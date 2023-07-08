@@ -18,8 +18,11 @@ set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set encoding=utf-8
 
+" theme
+set bg=dark
+autocmd vimenter * ++nested colorscheme gruvbox
 "set compatible
-colorscheme delek
+"colorscheme delek
 "colorscheme elflord
 "colorscheme morning
 "colorscheme pablo
@@ -40,6 +43,12 @@ colorscheme delek
 "
 set autoindent
 set cindent
+
+"resize window
+:nnoremap <silent> <C-up> :resize -2<CR>
+:nnoremap <silent> <C-down> :resize +2<CR>
+:nnoremap <silent> <C-left> :vertical resize -2<CR>
+:nnoremap <silent> <C-right> :vertical resize +2<CR>
 
 syntax enable
 filetype on
@@ -67,7 +76,7 @@ autocmd! bufwritepost .vimrc source ~/.vimrc
 "Generate tags and cscope.out from FileList.txt (c, cpp, h, hpp)
 nmap <C-@> :!find -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > FileList.txt<CR>
         \ :!ctags --c++-kinds=+p --fields=+iaS --extra=+q -L -< FileList.txt<CR>
-        \ :!cscope -bkq -i FileList.txt<CR>
+        \ :!cscope -RbuUq -i FileList.txt<CR>
 
 "taglist
 map <F2> :Tlist<CR>
@@ -96,11 +105,50 @@ if has("cscope")
 	set csverb
 endif
 
-nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+nmap <C-_>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-_>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+nmap <C-_>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>a :cs find a <C-R>=expand("<cword>")<CR><CR>
+
+" Using 'CTRL-spacebar' then a search type makes the vim window
+" split horizontally, with search result displayed in
+" the new window.
+
+"nmap <C-Space>s :scs find s <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space>g :scs find g <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space>c :scs find c <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space>t :scs find t <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space>e :scs find e <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space>f :scs find f <C-R>=expand("<cfile>")<CR><CR>
+"nmap <C-Space>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+"nmap <C-Space>d :scs find d <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space>a :scs find a <C-R>=expand("<cword>")<CR><CR>
+
+" Hitting CTRL-space *twice* before the search type does a vertical
+" split instead of a horizontal one
+
+"nmap <C-Space><C-Space>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space><C-Space>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space><C-Space>c :vert scs find c <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space><C-Space>t :vert scs find t <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space><C-Space>e :vert scs find e <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space><C-Space>i :vert scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+"nmap <C-Space><C-Space>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-Space><C-Space>a :vert scs find a <C-R>=expand("<cword>")<CR><CR>
+
+
+" YCM
+if filereadable(expand('~/.vim/pack/SI/start/YouCompleteMe/autoload/youcompleteme.vim'))
+	let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
+	let g:ycm_key_list_previous_completion = ['<S-TAB>', '<Up>']
+	let g:ycm_key_list_stop_completion = ['<C-y>']
+	let g:ycm_key_invoke_completion = '<C-Space>'
+	let g:ycm_autoclose_preview_window_after_completion = 1
+	let g:ycm_autoclose_preview_window_after_insertion = 1
+endif
+
