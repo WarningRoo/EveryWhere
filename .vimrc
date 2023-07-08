@@ -1,3 +1,6 @@
+" ./vim/pack/SI/start/
+
+" BASE Configuration
 set nu
 set nocompatible
 set incsearch
@@ -13,12 +16,26 @@ set t_Co=256
 set ignorecase
 set tabstop=8
 set shiftwidth=8
-
 set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set encoding=utf-8
+set autoindent
+set cindent
+
+syntax enable
+filetype on
+filetype plugin on
+
+"packadd! matchit
+
+"resize window
+:nnoremap <silent> <C-up> :resize -2<CR>
+:nnoremap <silent> <C-down> :resize +2<CR>
+:nnoremap <silent> <C-left> :vertical resize -2<CR>
+:nnoremap <silent> <C-right> :vertical resize +2<CR>
 
 " theme
+" [install_from] git clone https://github.com/morhetz/gruvbox.git
 set bg=dark
 autocmd vimenter * ++nested colorscheme gruvbox
 "set compatible
@@ -40,56 +57,20 @@ autocmd vimenter * ++nested colorscheme gruvbox
 "colorscheme torte
 "colorscheme darkblue
 "colorscheme industry
-"
-set autoindent
-set cindent
 
-"resize window
-:nnoremap <silent> <C-up> :resize -2<CR>
-:nnoremap <silent> <C-down> :resize +2<CR>
-:nnoremap <silent> <C-left> :vertical resize -2<CR>
-:nnoremap <silent> <C-right> :vertical resize +2<CR>
-
-syntax enable
-filetype on
-filetype plugin on
-
-set tags=tags
-
-"map \p bi(<Esc>ea)<Esc>
-"map \c bi{<Esc>ea}<Esc>
-
-"packadd! matchit
-
-"Set mapleader
-let mapleader=","
-
-"Fast reloading of the .vimrc
-map <silent> <leader>ss :source ~/.vimrc<cr>
-
-"Fast editing of .vimrc
-map <silent> <leader>ee :source ~/.vimrc<cr>
-
-"When .vimrc is edited, reload it
-autocmd! bufwritepost .vimrc source ~/.vimrc
-
-"Generate tags and cscope.out from FileList.txt (c, cpp, h, hpp)
+"-------------------------------------------------------------------------------------------------
+" ctags / cscope
+" [install_from]
+" sudo apt-get install ctags
+" sudo apt-get install cscope
+" Generate tags and cscope.out from FileList.txt (c, cpp, h, hpp)
 nmap <C-@> :!find -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > FileList.txt<CR>
         \ :!ctags --c++-kinds=+p --fields=+iaS --extra=+q -L -< FileList.txt<CR>
         \ :!cscope -RbuUq -i FileList.txt<CR>
 
-"taglist
-map <F2> :Tlist<CR>
-let Tlist_Show_One_File = 1             "不同时显示多个文件的tag，只显示当前文件的
-let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗口，则退出vim
+set tags=tags
 
-"NERDTree
-map <F4> :NERDTreeMirror<CR>
-map <F4> :NERDTreeToggle<CR>
-let NERDTreeWinPos="Right"
-let NERDTreeShowBookmarks=1
-
-"CSCOPE
+" CSCOPE
 if has("cscope")
 	set csprg=/usr/bin/cscope
 	set csto=0
@@ -141,8 +122,31 @@ nmap <C-_>a :cs find a <C-R>=expand("<cword>")<CR><CR>
 "nmap <C-Space><C-Space>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
 "nmap <C-Space><C-Space>a :vert scs find a <C-R>=expand("<cword>")<CR><CR>
 
+"-------------------------------------------------------------------------------------------------
+
+" taglist
+" [install_from]
+" git clone https://github.com/yegappan/taglist
+map <F2> :Tlist<CR>
+let Tlist_Show_One_File = 1             "不同时显示多个文件的tag，只显示当前文件的
+let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗口，则退出vim
+
+"-------------------------------------------------------------------------------------------------
+
+" NERDTree
+" [install_from]
+" git clone https://github.com/preservim/nerdtree.git
+map <F4> :NERDTreeMirror<CR>
+map <F4> :NERDTreeToggle<CR>
+let NERDTreeWinPos="Right"
+let NERDTreeShowBookmarks=1
+
+"-------------------------------------------------------------------------------------------------
 
 " YCM
+" [install_from]
+" git clone https://github.com/ycm-core/YouCompleteMe.git
+" git submodule update --init --recursive
 if filereadable(expand('~/.vim/pack/SI/start/YouCompleteMe/autoload/youcompleteme.vim'))
 	let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
 	let g:ycm_key_list_previous_completion = ['<S-TAB>', '<Up>']
@@ -152,3 +156,15 @@ if filereadable(expand('~/.vim/pack/SI/start/YouCompleteMe/autoload/youcompletem
 	let g:ycm_autoclose_preview_window_after_insertion = 1
 endif
 
+"-------------------------------------------------------------------------------------------------
+
+" fzf
+" [install_from]
+" sudo apt-get install fzf
+" git clone https://github.com/junegunn/fzf.git
+
+" fzf.vim
+" [install_from]
+" git clone https://github.com/junegunn/fzf.vim.git
+
+"-------------------------------------------------------------------------------------------------
