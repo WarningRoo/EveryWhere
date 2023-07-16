@@ -1,5 +1,7 @@
 " ./vim/pack/SI/start/
 
+:autocmd BufWritePre * :%s/\s\+$//e
+
 " BASE Configuration
 set nu
 set nocompatible
@@ -10,6 +12,9 @@ set background=dark
 set encoding=utf-8
 set laststatus=2
 set ruler
+set nowrap
+set autowrite
+"set list
 set showcmd
 set showmatch
 set t_Co=256
@@ -20,25 +25,24 @@ set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set encoding=utf-8
 set autoindent
-set cindent
 
-syntax enable
+set history=200
+
+syntax on
 filetype on
 filetype plugin on
+filetype plugin indent on
 
-"packadd! matchit
+packadd! matchit
+runtime! ftplugin/man.vim
 
 "resize window
-:nnoremap <silent> <C-up> :resize -2<CR>
-:nnoremap <silent> <C-down> :resize +2<CR>
+:nnoremap <silent> <C-up> :resize +2<CR>
+:nnoremap <silent> <C-down> :resize -2<CR>
 :nnoremap <silent> <C-left> :vertical resize -2<CR>
 :nnoremap <silent> <C-right> :vertical resize +2<CR>
 
 " theme
-" [install_from] git clone https://github.com/morhetz/gruvbox.git
-set bg=dark
-autocmd vimenter * ++nested colorscheme gruvbox
-"set compatible
 "colorscheme delek
 "colorscheme elflord
 "colorscheme morning
@@ -57,70 +61,82 @@ autocmd vimenter * ++nested colorscheme gruvbox
 "colorscheme torte
 "colorscheme darkblue
 "colorscheme industry
+"colorscheme Atelier_CaveDark
+"colorscheme Atelier_CaveLight
+"colorscheme Atelier_DuneDark
+"colorscheme Atelier_DuneLight
+"colorscheme Atelier_EstuaryDark
+"colorscheme Atelier_EstuaryLight
+"colorscheme Atelier_ForestDark
+"colorscheme Atelier_ForestLight
+"colorscheme Atelier_HeathDark
+"colorscheme Atelier_HeathLight
+"colorscheme Atelier_LakesideDark
+"colorscheme Atelier_LakesideLight
+"colorscheme Atelier_PlateauDark
+"colorscheme Atelier_PlateauLight
+"colorscheme Atelier_SavannaDark
+"colorscheme Atelier_SavannaLight
+"colorscheme Atelier_SeasideDark
+"colorscheme Atelier_SeasideLight
+"colorscheme Atelier_SulphurpoolDark
+"colorscheme Atelier_SulphurpoolLight
+colorscheme molokai
 
 "-------------------------------------------------------------------------------------------------
-" ctags / cscope
+" gtags
 " [install_from]
-" sudo apt-get install ctags
-" sudo apt-get install cscope
-" Generate tags and cscope.out from FileList.txt (c, cpp, h, hpp)
-nmap <C-@> :!find -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > FileList.txt<CR>
-        \ :!ctags --c++-kinds=+p --fields=+iaS --extra=+q -L -< FileList.txt<CR>
-        \ :!cscope -RbuUq -i FileList.txt<CR>
+" sudo apt-get install global
+nmap <C-@> :!find -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > .FileList.txt<CR>
+	 \ :Leaderf gtags --update<CR>
+	 \ :call delete(expand('./.FileList.txt'))
+"         \ :!gtags -f -< .FileList.txt<CR>
+map <C-n> :cn<CR>
+map <C-p> :cp<CR>
+map <C-_> :GtagsCursor<CR>
+"nmap <C-=>c :Gtags <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-q>c :Gtags -r <C-R>=expand("<cword>")<CR><CR>
+"
+"-------------------------------------------------------------------------------------------------
+let s:prj_file_tag = expand('./.cache')
+let g:Lf_RootMarkers = [s:prj_file_tag]
+let g:Lf_GtagsStoreInRootMarker = 1
 
-set tags=tags
+" don't show the help in normal mode
+let g:Lf_HideHelp = 1
+let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+" popup mode
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+"let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
 
-" CSCOPE
-if has("cscope")
-	set csprg=/usr/bin/cscope
-	set csto=0
-	set cst
-	set nocsverb
-	" add any database in current directory
-	if filereadable("cscope.out")
-		cs add cscope.out
-	" else add database pointed to by environment
-	elseif $CSCOPE_DB != ""
-		cs add $CSCOPE_DB
-	endif
-	set csverb
-endif
+" MOST inuse
+let g:Lf_ShortcutF = "<leader>ff"
+noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>fg :<C-U><C-R>=printf("Leaderf! gtags %s", "")<CR><CR>
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
 
-nmap <C-_>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-nmap <C-_>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-nmap <C-_>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-nmap <C-_>a :cs find a <C-R>=expand("<cword>")<CR><CR>
 
-" Using 'CTRL-spacebar' then a search type makes the vim window
-" split horizontally, with search result displayed in
-" the new window.
+noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 
-"nmap <C-Space>s :scs find s <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space>g :scs find g <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space>c :scs find c <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space>t :scs find t <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space>e :scs find e <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space>f :scs find f <C-R>=expand("<cfile>")<CR><CR>
-"nmap <C-Space>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-"nmap <C-Space>d :scs find d <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space>a :scs find a <C-R>=expand("<cword>")<CR><CR>
+"noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+"noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+" search visually selected text literally
+xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+noremap go :<C-U>Leaderf! rg --recall<CR>
 
-" Hitting CTRL-space *twice* before the search type does a vertical
-" split instead of a horizontal one
-
-"nmap <C-Space><C-Space>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space><C-Space>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space><C-Space>c :vert scs find c <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space><C-Space>t :vert scs find t <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space><C-Space>e :vert scs find e <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space><C-Space>i :vert scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-"nmap <C-Space><C-Space>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-Space><C-Space>a :vert scs find a <C-R>=expand("<cword>")<CR><CR>
+" should use `Leaderf gtags --update` first
+let g:Lf_GtagsAutoGenerate = 0
+let g:Lf_GtagsGutentags = 0
+"let g:Lf_Gtagslabel = 'native-pygments'
+noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
 "-------------------------------------------------------------------------------------------------
 
@@ -158,13 +174,20 @@ endif
 
 "-------------------------------------------------------------------------------------------------
 
-" fzf
+" theme
 " [install_from]
-" sudo apt-get install fzf
-" git clone https://github.com/junegunn/fzf.git
+" git clone https://github.com/atelierbram/vim-colors_atelier-schemes.git
 
-" fzf.vim
+"-------------------------------------------------------------------------------------------------
+
+" gutentags
 " [install_from]
-" git clone https://github.com/junegunn/fzf.vim.git
-
+" git clone https://github.com/ludovicchabant/vim-gutentags.git
+" helptags ~/.vim/pack/SI/start/vim-gutentags/doc
+"
+"let g:gutentags_project_root = ['.project', '.svn', '.git']
+"let g:gutentags_ctags_tagfile = 'GTAGS'
+"let g:gutentags_modules = ['gtags_cscope']
+"let g:gutentags_define_advanced_commands = 1
+"let g:gutentags_cache_dir = expand(g:Lf_CacheDirectory.'/.cache/gtags')
 "-------------------------------------------------------------------------------------------------
