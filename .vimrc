@@ -87,10 +87,7 @@ colorscheme molokai
 " gtags
 " [install_from]
 " sudo apt-get install global
-nmap <C-@> :!find -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" > .FileList.txt<CR>
-	 \ :Leaderf gtags --update<CR>
-	 \ :call delete(expand('./.FileList.txt'))
-"         \ :!gtags -f -< .FileList.txt<CR>
+nmap <C-@> :Leaderf gtags --update<CR>
 map <C-n> :cn<CR>
 map <C-p> :cp<CR>
 map <C-_> :GtagsCursor<CR>
