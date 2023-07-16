@@ -1,5 +1,6 @@
 " ./vim/pack/SI/start/
 
+" Strip the blank in the end of line
 :autocmd BufWritePre * :%s/\s\+$//e
 
 " BASE Configuration
@@ -14,7 +15,6 @@ set laststatus=2
 set ruler
 set nowrap
 set autowrite
-"set list
 set showcmd
 set showmatch
 set t_Co=256
@@ -25,7 +25,6 @@ set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set encoding=utf-8
 set autoindent
-
 set history=200
 
 syntax on
@@ -41,47 +40,6 @@ runtime! ftplugin/man.vim
 :nnoremap <silent> <C-down> :resize -2<CR>
 :nnoremap <silent> <C-left> :vertical resize -2<CR>
 :nnoremap <silent> <C-right> :vertical resize +2<CR>
-
-" theme
-"colorscheme delek
-"colorscheme elflord
-"colorscheme morning
-"colorscheme pablo
-"colorscheme ron
-"colorscheme slate
-"colorscheme zellner
-"colorscheme peachpuff
-"colorscheme default
-"colorscheme desert
-"colorscheme evening
-"colorscheme koehler
-"colorscheme blue
-"colorscheme murphy
-"colorscheme shine
-"colorscheme torte
-"colorscheme darkblue
-"colorscheme industry
-"colorscheme Atelier_CaveDark
-"colorscheme Atelier_CaveLight
-"colorscheme Atelier_DuneDark
-"colorscheme Atelier_DuneLight
-"colorscheme Atelier_EstuaryDark
-"colorscheme Atelier_EstuaryLight
-"colorscheme Atelier_ForestDark
-"colorscheme Atelier_ForestLight
-"colorscheme Atelier_HeathDark
-"colorscheme Atelier_HeathLight
-"colorscheme Atelier_LakesideDark
-"colorscheme Atelier_LakesideLight
-"colorscheme Atelier_PlateauDark
-"colorscheme Atelier_PlateauLight
-"colorscheme Atelier_SavannaDark
-"colorscheme Atelier_SavannaLight
-"colorscheme Atelier_SeasideDark
-"colorscheme Atelier_SeasideLight
-"colorscheme Atelier_SulphurpoolDark
-"colorscheme Atelier_SulphurpoolLight
-colorscheme molokai
 
 "-------------------------------------------------------------------------------------------------
 " gtags
@@ -100,14 +58,13 @@ let g:Lf_RootMarkers = [s:prj_file_tag]
 let g:Lf_GtagsStoreInRootMarker = 1
 
 " don't show the help in normal mode
-let g:Lf_HideHelp = 1
+let g:Lf_HideHelp = 0
 let g:Lf_UseCache = 0
 let g:Lf_UseVersionControlTool = 0
 let g:Lf_IgnoreCurrentBufferName = 1
 " popup mode
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
-"let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
 
 " MOST inuse
 let g:Lf_ShortcutF = "<leader>ff"
@@ -115,8 +72,6 @@ noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fg :<C-U><C-R>=printf("Leaderf! gtags %s", "")<CR><CR>
 noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
 noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-
-
 noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
@@ -171,12 +126,6 @@ endif
 
 "-------------------------------------------------------------------------------------------------
 
-" theme
-" [install_from]
-" git clone https://github.com/atelierbram/vim-colors_atelier-schemes.git
-
-"-------------------------------------------------------------------------------------------------
-
 " gutentags
 " [install_from]
 " git clone https://github.com/ludovicchabant/vim-gutentags.git
@@ -187,4 +136,54 @@ endif
 "let g:gutentags_modules = ['gtags_cscope']
 "let g:gutentags_define_advanced_commands = 1
 "let g:gutentags_cache_dir = expand(g:Lf_CacheDirectory.'/.cache/gtags')
+
 "-------------------------------------------------------------------------------------------------
+
+" air line
+" git clone https://github.com/vim-airline/vim-airline
+" :helptags ~/.vim/pack/dist/start/vim-airline/doc
+
+"-------------------------------------------------------------------------------------------------
+
+" theme
+" [install_from]
+" git clone https://github.com/atelierbram/vim-colors_atelier-schemes.git
+"colorscheme delek
+"colorscheme elflord
+"colorscheme morning
+"colorscheme pablo
+"colorscheme ron
+"colorscheme slate
+"colorscheme zellner
+"colorscheme peachpuff
+"colorscheme default
+"colorscheme desert
+"colorscheme evening
+"colorscheme koehler
+"colorscheme blue
+"colorscheme murphy
+"colorscheme shine
+"colorscheme torte
+"colorscheme darkblue
+"colorscheme industry
+"colorscheme Atelier_CaveDark
+"colorscheme Atelier_CaveLight
+"colorscheme Atelier_DuneDark
+"colorscheme Atelier_DuneLight
+"colorscheme Atelier_EstuaryDark
+"colorscheme Atelier_EstuaryLight
+"colorscheme Atelier_ForestDark
+"colorscheme Atelier_ForestLight
+"colorscheme Atelier_HeathDark
+"colorscheme Atelier_HeathLight
+"colorscheme Atelier_LakesideDark
+"colorscheme Atelier_LakesideLight
+"colorscheme Atelier_PlateauDark
+"colorscheme Atelier_PlateauLight
+"colorscheme Atelier_SavannaDark
+"colorscheme Atelier_SavannaLight
+"colorscheme Atelier_SeasideDark
+"colorscheme Atelier_SeasideLight
+"colorscheme Atelier_SulphurpoolDark
+"colorscheme Atelier_SulphurpoolLight
+colorscheme molokai
