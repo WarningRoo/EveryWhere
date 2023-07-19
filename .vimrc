@@ -1,6 +1,6 @@
 " ./vim/pack/SI/start/
 
-" Strip the blank in the end of line
+" Strip blank at the end of line
 autocmd BufWritePre * :%s/\s\+$//e
 
 " BASE Configuration
@@ -9,7 +9,7 @@ set nocompatible
 set incsearch
 set hlsearch
 set showmode
-"set background=dark
+set background=dark
 set encoding=utf-8
 set laststatus=2
 set ruler
@@ -45,13 +45,14 @@ runtime! ftplugin/man.vim
 " gtags
 " [install_from]
 " sudo apt-get install global
-"nmap <C-@> :Leaderf gtags --update<CR>
-nmap <C-@> :call CacheFileWarning()<CR>
-function! CacheFileWarning()
-	if isdirectory(expand("./.cache"))
+nmap <C-@> :call MakeGTAGSFiles()<CR>
+
+let s:prj_file_tag = expand('./.cache')
+function! MakeGTAGSFiles()
+	if isdirectory(s:prj_file_tag)
 		Leaderf gtags --update
 	else
-		echo "Please mkdir one .cache file in your project root directory!"
+		echo "Make sure you've 'mkdir .cache' in your project root directory!"
 	endif
 endfunction
 
@@ -63,7 +64,6 @@ map <C-_> :GtagsCursor<CR>
 
 "-------------------------------------------------------------------------------------------------
 
-let s:prj_file_tag = expand('./.cache')
 let g:Lf_RootMarkers = [s:prj_file_tag]
 let g:Lf_GtagsStoreInRootMarker = 1
 
@@ -75,6 +75,10 @@ let g:Lf_IgnoreCurrentBufferName = 1
 " popup mode
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+let g:Lf_WildIgnore = {
+	\ 'dir': ['.svn','.git','.hg'],
+	\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+	\}
 
 " MOST inuse
 let g:Lf_ShortcutF = "<leader>ff"
@@ -101,10 +105,6 @@ noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
 noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
-let g:Lf_WildIgnore = {
-	\ 'dir': ['.svn','.git','.hg'],
-	\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
-	\}
 "-------------------------------------------------------------------------------------------------
 
 " taglist
