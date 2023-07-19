@@ -1,7 +1,7 @@
 " ./vim/pack/SI/start/
 
 " Strip the blank in the end of line
-:autocmd BufWritePre * :%s/\s\+$//e
+autocmd BufWritePre * :%s/\s\+$//e
 
 " BASE Configuration
 set nu
@@ -9,7 +9,7 @@ set nocompatible
 set incsearch
 set hlsearch
 set showmode
-set background=dark
+"set background=dark
 set encoding=utf-8
 set laststatus=2
 set ruler
@@ -45,14 +45,24 @@ runtime! ftplugin/man.vim
 " gtags
 " [install_from]
 " sudo apt-get install global
-nmap <C-@> :Leaderf gtags --update<CR>
+"nmap <C-@> :Leaderf gtags --update<CR>
+nmap <C-@> :call CacheFileWarning()<CR>
+function! CacheFileWarning()
+	if isdirectory(expand("./.cache"))
+		Leaderf gtags --update
+	else
+		echo "Please mkdir one .cache file in your project root directory!"
+	endif
+endfunction
+
 map <C-n> :cn<CR>
 map <C-p> :cp<CR>
 map <C-_> :GtagsCursor<CR>
 "nmap <C-=>c :Gtags <C-R>=expand("<cword>")<CR><CR>
 "nmap <C-q>c :Gtags -r <C-R>=expand("<cword>")<CR><CR>
-"
+
 "-------------------------------------------------------------------------------------------------
+
 let s:prj_file_tag = expand('./.cache')
 let g:Lf_RootMarkers = [s:prj_file_tag]
 let g:Lf_GtagsStoreInRootMarker = 1
@@ -69,9 +79,10 @@ let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu S
 " MOST inuse
 let g:Lf_ShortcutF = "<leader>ff"
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-noremap <leader>fg :<C-U><C-R>=printf("Leaderf! gtags %s", "")<CR><CR>
+noremap <leader>fs :<C-U><C-R>=printf("Leaderf! gtags %s", "")<CR><CR>
 noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
 noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fg :<C-U><C-R>=printf("Leaderf! gtags -g %s --auto-jump", expand("<cword>"))<CR><CR>
 noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
@@ -85,11 +96,15 @@ noremap go :<C-U>Leaderf! rg --recall<CR>
 " should use `Leaderf gtags --update` first
 let g:Lf_GtagsAutoGenerate = 0
 let g:Lf_GtagsGutentags = 0
-"let g:Lf_Gtagslabel = 'native-pygments'
+let g:Lf_Gtagslabel = 'pygments'
 noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
 noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
+let g:Lf_WildIgnore = {
+	\ 'dir': ['.svn','.git','.hg'],
+	\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+	\}
 "-------------------------------------------------------------------------------------------------
 
 " taglist
@@ -104,8 +119,10 @@ let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗�
 " NERDTree
 " [install_from]
 " git clone https://github.com/preservim/nerdtree.git
+map <leader>nf :NERDTreeFind<CR>
 map <F4> :NERDTreeMirror<CR>
 map <F4> :NERDTreeToggle<CR>
+
 let NERDTreeWinPos="Right"
 let NERDTreeShowBookmarks=1
 
