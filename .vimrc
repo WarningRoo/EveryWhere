@@ -1,4 +1,34 @@
-" ./vim/pack/SI/start/
+"-------------------------------------------------------------------------------------------------
+" VIM-plug
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+let plug_vim = data_dir . '/autoload/plug.vim'
+let plug_dir = data_dir . '/plugged'
+
+if empty(glob(plug_vim))
+	silent execute '!curl -fLo ' . plug_vim . ' --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin(plug_dir)
+
+Plug 'junegunn/vim-plug'
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+Plug 'tomasr/molokai'
+Plug 'preservim/nerdtree'
+Plug 'vim-scripts/taglist.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'atelierbram/vim-colors_atelier-schemes'
+Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+
+" We have to do these for gtags manually:
+" 1. Download the newest GNU-Global soft from "https://ftp.gnu.org/pub/gnu/global/"
+" 2. Configure and INSTALL, see global/INSTALL
+" 3. mkdir -p ...plugged/gtags/plugin | cp global-xxx/*.vim " ...plugged/gtags/plugin
+Plug plug_dir.'/gtags'
+
+call plug#end()
+
+"-------------------------------------------------------------------------------------------------
 
 " Strip blank at the end of line
 autocmd BufWritePre * :%s/\s\+$//e
@@ -8,6 +38,8 @@ set nu
 set nocompatible
 set incsearch
 set hlsearch
+set cursorline
+set cursorcolumn
 set showmode
 set background=dark
 set encoding=utf-8
@@ -36,15 +68,13 @@ packadd! matchit
 runtime! ftplugin/man.vim
 
 "resize window
-:nnoremap <silent> <C-up> :resize +2<CR>
-:nnoremap <silent> <C-down> :resize -2<CR>
-:nnoremap <silent> <C-left> :vertical resize -2<CR>
-:nnoremap <silent> <C-right> :vertical resize +2<CR>
+nnoremap <silent> <C-up> :resize +2<CR>
+nnoremap <silent> <C-down> :resize -2<CR>
+nnoremap <silent> <C-left> :vertical resize -2<CR>
+nnoremap <silent> <C-right> :vertical resize +2<CR>
 
 "-------------------------------------------------------------------------------------------------
 " gtags
-" [install_from]
-" sudo apt-get install global
 nmap <C-@> :call MakeGTAGSFiles()<CR>
 
 let s:prj_file_tag = expand('./.cache')
@@ -108,8 +138,6 @@ noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 "-------------------------------------------------------------------------------------------------
 
 " taglist
-" [install_from]
-" git clone https://github.com/yegappan/taglist
 map <F2> :Tlist<CR>
 let Tlist_Show_One_File = 1             "不同时显示多个文件的tag，只显示当前文件的
 let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗口，则退出vim
@@ -117,8 +145,6 @@ let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗�
 "-------------------------------------------------------------------------------------------------
 
 " NERDTree
-" [install_from]
-" git clone https://github.com/preservim/nerdtree.git
 map <leader>nf :NERDTreeFind<CR>
 map <F4> :NERDTreeMirror<CR>
 map <F4> :NERDTreeToggle<CR>
@@ -143,28 +169,11 @@ endif
 
 "-------------------------------------------------------------------------------------------------
 
-" gutentags
-" [install_from]
-" git clone https://github.com/ludovicchabant/vim-gutentags.git
-" helptags ~/.vim/pack/SI/start/vim-gutentags/doc
-"
-"let g:gutentags_project_root = ['.project', '.svn', '.git']
-"let g:gutentags_ctags_tagfile = 'GTAGS'
-"let g:gutentags_modules = ['gtags_cscope']
-"let g:gutentags_define_advanced_commands = 1
-"let g:gutentags_cache_dir = expand(g:Lf_CacheDirectory.'/.cache/gtags')
-
-"-------------------------------------------------------------------------------------------------
-
-" air line
-" git clone https://github.com/vim-airline/vim-airline
-" :helptags ~/.vim/pack/dist/start/vim-airline/doc
+" airline
 
 "-------------------------------------------------------------------------------------------------
 
 " theme
-" [install_from]
-" git clone https://github.com/atelierbram/vim-colors_atelier-schemes.git
 "colorscheme delek
 "colorscheme elflord
 "colorscheme morning
