@@ -22,7 +22,7 @@ endif
 
 "-------------------------------------------------------------------------------------------------
 " VIM-plug
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+let data_dir = expand(has('nvim') ? stdpath('data') . '/site' : '~/.vim')
 let plug_vim = data_dir . '/autoload/plug.vim'
 let plug_dir = data_dir . '/plugged'
 
@@ -34,21 +34,25 @@ endif
 call plug#begin(plug_dir)
 
 Plug 'junegunn/vim-plug'
+
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
-Plug 'tomasr/molokai'
 Plug 'preservim/nerdtree'
 Plug 'vim-scripts/taglist.vim'
-Plug 'vim-airline/vim-airline'
-Plug 'atelierbram/vim-colors_atelier-schemes'
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
-Plug 'morhetz/gruvbox'
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " We have to do these for gtags manually:
 " 1. Download the newest GNU-Global soft from "https://ftp.gnu.org/pub/gnu/global/"
 " 2. Configure and INSTALL, see global/INSTALL
 " 3. mkdir -p ...plugged/gtags/plugin | cp global/*.vim ...plugged/gtags/plugin
 Plug plug_dir.'/gtags'
+
+" +++++++++++++++++++++++++++++++++++++++++++
+" colorscheme
+Plug 'tomasr/molokai'
+Plug 'atelierbram/vim-colors_atelier-schemes'
+Plug 'morhetz/gruvbox'
+Plug 'vim-airline/vim-airline'
+" +++++++++++++++++++++++++++++++++++++++++++
 
 call plug#end()
 
@@ -125,6 +129,7 @@ map <C-_> :GtagsCursor<CR>
 
 let g:Lf_RootMarkers = ['.cache']
 let g:Lf_GtagsStoreInRootMarker = 1
+let g:Lf_Gtagslabel = 'native-pygments'
 
 " don't show the help in normal mode
 let g:Lf_HideHelp = 0
@@ -146,21 +151,41 @@ noremap <leader>fs :<C-U><C-R>=printf("Leaderf! gtags %s", "")<CR><CR>
 noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
 noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
 noremap <leader>fg :<C-U><C-R>=printf("Leaderf! gtags -g %s --auto-jump", expand("<cword>"))<CR><CR>
+
+noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+
 noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 
-"noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-"noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
-" search visually selected text literally
-xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+" rg
+let g:Lf_RgConfig = [
+	\ "--max-columns=150",
+	\ "--type-add web:*.{html,css,js}*",
+	\ "--glob=!git/*",
+	\ "--hidden"
+	\ ]
+
+" Search in ALL-files / current-file
+noremap <leader>ra :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+noremap <leader>rc :<C-U><C-R>=printf("Leaderf! rg -F --current-buffer -e %s ", expand("<cword>"))<CR>
 noremap go :<C-U>Leaderf! rg --recall<CR>
 
-" should use `Leaderf gtags --update` first
-let g:Lf_Gtagslabel = 'native-pygments'
-noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
-noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+"noremap <leader>ro :<C-U><C-R>=printf("Leaderf! rg --append -e %s ", expand("<cword>"))<CR>
+" search visually selected text literally, don't quit LeaderF after accepting an entry
+"xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F --stayOpen -e %s ", leaderf#Rg#visual())<CR>
+" search word under cursor, use --heading
+"noremap <C-H> :<C-U><C-R>=printf("Leaderf! rg -e %s --heading -C3 ", expand("<cword>"))<CR>
+" search word under cursor literally in all listed buffers
+"noremap <C-D> :<C-U><C-R>=printf("Leaderf! rg -F --all-buffers -e %s ", expand("<cword>"))<CR>
+
+" search word under cursor in *.h and *.cpp files.
+"noremap <Leader>a :<C-U><C-R>=printf("Leaderf! rg -e %s -g *.h -g *.cpp", expand("<cword>"))<CR>
+"noremap <Leader>a :<C-U><C-R>=printf("Leaderf! rg -e %s -g *.{h,cpp}", expand("<cword>"))<CR>
+"noremap <Leader>b :<C-U><C-R>=printf("Leaderf! rg -e %s -t cpp -t java", expand("<cword>"))<CR>
+"noremap <Leader>c :<C-U><C-R>=printf("Leaderf! rg -e %s -t cpp -g !*.hpp", expand("<cword>"))<CR>
 
 "-------------------------------------------------------------------------------------------------
 
