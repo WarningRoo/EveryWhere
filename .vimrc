@@ -41,6 +41,8 @@ Plug 'vim-scripts/taglist.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'atelierbram/vim-colors_atelier-schemes'
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+Plug 'morhetz/gruvbox'
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " We have to do these for gtags manually:
 " 1. Download the newest GNU-Global soft from "https://ftp.gnu.org/pub/gnu/global/"
@@ -155,8 +157,6 @@ xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
 noremap go :<C-U>Leaderf! rg --recall<CR>
 
 " should use `Leaderf gtags --update` first
-let g:Lf_GtagsAutoGenerate = 0
-let g:Lf_GtagsGutentags = 0
 let g:Lf_Gtagslabel = 'native-pygments'
 noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
