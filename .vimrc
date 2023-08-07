@@ -35,6 +35,7 @@ call plug#begin(plug_dir)
 
 Plug 'junegunn/vim-plug'
 
+Plug 'tpope/vim-surround'
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'preservim/nerdtree'
 Plug 'vim-scripts/taglist.vim'
@@ -84,6 +85,9 @@ set encoding=utf-8
 set autoindent
 set history=200
 
+set path+=**
+set wildmenu
+
 syntax on
 filetype on
 filetype plugin on
@@ -107,6 +111,14 @@ autocmd BufWritePre * :%s/\s\+$//e
 let $GTAGSROOT = g:root_dir
 let $GTAGSDBPATH = g:cache_dir . '/.LfGtags'
 
+" If you make empty GTAGS or Gtags doesn't figure out .py/.vim... file. JUST
+" Check EXUBERANT_CTAGS in pygments_parser.py and Ensure the ctags is exactly
+" located there.
+" You may need `ln` one new ctags or reinstall `global`(./configure | make |
+" sudo make install)
+let $GTAGSLABEL = 'pygments'
+let $GTAGSCONF = '/usr/local/share/gtags/gtags.conf'
+
 " ATTENTION:
 "   Run this command in the project's root directory, which should have a
 "   .cache/ directory; otherwise, you'll run into an error.
@@ -129,7 +141,7 @@ map <C-_> :GtagsCursor<CR>
 
 let g:Lf_RootMarkers = ['.cache']
 let g:Lf_GtagsStoreInRootMarker = 1
-let g:Lf_Gtagslabel = 'native-pygments'
+let g:Lf_Gtagslabel = 'pygments'
 
 " don't show the help in normal mode
 let g:Lf_HideHelp = 0
@@ -147,10 +159,11 @@ let g:Lf_WildIgnore = {
 " MOST inuse
 let g:Lf_ShortcutF = "<leader>ff"
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-noremap <leader>fs :<C-U><C-R>=printf("Leaderf! gtags %s", "")<CR><CR>
-noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
-noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-noremap <leader>fg :<C-U><C-R>=printf("Leaderf! gtags -g %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fa :<C-U><C-R>=printf("Leaderf  gtags --result ctags-x %s", "")<CR><CR>
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags --result ctags-x -r %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fs :<C-U><C-R>=printf("Leaderf! gtags --result ctags-x -s %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags --result ctags-x -d %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fg :<C-U><C-R>=printf("Leaderf! gtags --result ctags-x -g %s --auto-jump", expand("<cword>"))<CR><CR>
 
 noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
@@ -169,8 +182,8 @@ let g:Lf_RgConfig = [
 	\ ]
 
 " Search in ALL-files / current-file
-noremap <leader>ra :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
-noremap <leader>rc :<C-U><C-R>=printf("Leaderf! rg -F --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap <leader>ra :<C-U><C-R>=printf("Leaderf rg -e %s ", expand("<cword>"))<CR>
+noremap <leader>rc :<C-U><C-R>=printf("Leaderf rg -F --current-buffer -e %s ", expand("<cword>"))<CR>
 noremap go :<C-U>Leaderf! rg --recall<CR>
 
 "noremap <leader>ro :<C-U><C-R>=printf("Leaderf! rg --append -e %s ", expand("<cword>"))<CR>
