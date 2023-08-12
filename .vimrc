@@ -35,6 +35,8 @@ call plug#begin(plug_dir)
 
 Plug 'junegunn/vim-plug'
 
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'preservim/nerdtree'
@@ -85,7 +87,8 @@ set encoding=utf-8
 set autoindent
 set history=200
 
-set path+=**
+execute 'set path+=' . g:root_dir . '/**'
+
 set wildmenu
 
 syntax on
@@ -101,6 +104,8 @@ nnoremap <silent> <C-up> :resize +2<CR>
 nnoremap <silent> <C-down> :resize -2<CR>
 nnoremap <silent> <C-left> :vertical resize -2<CR>
 nnoremap <silent> <C-right> :vertical resize +2<CR>
+
+cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 " Strip blank at the end of line
 autocmd BufWritePre * :%s/\s\+$//e
