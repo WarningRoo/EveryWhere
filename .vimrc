@@ -107,6 +107,11 @@ nnoremap <silent> <C-right> :vertical resize +2<CR>
 
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+
 " Strip blank at the end of line
 autocmd BufWritePre * :%s/\s\+$//e
 
