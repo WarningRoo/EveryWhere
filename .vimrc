@@ -105,11 +105,19 @@ filetype plugin indent on
 packadd! matchit
 runtime! ftplugin/man.vim
 
+" [INSERT MODE] <C-v><Alt-h> -> h
+" [INSERT MODE] <C-v><Ctrl-h> -> h
+nnoremap <silent> <C-h> <C-w>h
+nnoremap <silent> <C-j> <C-w>j
+nnoremap <silent> <C-k> <C-w>k
+nnoremap <silent> <C-l> <C-w>l
+
 "resize window
-nnoremap <silent> <C-up> :resize +2<CR>
-nnoremap <silent> <C-down> :resize -2<CR>
-nnoremap <silent> <C-left> :vertical resize -2<CR>
-nnoremap <silent> <C-right> :vertical resize +2<CR>
+nnoremap <silent> [A :resize +4<CR>
+nnoremap <silent> [B :resize -4<CR>
+nnoremap <silent> [D :vertical resize -4<CR>
+nnoremap <silent> [C :vertical resize +4<CR>
+" <C-w>= -> Resize window automally
 
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
@@ -231,12 +239,52 @@ let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗�
 "-------------------------------------------------------------------------------------------------
 
 " NERDTree
-map <leader>nf :NERDTreeFind<CR>
-map <F4> :NERDTreeMirror<CR>
-map <F4> :NERDTreeToggle<CR>
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
 
 let NERDTreeWinPos="Right"
 let NERDTreeShowBookmarks=1
+
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+		\ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+"-------------------------------------------------------------------------------
+" Open file in reoute server
+" Function to open the file or NERDTree or netrw.
+"   Returns: 1 if either file explorer was opened; otherwise, 0.
+function! s:OpenFileOrExplorer(...)
+    if a:0 == 0 || a:1 == ''
+        NERDTree
+    elseif filereadable(a:1)
+        execute 'edit '.a:1
+        return 0
+    elseif a:1 =~? '^\(scp\|ftp\)://' " Add other protocols as needed.
+        execute 'Vexplore '.a:1
+    elseif isdirectory(a:1)
+        execute 'NERDTree '.a:1
+    endif
+    return 1
+endfunction
+
+" Auto commands to handle OS commandline arguments
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc()==1 && !exists('s:std_in') | if <SID>OpenFileOrExplorer(argv()[0]) | wincmd p | enew | wincmd p | endif | endif
+
+" Command to call the OpenFileOrExplorer function.
+command! -n=? -complete=file -bar Edit :call <SID>OpenFileOrExplorer('<args>')
+
+" Command-mode abbreviation to replace the :edit Vim command.
+cnoreabbrev e Edit
+"-------------------------------------------------------------------------------
 
 "-------------------------------------------------------------------------------------------------
 " YCM
