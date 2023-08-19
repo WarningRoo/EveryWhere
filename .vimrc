@@ -51,6 +51,7 @@ Plug plug_dir.'/gtags'
 
 " +++++++++++++++++++++++++++++++++++++++++++
 " colorscheme
+Plug 'ghifarit53/tokyonight-vim'
 Plug 'tomasr/molokai'
 Plug 'atelierbram/vim-colors_atelier-schemes'
 Plug 'morhetz/gruvbox'
@@ -62,6 +63,9 @@ call plug#end()
 "-------------------------------------------------------------------------------------------------
 " BASE Configuration (no plugin)
 
+set encoding=utf-8
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+set termencoding=utf-8
 set nu
 set nocompatible
 set incsearch
@@ -70,7 +74,6 @@ set cursorline
 set cursorcolumn
 set showmode
 set background=dark
-set encoding=utf-8
 set laststatus=2
 set ruler
 set nowrap
@@ -79,13 +82,16 @@ set showcmd
 set showmatch
 set t_Co=256
 set ignorecase
+set smartcase
 set tabstop=8
 set shiftwidth=8
-set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
-set termencoding=utf-8
-set encoding=utf-8
 set autoindent
 set history=200
+set clipboard=unnamed
+set termguicolors
+set colorcolumn=80
+set splitbelow
+set splitright
 
 execute 'set path+=' . g:root_dir . '/**'
 
@@ -106,11 +112,6 @@ nnoremap <silent> <C-left> :vertical resize -2<CR>
 nnoremap <silent> <C-right> :vertical resize +2<CR>
 
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
-
-noremap <Up> <Nop>
-noremap <Down> <Nop>
-noremap <Left> <Nop>
-noremap <Right> <Nop>
 
 " Strip blank at the end of line
 autocmd BufWritePre * :%s/\s\+$//e
@@ -238,7 +239,6 @@ let NERDTreeWinPos="Right"
 let NERDTreeShowBookmarks=1
 
 "-------------------------------------------------------------------------------------------------
-
 " YCM
 if filereadable(expand(plug_dir.'/YouCompleteMe/plugin/youcompleteme.vim'))
 	let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
@@ -251,8 +251,4 @@ endif
 
 "-------------------------------------------------------------------------------------------------
 
-" airline
-
-"-------------------------------------------------------------------------------------------------
-
-colorscheme molokai
+colorscheme tokyonight
