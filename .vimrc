@@ -37,11 +37,17 @@ Plug 'junegunn/vim-plug'
 
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-surround'
+"Plug 'tpope/vim-surround'
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'preservim/nerdtree'
 Plug 'vim-scripts/taglist.vim'
 Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+
+" +++++++++++++++++++++++++++++++++++++++++++
+" LSP
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+" +++++++++++++++++++++++++++++++++++++++++++
 
 " We have to do these for gtags manually:
 " 1. Download the newest GNU-Global soft from "https://ftp.gnu.org/pub/gnu/global/"
@@ -97,6 +103,9 @@ set nobackup
 set noswapfile
 set autoread
 set confirm
+
+"set foldmethod=syntax
+"set nofoldenable
 
 execute 'set path+=' . g:root_dir . '/**'
 
@@ -256,7 +265,7 @@ let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗�
 
 " NERDTree
 nnoremap <leader>n :NERDTreeFocus<CR>
-nnoremap <C-n> :NERDTree<CR>
+""nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
@@ -312,6 +321,46 @@ if filereadable(expand(plug_dir.'/YouCompleteMe/plugin/youcompleteme.vim'))
 	let g:ycm_autoclose_preview_window_after_completion = 1
 	let g:ycm_autoclose_preview_window_after_insertion = 1
 endif
+
+"-------------------------------------------------------------------------------------------------
+
+if executable('pylsp')
+	" pip install python-lsp-server
+	au User lsp_setup call lsp#register_server({
+				\ 'name': 'pylsp',
+				\ 'cmd': {server_info->['pylsp']},
+				\ 'allowlist': ['python'],
+				\ })
+endif
+
+function! s:on_lsp_buffer_enabled() abort
+	setlocal omnifunc=lsp#complete
+	setlocal signcolumn=yes
+	if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+	nmap <buffer> gd <plug>(lsp-definition)
+	nmap <buffer> gs <plug>(lsp-document-symbol-search)
+	nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+	nmap <buffer> gr <plug>(lsp-references)
+	nmap <buffer> gi <plug>(lsp-implementation)
+	nmap <buffer> gt <plug>(lsp-type-definition)
+	nmap <buffer> <leader>rn <plug>(lsp-rename)
+	nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+	nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+	nmap <buffer> K <plug>(lsp-hover)
+	nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+	nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+	let g:lsp_format_sync_timeout = 1000
+	autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+
+	" refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+	au!
+	" call s:on_lsp_buffer_enabled only for languages that has the server registered.
+	autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 "-------------------------------------------------------------------------------------------------
 
