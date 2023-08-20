@@ -83,8 +83,8 @@ set showmatch
 set t_Co=256
 set ignorecase
 set smartcase
-set tabstop=8
-set shiftwidth=8
+set tabstop=4
+set shiftwidth=4
 set autoindent
 set history=200
 set clipboard=unnamed
@@ -93,9 +93,18 @@ set colorcolumn=80
 set splitbelow
 set splitright
 
+set nobackup
+set noswapfile
+set autoread
+set confirm
+
 execute 'set path+=' . g:root_dir . '/**'
 
 set wildmenu
+set completeopt=menuone,preview,noselect
+set omnifunc=syntaxcomplete#Complet
+set shortmess+=c
+set cpt+=kspell
 
 syntax on
 filetype on
@@ -118,6 +127,13 @@ nnoremap <silent> [B :resize -4<CR>
 nnoremap <silent> [D :vertical resize -4<CR>
 nnoremap <silent> [C :vertical resize +4<CR>
 " <C-w>= -> Resize window automally
+
+inoremap < <><left>
+noremap! ( ()<left>
+noremap! [ []<left>
+noremap! { {}<left>
+noremap! " ""<left>
+noremap! ' ''<left>
 
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
