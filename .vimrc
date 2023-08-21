@@ -45,8 +45,9 @@ Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
 
 " +++++++++++++++++++++++++++++++++++++++++++
 " LSP
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
+" Plug 'prabirshrestha/vim-lsp'
+" Plug 'mattn/vim-lsp-settings'
+" LSP
 " +++++++++++++++++++++++++++++++++++++++++++
 
 " We have to do these for gtags manually:
@@ -86,7 +87,6 @@ set nowrap
 set autowrite
 set showcmd
 set showmatch
-set t_Co=256
 set ignorecase
 set smartcase
 set tabstop=4
@@ -94,6 +94,7 @@ set shiftwidth=4
 set autoindent
 set history=200
 set clipboard=unnamed
+set t_Co=256
 set termguicolors
 set colorcolumn=80
 set splitbelow
@@ -137,12 +138,12 @@ nnoremap <silent> [D :vertical resize -4<CR>
 nnoremap <silent> [C :vertical resize +4<CR>
 " <C-w>= -> Resize window automally
 
-inoremap < <><left>
+"inoremap < <><left>
 noremap! ( ()<left>
 noremap! [ []<left>
 noremap! { {}<left>
-noremap! " ""<left>
-noremap! ' ''<left>
+"noremap! " ""<left>
+"noremap! ' ''<left>
 
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
@@ -157,7 +158,16 @@ function! ToggleQuickFix()
 		cclose
 	endif
 endfunction
-nnoremap <silent> <C-q> :call ToggleQuickFix()<cr>
+nnoremap <silent> <C-q> :call ToggleQuickFix()<CR>
+
+"-------------------------------------------------------------------------------------------------
+" search
+execute 'set grepprg=grep\ -r\ -n\ $*\ ' .
+	\ g:root_dir .
+	\ '\ --exclude={a.out,*.o,*.a}\ ' .
+	\ '\ --exclude-dir={.svn,.git}\ ' .
+	\ '\ /dev/null'
+command! -nargs=+ Grep execute 'silent grep! ' . shellescape(<q-args>) | redraw!
 
 "-------------------------------------------------------------------------------------------------
 " gtags
@@ -185,8 +195,8 @@ function! MakeGTAGSFiles()
 	endif
 endfunction
 
-map <C-n> :cn<CR>
-map <C-p> :cp<CR>
+map <C-n> :cnext<CR>
+map <C-p> :cprev<CR>
 map <C-_> :GtagsCursor<CR>
 "nmap <C-=>c :Gtags <C-R>=expand("<cword>")<CR><CR>
 "nmap <C-q>c :Gtags -r <C-R>=expand("<cword>")<CR><CR>
@@ -265,7 +275,7 @@ let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗�
 
 " NERDTree
 nnoremap <leader>n :NERDTreeFocus<CR>
-""nnoremap <C-n> :NERDTree<CR>
+"nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
@@ -364,4 +374,5 @@ augroup END
 
 "-------------------------------------------------------------------------------------------------
 
+let g:tokyonight_style = 'storm'
 colorscheme tokyonight
