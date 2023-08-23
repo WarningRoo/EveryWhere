@@ -69,26 +69,22 @@ call plug#end()
 
 "-------------------------------------------------------------------------------------------------
 " BASE Configuration (no plugin)
-
 set encoding=utf-8
 set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
 set termencoding=utf-8
 set nu
 set nocompatible
-set incsearch
-set hlsearch
-set cursorline
-set cursorcolumn
+set hlsearch incsearch
+set cursorline cursorcolumn
 set showmode
 set background=dark
 set laststatus=2
 set ruler
 set nowrap
-set autowrite
+set autowrite autoread
 set showcmd
 set showmatch
-set ignorecase
-set smartcase
+set ignorecase smartcase
 set tabstop=4
 set shiftwidth=4
 set autoindent
@@ -97,13 +93,9 @@ set clipboard=unnamed
 set t_Co=256
 set termguicolors
 set colorcolumn=80
-set splitbelow
-set splitright
-
-set nobackup
-set noswapfile
-set autoread
-set confirm
+set splitbelow splitright
+set nobackup noswapfile
+"set confirm
 
 "set foldmethod=syntax
 "set nofoldenable
@@ -139,11 +131,25 @@ nnoremap <silent> [C :vertical resize +4<CR>
 " <C-w>= -> Resize window automally
 
 "inoremap < <><left>
-noremap! ( ()<left>
-noremap! [ []<left>
-noremap! { {}<left>
+"noremap! ( ()<left>
+"noremap! [ []<left>
+"noremap! { {}<left>
 "noremap! " ""<left>
 "noremap! ' ''<left>
+
+" .vimrc fast edit/save
+nnoremap <leader>ev :edit $MYVIMRC<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+"nnoremap <leader>' ea'<esc>bi'<esc>
+"nnoremap <leader>" ea"<esc>bi"<esc>
+"nnoremap <leader>( ea)<esc>bi(<esc>
+"nnoremap <leader>[ ea]<esc>bi[<esc>
+"nnoremap <leader>{ ea}<esc>bi{<esc>
+
+"autocmd FileType c      nnoremap <buffer> <localleader>c I//<esc>
+"autocmd FileType vim    nnoremap <buffer> <localleader>c I"<esc>
+"autocmd FileType python nnoremap <buffer> <localleader>c I#<esc>
 
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
@@ -160,14 +166,6 @@ function! ToggleQuickFix()
 endfunction
 nnoremap <silent> <C-q> :call ToggleQuickFix()<CR>
 
-"-------------------------------------------------------------------------------------------------
-" search
-execute 'set grepprg=grep\ -r\ -n\ $*\ ' .
-	\ g:root_dir .
-	\ '\ --exclude={a.out,*.o,*.a}\ ' .
-	\ '\ --exclude-dir={.svn,.git}\ ' .
-	\ '\ /dev/null'
-command! -nargs=+ Grep execute 'silent grep! ' . shellescape(<q-args>) | redraw!
 
 "-------------------------------------------------------------------------------------------------
 " gtags
@@ -186,7 +184,7 @@ let $GTAGSCONF = '/usr/local/share/gtags/gtags.conf'
 " ATTENTION:
 "   Run this command in the project's root directory, which should have a
 "   .cache/ directory; otherwise, you'll run into an error.
-nmap <C-@> :call MakeGTAGSFiles()<CR>
+nnoremap <C-@> :call MakeGTAGSFiles()<CR>
 function! MakeGTAGSFiles()
 	if isdirectory(g:cache_dir)
 		Leaderf gtags --update
@@ -195,11 +193,11 @@ function! MakeGTAGSFiles()
 	endif
 endfunction
 
-map <C-n> :cnext<CR>
-map <C-p> :cprev<CR>
-map <C-_> :GtagsCursor<CR>
-"nmap <C-=>c :Gtags <C-R>=expand("<cword>")<CR><CR>
-"nmap <C-q>c :Gtags -r <C-R>=expand("<cword>")<CR><CR>
+nnoremap <C-n> :cnext<CR>
+nnoremap <C-p> :cprev<CR>
+nnoremap <C-_> :GtagsCursor<CR>
+"nnoremap <C-=>c :Gtags <C-R>=expand("<cword>")<CR><CR>
+"nnoremap <C-q>c :Gtags -r <C-R>=expand("<cword>")<CR><CR>
 
 "-------------------------------------------------------------------------------------------------
 
@@ -216,9 +214,9 @@ let g:Lf_IgnoreCurrentBufferName = 1
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
 let g:Lf_WildIgnore = {
-	\ 'dir': ['.svn','.git','.hg'],
-	\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
-	\}
+			\ 'dir': ['.svn','.git','.hg'],
+			\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+			\}
 
 " MOST inuse
 let g:Lf_ShortcutF = "<leader>ff"
@@ -239,11 +237,11 @@ noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 
 " rg
 let g:Lf_RgConfig = [
-	\ "--max-columns=150",
-	\ "--type-add web:*.{html,css,js}*",
-	\ "--glob=!git/*",
-	\ "--hidden"
-	\ ]
+			\ "--max-columns=150",
+			\ "--type-add web:*.{html,css,js}*",
+			\ "--glob=!git/*",
+			\ "--hidden"
+			\ ]
 
 " Search in ALL-files / current-file
 noremap <leader>ra :<C-U><C-R>=printf("Leaderf rg -e %s ", expand("<cword>"))<CR>
@@ -267,7 +265,7 @@ noremap go :<C-U>Leaderf! rg --recall<CR>
 "-------------------------------------------------------------------------------------------------
 
 " taglist
-map <F2> :Tlist<CR>
+nnoremap <F2> :Tlist<CR>
 let Tlist_Show_One_File = 1             "不同时显示多个文件的tag，只显示当前文件的
 let Tlist_Exit_OnlyWindow = 1           "如果taglist窗口是最后一个窗口，则退出vim
 
@@ -290,24 +288,24 @@ autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTa
 
 " If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-		\ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+			\ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
 "-------------------------------------------------------------------------------
 " Open file in reoute server
 " Function to open the file or NERDTree or netrw.
 "   Returns: 1 if either file explorer was opened; otherwise, 0.
 function! s:OpenFileOrExplorer(...)
-    if a:0 == 0 || a:1 == ''
-        NERDTree
-    elseif filereadable(a:1)
-        execute 'edit '.a:1
-        return 0
-    elseif a:1 =~? '^\(scp\|ftp\)://' " Add other protocols as needed.
-        execute 'Vexplore '.a:1
-    elseif isdirectory(a:1)
-        execute 'NERDTree '.a:1
-    endif
-    return 1
+	if a:0 == 0 || a:1 == ''
+		NERDTree
+	elseif filereadable(a:1)
+		execute 'edit '.a:1
+		return 0
+	elseif a:1 =~? '^\(scp\|ftp\)://' " Add other protocols as needed.
+		execute 'Vexplore '.a:1
+	elseif isdirectory(a:1)
+		execute 'NERDTree '.a:1
+	endif
+	return 1
 endfunction
 
 " Auto commands to handle OS commandline arguments
@@ -376,3 +374,52 @@ augroup END
 
 let g:tokyonight_style = 'storm'
 colorscheme tokyonight
+
+"-------------------------------------------------------------------------------------------------
+" search
+execute 'set grepprg=grep\ -R\ -n\ $*\ ' .
+			\ '\ --exclude={a.out,*.o,*.a}\ ' .
+			\ '\ --exclude-dir={.svn,.git,.cache}\ ' .
+			\ '\ /dev/null'
+"			\ g:root_dir .
+
+" Search with operator
+nnoremap <leader>g :set operatorfunc=GrepOperator<CR>g@
+vnoremap <leader>g :<C-u>call GrepOperator(visualmode())<CR>
+
+function! GrepOperator(type)
+	let l:saved_unnamed_register = @@
+
+	if a:type ==# 'v'
+		normal! `<v`>y
+	elseif a:type ==# 'char'
+		normal! `[v`]y
+	else
+		return
+	endif
+
+	silent execute "grep! " . shellescape(expand(@@)) . " ."
+	copen
+	redraw!
+
+	let @@ = saved_unnamed_register
+endfunction
+
+" Search with command
+command! -nargs=+ Grep call GrepCommand(<f-args>)
+function! GrepCommand(...)
+	if a:0 ==# 1 || a:0 ==# 2
+		let l:pattern = a:1
+	else
+		echom 'Usage: :Grep pattern [path]'
+	end
+
+	if a:0 ==# 2 && a:2 ==# '%'
+		silent execute "grep! " . l:pattern . ' ' . expand('%')
+	else
+		silent execute "grep! " . l:pattern . ' ' . g:root_dir
+	endif
+
+	copen
+	redraw!
+endfunction
