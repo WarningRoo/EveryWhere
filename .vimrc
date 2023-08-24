@@ -384,8 +384,28 @@ execute 'set grepprg=grep\ -R\ -n\ $*\ ' .
 "			\ g:root_dir .
 
 " Search with operator
-nnoremap <leader>g :set operatorfunc=GrepOperator<CR>g@
-vnoremap <leader>g :<C-u>call GrepOperator(visualmode())<CR>
+nnoremap <leader>gl :set operatorfunc=GrepOperatorLocal<CR>g@
+nnoremap <leader>gg :set operatorfunc=GrepOperator<CR>g@
+vnoremap <leader>gl :<C-u>call GrepOperatorLocal(visualmode())<CR>
+vnoremap <leader>gg :<C-u>call GrepOperator(visualmode())<CR>
+
+function! GrepOperatorLocal(type)
+	let l:saved_unnamed_register = @@
+
+	if a:type ==# 'v'
+		normal! `<v`>y
+	elseif a:type ==# 'char'
+		normal! `[v`]y
+	else
+		return
+	endif
+
+	silent execute "grep! " . shellescape(expand(@@)) . " " . shellescape(expand('%'))
+	copen
+	redraw!
+
+	let @@ = saved_unnamed_register
+endfunction
 
 function! GrepOperator(type)
 	let l:saved_unnamed_register = @@
@@ -398,7 +418,7 @@ function! GrepOperator(type)
 		return
 	endif
 
-	silent execute "grep! " . shellescape(expand(@@)) . " ."
+	silent execute "grep! " . shellescape(expand(@@)) . " " . shellescape(g:root_dir)
 	copen
 	redraw!
 
