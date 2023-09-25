@@ -15,12 +15,10 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (savehist-mode 1)
-;(add-to-list 'default-frame-alist '(width . 90))
-;(add-to-list 'default-frame-alist '(height . 55))
 (setq tab-width 8)
 (setq c-basic-offset 4)
 
-;; BASIC Keybindings
+;;; BASIC Keybindings
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-j") nil)
 (global-set-key (kbd "C-j C-k") 'kill-whole-line)
@@ -38,7 +36,7 @@
 (global-set-key (kbd "M-n") 'next-ten-lines)
 (global-set-key (kbd "M-p") 'previous-ten-lines)
 
-;;; ABOUNT Package
+;;; ABOUT Package
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -49,7 +47,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
+   '(dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -61,6 +59,15 @@
 ;;; Package setup
 (eval-when-compile 
   (require 'use-package))
+
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
+
+(use-package amx
+  :ensure t
+  :init (amx-mode))
 
 (use-package tree-sitter-indent
   :ensure t)
@@ -143,9 +150,14 @@
   (when (display-graphic-p) (require 'all-the-icons)))
 
 (use-package dracula-theme
-  :ensure t
-  :config
-  (when (display-graphic-p) (load-theme 'dracula t)))
+  :ensure t)
+
+(use-package molokai-theme
+  :ensure t)
+
+;; theme set
+(when (display-graphic-p) (load-theme 'dracula t))
+;(when (display-graphic-p) (load-theme 'molokai t))
 
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
@@ -170,4 +182,3 @@
   (require 'org-roam-protocol))
 
 (provide 'init)
-;;; init.el ends here
