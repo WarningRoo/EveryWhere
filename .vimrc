@@ -45,8 +45,8 @@ Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
 
 " +++++++++++++++++++++++++++++++++++++++++++
 " LSP
-"Plug 'prabirshrestha/vim-lsp'
-"Plug 'mattn/vim-lsp-settings'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
 " LSP
 " +++++++++++++++++++++++++++++++++++++++++++
 
@@ -62,7 +62,7 @@ Plug 'ghifarit53/tokyonight-vim'
 Plug 'tomasr/molokai'
 Plug 'atelierbram/vim-colors_atelier-schemes'
 Plug 'morhetz/gruvbox'
-Plug 'vim-airline/vim-airline'
+Plug 'embark-theme/vim', { 'as': 'embark', 'branch': 'main' }
 " +++++++++++++++++++++++++++++++++++++++++++
 
 call plug#end()
@@ -341,47 +341,47 @@ endif
 "				\ })
 "endif
 "
-"if executable('clangd')
-"    au User lsp_setup call lsp#register_server({
-"        \ 'name': 'clangd',
-"        \ 'cmd': {server_info->['clangd', '-background-index']},
-"        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-"        \ })
-"endif
-"
-"function! s:on_lsp_buffer_enabled() abort
-"	setlocal omnifunc=lsp#complete
-"	setlocal signcolumn=yes
-"	if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-"	nmap <buffer> <leader>gd <plug>(lsp-definition)
-"	nmap <buffer> <leader>gs <plug>(lsp-document-symbol-search)
-"	nmap <buffer> <leader>gS <plug>(lsp-workspace-symbol-search)
-"	nmap <buffer> <leader>gr <plug>(lsp-references)
-"	nmap <buffer> <leader>gi <plug>(lsp-implementation)
-"	nmap <buffer> <leader>gt <plug>(lsp-type-definition)
-"	nmap <buffer> <leader>rn <plug>(lsp-rename)
-"	nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-"	nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-"	nmap <buffer> K <plug>(lsp-hover)
-""	nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
-""	nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
-"
-"	let g:lsp_format_sync_timeout = 1000
-"	autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
-"
-"	" refer to doc to add more commands
-"endfunction
-"
-"augroup lsp_install
-"	au!
-"	" call s:on_lsp_buffer_enabled only for languages that has the server registered.
-"	autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-"augroup END
-"
+if executable('clangd')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'clangd',
+        \ 'cmd': {server_info->['clangd', '-background-index']},
+        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+        \ })
+endif
+
+function! s:on_lsp_buffer_enabled() abort
+	setlocal omnifunc=lsp#complete
+	setlocal signcolumn=yes
+	if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+	nmap <buffer> <leader>gd <plug>(lsp-definition)
+	nmap <buffer> <leader>gs <plug>(lsp-document-symbol-search)
+	nmap <buffer> <leader>gS <plug>(lsp-workspace-symbol-search)
+	nmap <buffer> <leader>gr <plug>(lsp-references)
+	nmap <buffer> <leader>gi <plug>(lsp-implementation)
+	nmap <buffer> <leader>gt <plug>(lsp-type-definition)
+	nmap <buffer> <leader>rn <plug>(lsp-rename)
+	nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+	nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+	nmap <buffer> K <plug>(lsp-hover)
+"	nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+"	nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+	let g:lsp_format_sync_timeout = 1000
+	autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+
+	" refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+	au!
+	" call s:on_lsp_buffer_enabled only for languages that has the server registered.
+	autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
 "-------------------------------------------------------------------------------------------------
 
 let g:tokyonight_style = 'storm'
-colorscheme tokyonight
+colorscheme embark
 
 "-------------------------------------------------------------------------------------------------
 " search
