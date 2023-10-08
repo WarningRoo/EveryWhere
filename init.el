@@ -9,6 +9,7 @@
 (electric-pair-mode t)
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (global-auto-revert-mode t) ;当另一程序修改了文件时，让 Emacs 及时刷新 Buffer
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 (delete-selection-mode t)
 (global-display-line-numbers-mode t)
 (tool-bar-mode -1)
@@ -156,9 +157,9 @@
   :ensure t)
 
 ;; theme set
-(when (display-graphic-p) (load-theme 'dracula t))
+;(when (display-graphic-p) (load-theme 'dracula t))
 ;(when (display-graphic-p) (load-theme 'molokai t))
-
+(load-theme 'molokai t)
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
@@ -179,6 +180,13 @@
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
+  (require 'org-roam-protocol)
+
+  (org-toggle-inline-images)
+  ;; Support source code highlight
+  (require 'ob-shell)
+  (require 'ob-c)
+  (require 'ob-lisp)
+  (require 'ob-elisp))
 
 (provide 'init)
