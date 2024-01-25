@@ -18,11 +18,13 @@
 (savehist-mode 1)
 (setq tab-width 8)
 (setq c-basic-offset 4)
+(set-input-method 'TeX)
 
 ;;; BASIC Keybindings
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-j") nil)
 (global-set-key (kbd "C-j C-k") 'kill-whole-line)
+(global-set-key (kbd "C-c q") 'auto-fill-mode)
 
 (defun next-ten-lines()
   "Move cursor to next 10 lines."
@@ -47,6 +49,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(global-display-line-numbers-mode t)
  '(package-selected-packages
    '(dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
 
@@ -55,7 +59,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "FiraCode Nerd Font Mono" :foundry "CTDB" :slant normal :weight regular :height 203 :width normal)))))
 
 ;;; Package setup
 (eval-when-compile 
@@ -64,7 +68,12 @@
 (use-package dashboard
   :ensure t
   :config
-  (dashboard-setup-startup-hook))
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title nil)
+  (setq dashboard-startup-banner nil)
+  (setq dashboard-center-content t)
+  (setq dashboard-set-footer nil)
+  )
 
 (use-package amx
   :ensure t
@@ -158,7 +167,7 @@
 
 ;; theme set
 ;(when (display-graphic-p) (load-theme 'dracula t))
-;(when (display-graphic-p) (load-theme 'molokai t))
+(when (display-graphic-p) (load-theme 'molokai t))
 (load-theme 'molokai t)
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
@@ -187,6 +196,12 @@
   (require 'ob-shell)
   (require 'ob-c)
   (require 'ob-lisp)
+  (require 'ob-lua)
   (require 'ob-elisp))
-
+  ;; active Babel languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (emacs-lisp . t)
+     (lisp . t)))
 (provide 'init)
