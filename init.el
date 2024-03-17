@@ -55,7 +55,7 @@
  '(helm-gtags-ignore-case t)
  '(helm-gtags-path-style 'relative)
  '(package-selected-packages
-   '(treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
+   '(slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -354,14 +354,19 @@
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
 
+(use-package slime
+  :ensure t
+  :config (setq inferior-lisp-program (executable-find "sbcl")))
 
-
-
-
+(use-package align
+  :ensure t
+  :hook (org-mode . valign-mode))
 
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
+
+(add-hook 'org-mode-hook #'auto-fill-mode)
 
 (use-package org-roam
   :ensure t
