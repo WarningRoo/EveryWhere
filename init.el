@@ -19,6 +19,7 @@
 (setq tab-width 8)
 (setq c-basic-offset 4)
 (set-input-method 'TeX)
+(display-time)
 
 ;;; BASIC Keybindings
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
