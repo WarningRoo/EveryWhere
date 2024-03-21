@@ -56,7 +56,7 @@
  '(helm-gtags-ignore-case t)
  '(helm-gtags-path-style 'relative)
  '(package-selected-packages
-   '(slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
+   '(align which-key tablist rainbow-delimiters org org-contrib slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -64,8 +64,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "FiraCode Nerd Font Mono" :foundry "CTDB" :slant normal :weight regular :height 110 :width normal))))
- '(org-level-1 ((t (:inherit outline-1 :extend nil :height 2.0))))
- '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
+ '(org-level-1 ((t (:inherit outline-1 :extend nil :height 1.6))))
+ '(org-level-2 ((t (:inherit outline-2 :height 1.4))))
  '(org-level-3 ((t (:inherit outline-3 :height 1.2)))))
 
 ;;; Package setup
@@ -107,11 +107,11 @@
 
 (use-package tree-sitter-indent
   :ensure t)
+
 (use-package tree-sitter
   :ensure t)
+
 (use-package magit
-  :ensure t)
-(use-package pdf-tools
   :ensure t)
 
 (use-package google-translate
@@ -359,20 +359,21 @@
   :ensure t
   :config (setq inferior-lisp-program (executable-find "sbcl")))
 
-(use-package align
-  :ensure t
-  :hook (org-mode . valign-mode))
-
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
-
 (add-hook 'org-mode-hook #'auto-fill-mode)
+
+(use-package org
+  :ensure t)
+
+(use-package org-contrib
+  :ensure t)
 
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename *dir-of-org*))
+  (org-roam-directory (concat org-directory "roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n g" . org-roam-graph)
@@ -386,16 +387,5 @@
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
-;  (org-toggle-inline-images)
-  ;; Support source code highlight
-;  (require 'ob-shell)
-;  (require 'ob-lisp)
-;  (require 'ob-lua)
-;  (require 'ob-elisp))
-  ;; active Babel languages
-;  (org-babel-do-load-languages
-;   'org-babel-load-languages
-;   '((R . t)
-;     (emacs-lisp . t)
-;     (lisp . t)))
+
 (provide 'init)
