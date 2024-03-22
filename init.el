@@ -5,6 +5,7 @@
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq inhibit-startup-message t)
 (setq make-backup-files nil)
+(setq eww-search-prefix "https://cn.bing.com/search?q=")
 (column-number-mode t)
 (electric-pair-mode t)
 (add-hook 'prog-mode-hook #'show-paren-mode)
@@ -56,7 +57,7 @@
  '(helm-gtags-ignore-case t)
  '(helm-gtags-path-style 'relative)
  '(package-selected-packages
-   '(align which-key tablist rainbow-delimiters org org-contrib slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
+   '(org-roam-ui align which-key tablist rainbow-delimiters org org-contrib slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -73,14 +74,14 @@
   (require 'use-package))
 
 (use-package dashboard
+; :disabled
   :ensure t
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title nil)
   (setq dashboard-startup-banner nil)
   (setq dashboard-center-content t)
-  (setq dashboard-set-footer nil)
-  )
+  (setq dashboard-set-footer nil))
 
 (use-package amx
   :ensure t
@@ -359,7 +360,7 @@
   :ensure t
   :config (setq inferior-lisp-program (executable-find "sbcl")))
 
-;;; org-mode
+; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
 (add-hook 'org-mode-hook #'auto-fill-mode)
@@ -387,5 +388,14 @@
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
+
+(use-package org-roam-ui
+  :ensure t
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
 
 (provide 'init)
