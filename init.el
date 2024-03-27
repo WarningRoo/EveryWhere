@@ -30,18 +30,16 @@
 (global-set-key (kbd "C-j C-k") 'kill-whole-line)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 
-(defun next-ten-lines()
-  "Move cursor to next 10 lines."
-  (interactive)
-  (next-line 10))
+(global-set-key (kbd "M-n") (lambda () (interactive) (next-line 10)))
+(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 10)))
 
-(defun previous-ten-lines()
-  "Move cursor to previous 10 lines."
-  (interactive)
-  (previous-line 10))
+(setq explicit-shell-file-name "/bin/bash")
 
-(global-set-key (kbd "M-n") 'next-ten-lines)
-(global-set-key (kbd "M-p") 'previous-ten-lines)
+(setq-default line-spacing 0.15)
+(set-face-attribute 'default nil
+		    :font (font-spec :family "FiraCode Nerd Font Mono"
+				     :foundry "Light"
+				     :size 15))
 
 ;;; ABOUT Package
 (require 'package)
@@ -59,14 +57,13 @@
  '(helm-gtags-ignore-case t)
  '(helm-gtags-path-style 'relative)
  '(package-selected-packages
-   '(org-superstar org-bullets org-roam-ui align which-key tablist rainbow-delimiters org org-contrib slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
+   '(auctex pandoc-mode org-superstar org-bullets org-roam-ui align which-key tablist rainbow-delimiters org org-contrib slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "FiraCode Nerd Font Mono" :foundry "CTDB" :slant normal :weight regular :height 110 :width normal))))
  '(org-level-1 ((t (:inherit outline-1 :extend nil :height 1.6))))
  '(org-level-2 ((t (:inherit outline-2 :height 1.4))))
  '(org-level-3 ((t (:inherit outline-3 :height 1.2)))))
@@ -370,7 +367,6 @@
 (setq org-directory (file-truename *dir-of-org*))
 (add-hook 'org-mode-hook #'auto-fill-mode)
 (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
-(setq org-hide-emphasis-markers t)
 
 (use-package org
   :ensure t)
