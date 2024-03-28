@@ -1,6 +1,17 @@
+;;; init.el
+
+;;; Environment
+;; Move customization variables to a separate file and load it
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(load custom-file 'noerror 'nomessage)
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;; BASIC configuration
+;; network
+(setq url-proxy-services
+      '(("https" . "localhost:7890")
+	("http" . "localhost:7890")))
+
+;;; BASIC
 (defconst *spell-check-support-enabled* nil)
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq inhibit-startup-message t)
@@ -8,18 +19,33 @@
 (setq eww-search-prefix "https://cn.bing.com/search?q=")
 (column-number-mode t)
 (electric-pair-mode t)
-(global-auto-revert-mode t)
 (setq default-frame-alist '((width . 90) (height . 50)))
 (delete-selection-mode t)
-(global-display-line-numbers-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
+(setq history-length 25)
 (savehist-mode 1)
 (setq tab-width 8)
-(setq c-basic-offset 4)
+(setq c-basic-offset 8)
 (set-input-method 'TeX)
 (display-time)
+(global-auto-revert-mode t)
+(setq global-auto-revert-non-file-buffers t)
+(setq use-dialog-box nil)
+(save-place-mode t)
+(recentf-mode t)
+(setq explicit-shell-file-name "/bin/bash")
+
+;; Line-number
+(column-number-mode)
+(global-display-line-numbers-mode t)
+; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+		term-mode-hook
+		eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
@@ -33,48 +59,24 @@
 (global-set-key (kbd "M-n") (lambda () (interactive) (next-line 10)))
 (global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 10)))
 
-(setq explicit-shell-file-name "/bin/bash")
 
+;; Face
 (setq-default line-spacing 0.15)
 (set-face-attribute 'default nil
 		    :font (font-spec :family "FiraCode Nerd Font Mono"
 				     :foundry "Light"
-				     :size 15))
+				     :size 14))
 
 ;;; ABOUT Package
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(column-number-mode t)
- '(global-display-line-numbers-mode t)
- '(helm-gtags-auto-update t)
- '(helm-gtags-ignore-case t)
- '(helm-gtags-path-style 'relative)
- '(package-selected-packages
-   '(auctex pandoc-mode org-superstar org-bullets org-roam-ui align which-key tablist rainbow-delimiters org org-contrib slime treemacs-tab-bar treemacs-magit treemacs-icons-dired treemacs-projectile treemacs lsp-ivy lsp-ui counsel-projectile projectile lsp-mode highlight-symbol mwim dashboard amx molokai-theme tree-sitter-indent tree-sitter org-roam use-package google-translate google-this magit company-box good-scroll counsel swiper ivy company all-the-icons dracula-theme cmake-mode)))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-level-1 ((t (:inherit outline-1 :extend nil :height 1.6))))
- '(org-level-2 ((t (:inherit outline-2 :height 1.4))))
- '(org-level-3 ((t (:inherit outline-3 :height 1.2)))))
-
 ;;; Package setup
-(eval-when-compile
-  (require 'use-package))
+(eval-when-compile (require 'use-package))
+(setq use-package-always-ensure t)
 
 (use-package dashboard
-; :disabled
-  :ensure t
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
@@ -86,68 +88,57 @@
 			  (agenda    . 5))))
 
 (use-package amx
-  :ensure t
   :init (amx-mode))
 
 (use-package mwim
-  :ensure t
   :bind
   ("C-a" . mwim-beginning-of-code-or-line)
   ("C-e" . mwim-end-of-code-or-line))
 
 (use-package which-key
-  :ensure t
   :init (which-key-mode))
 
 (use-package highlight-symbol
-  :ensure t
   :init (highlight-symbol-mode)
   :bind ("<f9>" . highlight-symbol))
 
 (use-package rainbow-delimiters
-  :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package tree-sitter-indent
-  :ensure t)
+(use-package tree-sitter-indent)
 
-(use-package tree-sitter
-  :ensure t)
+(use-package tree-sitter)
 
-(use-package magit
-  :ensure t)
+(use-package magit)
 
 (use-package google-translate
-  :ensure t
   :init
   (setq google-translate-default-source-language "en")
   (setq google-translate-default-target-language "zh-CN")
-  (setq google-translate-output-destination 'popup)
+  (setq google-translate-output-destination nil)
   :bind (("\C-ct" . 'google-translate-at-point)
 	 ("\C-cT" . 'google-translate-query-translate))
   :config
-  (require 'google-translate-default-ui))
+  (require 'google-translate-smooth-ui))
 
 (use-package google-this
-  :ensure t
   :config
   (google-this-mode 1))
 
 (use-package good-scroll
-  :ensure t
   :bind (([next] . #'good-scroll-up-full-screen)
 	 ([prior] . #'good-scroll-down-full-screen))
   :config
   (good-scroll-mode 1))
 
-(use-package swiper
-  :ensure t)
+(use-package slime
+  :config (setq inferior-lisp-program (executable-find "sbcl")))
 
-(use-package counsel
-  :ensure t)
+(use-package swiper)
+
+(use-package counsel)
 
 (use-package ivy
-  :ensure t
   :init
   (ivy-mode 1)
   (counsel-mode 1)
@@ -175,38 +166,29 @@
 	 :map minibuffer-local-map
 	 ("C-r" . 'counsel-minibuffer-history)))
 
-(use-package company
-  :ensure t
-  :init (global-company-mode))
-;  :hook (after-init-hook . global-company-mode))
+(use-package ivy-rich
+  :init (ivy-rich-mode t)
+  :config (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
-;(add-hook 'after-init-hook 'global-company-mode)
+(use-package company
+  :init (global-company-mode)
+  :hook ((after-init-hook . global-company-mode)))
 
 (use-package company-box
-  :ensure t
   :hook ((company-mode-hook . company-box-mode)))
 
 (use-package all-the-icons
-  :ensure t
   :config
   (when (display-graphic-p) (require 'all-the-icons)))
 
-(use-package dracula-theme
-  :ensure t)
-
-(use-package molokai-theme
-  :ensure t)
-
-;; theme set
-;(when (display-graphic-p) (load-theme 'dracula t))
-(when (display-graphic-p) (load-theme 'molokai t))
-(load-theme 'molokai t)
+;; theme
+(use-package dracula-theme)
+(use-package molokai-theme)
+(load-theme 'molokai t nil)
 
 ;;;LSP
 (use-package lsp-mode
-  :ensure t
   :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
 	 (c-mode . lsp)
@@ -216,13 +198,11 @@
 
 ;; optionally
 (use-package lsp-ui
-  :ensure t
   :commands lsp-ui-mode)
 ;; if you are helm user
 ;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
 ;; if you are ivy user
 (use-package lsp-ivy
-  :ensure t
   :commands lsp-ivy-workspace-symbol)
 ;(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
@@ -231,7 +211,6 @@
 ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
 (use-package projectile
-  :ensure t
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
@@ -239,12 +218,10 @@
 	      ("C-c p" . projectile-command-map)))
 
 (use-package counsel-projectile
-  :ensure t
   :after (projectile)
   :init (counsel-projectile-mode))
 
 (use-package treemacs
-  :ensure t
   :defer t
   :init
   (with-eval-after-load 'winum
@@ -333,53 +310,46 @@
 	("C-x t M-t" . treemacs-find-tag)))
 
 ;(use-package treemacs-evil
-;  :after (treemacs evil)
-;  :ensure t)
+;  :after (treemacs evil))
 
 (use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
+  :after (treemacs projectile))
 
 (use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+  :hook (dired-mode . treemacs-icons-dired-enable-once))
 
 (use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
+  :after (treemacs magit))
 
 ;(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
 ;  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-;  :ensure t
 ;  :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
   :after (treemacs)
-  :ensure t
   :config (treemacs-set-scope-type 'Tabs))
 
-(use-package slime
-  :ensure t
-  :config (setq inferior-lisp-program (executable-find "sbcl")))
-
-; org-mode
+;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
-(add-hook 'org-mode-hook #'auto-fill-mode)
-(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
 
 (use-package org
-  :ensure t)
+  :hook (org-mode . (lambda ()
+		      (org-indent-mode)
+		      (variable-pitch-mode 1) ; variable pitch against fixed-pitch
+		      (auto-fill-mode 0)
+		      (visual-line-mode 1)
+		      (setq evil-auto-indent nil)))
+  :config
+  (setq org-hide-emphasis-markers t)
+  (require 'org-indent))
 
-(use-package org-contrib
-  :ensure t)
+(use-package org-contrib)
 
 (use-package org-superstar
-  :ensure t)
-(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  :hook (org-mode . (lambda () (org-superstar-mode 1))))
 
 (use-package org-roam
-  :ensure t
   :custom
   (org-roam-directory (concat org-directory "roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
@@ -397,12 +367,45 @@
   (require 'org-roam-protocol))
 
 (use-package org-roam-ui
-  :ensure t
   :after org-roam
   :config
   (setq org-roam-ui-sync-theme t
 	org-roam-ui-follow t
 	org-roam-ui-update-on-save t
 	org-roam-ui-open-on-start t))
+
+(use-package visual-fill-column
+  :hook
+  (org-mode . (lambda () (setq visual-fill-column-width 100
+			       visual-fill-column-center-text t)
+		(visual-fill-column-mode 1))))
+
+;;; org-mode face configuration
+;; Replace list hyphen with dot
+(font-lock-add-keywords 'org-mode
+			'(("^ *\\([-]\\) "
+			  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(with-eval-after-load 'org-faces
+  (set-face-attribute 'org-level-1 nil :height 1.6)
+  (set-face-attribute 'org-level-2 nil :height 1.5)
+  (set-face-attribute 'org-level-3 nil :height 1.4)
+  (set-face-attribute 'org-level-4 nil :height 1.3)
+  (set-face-attribute 'org-level-5 nil :height 1.2)
+  (set-face-attribute 'org-level-6 nil :height 1.1)
+  (set-face-attribute 'org-level-7 nil :height 1.1)
+  (set-face-attribute 'org-level-8 nil :height 1.1))
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-special-keyword nil
+		    :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil
+		    :inherit '(font-lock-comment-face fixed-pitch))
 
 (provide 'init)
