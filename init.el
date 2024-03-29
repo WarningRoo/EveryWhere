@@ -17,15 +17,15 @@
 (setq inhibit-startup-message t)
 (setq make-backup-files nil)
 (setq eww-search-prefix "https://cn.bing.com/search?q=")
-(column-number-mode t)
 (electric-pair-mode t)
-(setq default-frame-alist '((width . 90) (height . 50)))
+(save-place-mode t)
+(recentf-mode t)
 (delete-selection-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(setq history-length 25)
 (savehist-mode 1)
+(setq history-length 25)
 (setq tab-width 8)
 (setq c-basic-offset 8)
 (set-input-method 'TeX)
@@ -33,19 +33,17 @@
 (global-auto-revert-mode t)
 (setq global-auto-revert-non-file-buffers t)
 (setq use-dialog-box nil)
-(save-place-mode t)
-(recentf-mode t)
 (setq explicit-shell-file-name "/bin/bash")
 
 ;; Line-number
-(column-number-mode)
-(global-display-line-numbers-mode t)
+(column-number-mode 1)
+(global-display-line-numbers-mode 1)
 ; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
 		term-mode-hook
+		shell-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
@@ -59,8 +57,11 @@
 (global-set-key (kbd "M-n") (lambda () (interactive) (next-line 10)))
 (global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 10)))
 
+(global-set-key (kbd "M-o") 'other-window)
 
 ;; Face
+(set-fringe-mode 5)
+(setq default-frame-alist '((width . 90) (height . 50)))
 (setq-default line-spacing 0.15)
 (set-face-attribute 'default nil
 		    :font (font-spec :family "FiraCode Nerd Font Mono"
@@ -116,6 +117,7 @@
   (setq google-translate-default-source-language "en")
   (setq google-translate-default-target-language "zh-CN")
   (setq google-translate-output-destination nil)
+  (setq google-translate-show-phonetic t)
   :bind (("\C-ct" . 'google-translate-at-point)
 	 ("\C-cT" . 'google-translate-query-translate))
   :config
@@ -182,9 +184,15 @@
   (when (display-graphic-p) (require 'all-the-icons)))
 
 ;; theme
-(use-package dracula-theme)
-(use-package molokai-theme)
-(load-theme 'molokai t nil)
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t
+	doom-themes-enable-italic t)
+  (load-theme 'doom-molokai t nil)
+  (setq doom-themes-treemacs-theme "doom-atom"))
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
 
 ;;;LSP
 (use-package lsp-mode
@@ -196,9 +204,9 @@
 	 (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
-;; optionally
 (use-package lsp-ui
   :commands lsp-ui-mode)
+
 ;; if you are helm user
 ;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
 ;; if you are ivy user
@@ -210,16 +218,26 @@
 ;(use-package dap-mode)
 ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
+;;; Project management
 (use-package projectile
   :init
   (projectile-mode +1)
-  :bind (:map projectile-mode-map
-	      ("s-p" . projectile-command-map)
-	      ("C-c p" . projectile-command-map)))
+  (setq projectile-switch-project-action #'projectile-dired)
+  :bind ((:map projectile-mode-map
+	       ("C-c p" . projectile-command-map))
+	 ("C-c p N" . projectile-discover-projects-in-directory)
+	 )
+  :config
+  (setq projectile-project-search-path '(("~/Repo" . 1) ("~/src" . 1)))
+					; set default dir where projects to search
+  (setq projectile-auto-discover nil)   ; Suppress the auto-discovery when startup
+  )
 
-(use-package counsel-projectile
-  :after (projectile)
-  :init (counsel-projectile-mode))
+;(use-package counsel-projectile
+;  :after (projectile)
+;  :init
+;  (counsel-projectile-mode)
+;  (setq counsel-projectile-switch-project-action #'projectile-dired))
 
 (use-package treemacs
   :defer t
@@ -336,7 +354,7 @@
 (use-package org
   :hook (org-mode . (lambda ()
 		      (org-indent-mode)
-		      (variable-pitch-mode 1) ; variable pitch against fixed-pitch
+;		      (variable-pitch-mode 1) ; variable pitch against fixed-pitch
 		      (auto-fill-mode 0)
 		      (visual-line-mode 1)
 		      (setq evil-auto-indent nil)))
