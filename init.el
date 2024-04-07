@@ -30,10 +30,12 @@
 (setq c-basic-offset 8)
 (set-input-method 'TeX)
 (display-time)
-(global-auto-revert-mode t)
-(setq global-auto-revert-non-file-buffers t)
 (setq use-dialog-box nil)
 (setq explicit-shell-file-name "/bin/bash")
+; refresh file/dir automatically
+(global-auto-revert-mode t)
+(setq global-auto-revert-non-file-buffers t)
+(add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
 
 ;; Line-number
 (column-number-mode 1)
@@ -78,15 +80,16 @@
 (setq use-package-always-ensure t)
 
 (use-package dashboard
+  :custom
+  (dashboard-center-content t)
+  (dashboard-startup-banner 'logo)
+  (dashboard-set-footer nil)
+  (dashboard-items '((recents   . 5)
+		     (projects  . 5)
+		     (bookmarks . 5)
+		     (agenda    . 5)))
   :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-center-content t)
-  (setq dashboard-startup-banner 'logo)
-  (setq dashboard-set-footer nil)
-  (setq dashboard-items '((recents   . 5)
-			  (projects  . 5)
-			  (bookmarks . 5)
-			  (agenda    . 5))))
+  (dashboard-setup-startup-hook))
 
 (use-package amx
   :init (amx-mode))
@@ -113,19 +116,15 @@
 (use-package magit)
 
 (use-package google-translate
-  :init
-  (setq google-translate-default-source-language "en")
-  (setq google-translate-default-target-language "zh-CN")
-  (setq google-translate-output-destination nil)
-  (setq google-translate-show-phonetic t)
+  :custom
+  (google-translate-default-source-language "en")
+  (google-translate-default-target-language "zh-CN")
+  (google-translate-output-destination nil)
+  (google-translate-show-phonetic t)
+  :config
+  (require 'google-translate-smooth-ui)
   :bind (("\C-ct" . 'google-translate-at-point)
-	 ("\C-cT" . 'google-translate-query-translate))
-  :config
-  (require 'google-translate-smooth-ui))
-
-(use-package google-this
-  :config
-  (google-this-mode 1))
+	 ("\C-cT" . 'google-translate-query-translate)))
 
 (use-package good-scroll
   :bind (([next] . #'good-scroll-up-full-screen)
@@ -134,7 +133,8 @@
   (good-scroll-mode 1))
 
 (use-package slime
-  :config (setq inferior-lisp-program (executable-find "sbcl")))
+  :config
+  (setq inferior-lisp-program (executable-find "sbcl")))
 
 (use-package swiper)
 
@@ -144,11 +144,13 @@
   :init
   (ivy-mode 1)
   (counsel-mode 1)
-  :config
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t)
+  :custom
+  (ivy-use-virtual-buffers t)
+  (enable-recursive-minibuffers t)
+  (ivy-use-selectable-prompt t)
   ;; enable this if you want `swiper' to use it
-  (setq search-default-mode #'char-fold-to-regexp)
+  (search-default-mode #'char-fold-to-regexp)
+  :config
   :bind (("C-s" . 'swiper)
 	 ("C-c C-r" . 'ivy-resume)
 	 ("<f6>" . 'ivy-resume)
@@ -185,11 +187,12 @@
 
 ;; theme
 (use-package doom-themes
+  :custom
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
+  (doom-themes-treemacs-theme "doom-atom")
   :config
-  (setq doom-themes-enable-bold t
-	doom-themes-enable-italic t)
-  (load-theme 'doom-molokai t nil)
-  (setq doom-themes-treemacs-theme "doom-atom"))
+  (load-theme 'doom-molokai t nil))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
@@ -351,16 +354,77 @@
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
 
+
+(defun qu/org-font-setup()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+			  '(("^ *\\([-]\\) "
+			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  (with-eval-after-load 'org-faces
+    (set-face-attribute 'org-level-1 nil :height 1.6)
+    (set-face-attribute 'org-level-2 nil :height 1.5)
+    (set-face-attribute 'org-level-3 nil :height 1.4)
+    (set-face-attribute 'org-level-4 nil :height 1.3)
+    (set-face-attribute 'org-level-5 nil :height 1.2)
+    (set-face-attribute 'org-level-6 nil :height 1.1)
+    (set-face-attribute 'org-level-7 nil :height 1.1)
+    (set-face-attribute 'org-level-8 nil :height 1.1))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-special-keyword nil
+		      :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil
+		      :inherit '(font-lock-comment-face fixed-pitch)))
+
 (use-package org
-  :hook (org-mode . (lambda ()
-		      (org-indent-mode)
-;		      (variable-pitch-mode 1) ; variable pitch against fixed-pitch
-		      (auto-fill-mode 0)
-		      (visual-line-mode 1)
-		      (setq evil-auto-indent nil)))
+  :hook
+  (org-mode . (lambda ()
+;		(org-indent-mode)
+;               (variable-pitch-mode 1) ; variable pitch against fixed-pitch
+		(auto-fill-mode 0)
+		(visual-line-mode 1)
+		(setq evil-auto-indent nil)))
+  :bind (("C-c l" . org-store-link)
+	 ("C-c a" . org-agenda)
+	 ("C-c c" . org-capture))
+  :custom
+  (org-default-notes-file (concat org-directory "/notes.org"))
+  (org-hide-emphasis-markers t)
+  (org-ellipsis " ▾")
+  (org-habit-graph-column 60)
   :config
-  (setq org-hide-emphasis-markers t)
-  (require 'org-indent))
+  (require 'org-indent)
+  (require 'org-habit)
+  (require 'org-capture)
+  ; org-tag
+  (setq org-tags-column 0)
+;  (setq org-tag-alist '((:startgroup . nil)
+;			; Put mutually exclusive tags here
+;			(:endgroup . nil)
+;			("RNOW" . ?r)
+;			("IDEA" . ?i)))
+  ; org-todo
+  (setq org-enforce-todo-dependencies t)
+  (setq org-log-done 'time)  ; Insert timestamp automatically when done
+; (setq org-log-done 'note)  ; Insert a note with timestamp automatically when done
+			     ; Use C-u C-c C-t to make it as you will.
+  (setq org-log-into-drawer t)
+  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)")))
+  ; org-agenda
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-agenda-files (list (concat org-directory "agenda")))
+  (setq org-agenda-custom-commands
+	'(("r" "Done within 30min." tags "+RNOW")))
+  (setq org-capture-templates
+	'(("t" "Todo" entry (file "~/Documents/org/agenda/tasks.org") "* TODO %?\n  %T\n")))
+  (qu/org-font-setup))
 
 (use-package org-contrib)
 
@@ -397,33 +461,5 @@
   (org-mode . (lambda () (setq visual-fill-column-width 100
 			       visual-fill-column-center-text t)
 		(visual-fill-column-mode 1))))
-
-;;; org-mode face configuration
-;; Replace list hyphen with dot
-(font-lock-add-keywords 'org-mode
-			'(("^ *\\([-]\\) "
-			  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-(with-eval-after-load 'org-faces
-  (set-face-attribute 'org-level-1 nil :height 1.6)
-  (set-face-attribute 'org-level-2 nil :height 1.5)
-  (set-face-attribute 'org-level-3 nil :height 1.4)
-  (set-face-attribute 'org-level-4 nil :height 1.3)
-  (set-face-attribute 'org-level-5 nil :height 1.2)
-  (set-face-attribute 'org-level-6 nil :height 1.1)
-  (set-face-attribute 'org-level-7 nil :height 1.1)
-  (set-face-attribute 'org-level-8 nil :height 1.1))
-
-;; Ensure that anything that should be fixed-pitch in Org files appears that way
-(set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-special-keyword nil
-		    :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil
-		    :inherit '(font-lock-comment-face fixed-pitch))
 
 (provide 'init)
