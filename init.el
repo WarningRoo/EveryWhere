@@ -362,11 +362,11 @@
 			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
   (with-eval-after-load 'org-faces
-    (set-face-attribute 'org-level-1 nil :height 1.6)
-    (set-face-attribute 'org-level-2 nil :height 1.5)
-    (set-face-attribute 'org-level-3 nil :height 1.4)
-    (set-face-attribute 'org-level-4 nil :height 1.3)
-    (set-face-attribute 'org-level-5 nil :height 1.2)
+    (set-face-attribute 'org-level-1 nil :height 1.4)
+    (set-face-attribute 'org-level-2 nil :height 1.3)
+    (set-face-attribute 'org-level-3 nil :height 1.2)
+    (set-face-attribute 'org-level-4 nil :height 1.1)
+    (set-face-attribute 'org-level-5 nil :height 1.1)
     (set-face-attribute 'org-level-6 nil :height 1.1)
     (set-face-attribute 'org-level-7 nil :height 1.1)
     (set-face-attribute 'org-level-8 nil :height 1.1))
@@ -398,32 +398,32 @@
   (org-default-notes-file (concat org-directory "/notes.org"))
   (org-hide-emphasis-markers t)
   (org-ellipsis " ▾")
-  (org-habit-graph-column 60)
+  (org-log-done 'time) ; Insert timestamp automatically when done
+					; (org-log-done 'note)
+					; Use C-u C-c C-t to make it as you will.
+  (org-tags-column 0)
+  (org-enforce-todo-dependencies t)
+  (org-log-into-drawer t)
+  (org-agenda-start-with-log-mode t)
+  (org-agenda-files (list (concat org-directory "agenda")))
+
   :config
+  ; require module
   (require 'org-indent)
-  (require 'org-habit)
   (require 'org-capture)
-  ; org-tag
-  (setq org-tags-column 0)
-;  (setq org-tag-alist '((:startgroup . nil)
-;			; Put mutually exclusive tags here
-;			(:endgroup . nil)
-;			("RNOW" . ?r)
-;			("IDEA" . ?i)))
-  ; org-todo
-  (setq org-enforce-todo-dependencies t)
-  (setq org-log-done 'time)  ; Insert timestamp automatically when done
-; (setq org-log-done 'note)  ; Insert a note with timestamp automatically when done
-			     ; Use C-u C-c C-t to make it as you will.
-  (setq org-log-into-drawer t)
-  (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELED(c)")))
-  ; org-agenda
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-agenda-files (list (concat org-directory "agenda")))
+
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+					;  (setq org-tag-alist '((:startgroup . nil)
+					;			; Put mutually exclusive tags here
+					;			(:endgroup . nil)
+					;			("RNOW" . ?r)
+					;			("IDEA" . ?i)))
+  (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)")))
   (setq org-agenda-custom-commands
-	'(("r" "Done within 30min." tags "+RNOW")))
+	'(("n" "Now you are doing." todo "NOW")))
   (setq org-capture-templates
-	'(("t" "Todo" entry (file "~/Documents/org/agenda/tasks.org") "* TODO %?\n  %T\n")))
+	'(("t" "Todo" entry (file "~/Documents/org/agenda/tasks.org") "* TODO %?\n  %T\n" :prepend t)
+	  ("i" "Idea" entry (file "~/Documents/org/agenda/ideas.org") "* %T\n" :prepend t)))
   (qu/org-font-setup))
 
 (use-package org-contrib)
@@ -450,11 +450,11 @@
 
 (use-package org-roam-ui
   :after org-roam
-  :config
-  (setq org-roam-ui-sync-theme t
-	org-roam-ui-follow t
-	org-roam-ui-update-on-save t
-	org-roam-ui-open-on-start t))
+  :custom
+  (org-roam-ui-sync-theme t)
+  (org-roam-ui-follow t)
+  (org-roam-ui-update-on-save t)
+  (org-roam-ui-open-on-start t))
 
 (use-package visual-fill-column
   :hook
