@@ -64,7 +64,6 @@
 ;; Face
 (set-fringe-mode 5)
 (setq default-frame-alist '((width . 90) (height . 50)))
-(setq-default line-spacing 0.15)
 (set-face-attribute 'default nil
 		    :font (font-spec :family "FiraCode Nerd Font Mono"
 				     :foundry "Light"
@@ -182,8 +181,7 @@
   :hook ((company-mode-hook . company-box-mode)))
 
 (use-package all-the-icons
-  :config
-  (when (display-graphic-p) (require 'all-the-icons)))
+  :if (display-graphic-p))
 
 ;; theme
 (use-package doom-themes
@@ -192,10 +190,13 @@
   (doom-themes-enable-italic t)
   (doom-themes-treemacs-theme "doom-atom")
   :config
-  (load-theme 'doom-molokai t nil))
+  (load-theme 'doom-tokyo-night t nil))
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1))
+;; mode-line
+(use-package spaceline
+  :config
+  (spaceline-emacs-theme)
+  (spaceline-toggle-buffer-size-off))
 
 ;;;LSP
 (use-package lsp-mode
@@ -390,13 +391,15 @@
 ;               (variable-pitch-mode 1) ; variable pitch against fixed-pitch
 		(auto-fill-mode 0)
 		(visual-line-mode 1)
-		(setq evil-auto-indent nil)))
+		(adaptive-wrap-prefix-mode)
+		(setq evil-auto-indent nil)
+		(setq-local line-spacing 0.10)))
   :bind (("C-c l" . org-store-link)
 	 ("C-c a" . org-agenda)
 	 ("C-c c" . org-capture))
   :custom
   (org-default-notes-file (concat org-directory "/notes.org"))
-  (org-hide-emphasis-markers t)
+  (org-hide-emphasis-markers nil)
   (org-ellipsis " ▾")
   (org-log-done 'time) ; Insert timestamp automatically when done
 					; (org-log-done 'note)
@@ -461,5 +464,7 @@
   (org-mode . (lambda () (setq visual-fill-column-width 100
 			       visual-fill-column-center-text t)
 		(visual-fill-column-mode 1))))
+
+(use-package adaptive-wrap)
 
 (provide 'init)
