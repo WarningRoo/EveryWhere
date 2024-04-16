@@ -7,9 +7,8 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 ;; network
-(setq url-proxy-services
-      '(("https" . "localhost:7890")
-	("http" . "localhost:7890")))
+(setq url-proxy-services '(("https" . "localhost:7890")
+			   ("http" . "localhost:7890")))
 
 ;;; BASIC
 (defconst *spell-check-support-enabled* nil)
@@ -50,7 +49,7 @@
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
 
-;;; BASIC Keybindings
+;;; Keybindings
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-j") nil)
 (global-set-key (kbd "C-j C-k") 'kill-whole-line)
@@ -60,6 +59,10 @@
 (global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 10)))
 
 (global-set-key (kbd "M-o") 'other-window)
+
+;; move window
+; S-M-<right/left/up/down>
+(windmove-swap-states-default-keybindings '(shift meta))
 
 ;; Face
 (set-fringe-mode 5)
@@ -78,15 +81,30 @@
 (eval-when-compile (require 'use-package))
 (setq use-package-always-ensure t)
 
+;(use-package benchmark-init
+;  :config
+;  ;; To disable collection of benchmark data after init is done.
+;  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
 (use-package dashboard
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-  (dashboard-set-footer nil)
+
+  (dashboard-icon-type 'all-the-icons)
+  (dashboard-set-heading-icons t)
+  ;(dashboard-set-file-icons t)
+
+  (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
+  (dashboard-match-agenda-entry "+TODO=\"NOW\"")
+  (dashboard-item-names '(("Agenda for the coming week:" . "Just do it.")))
+  (dashboard-agenda-sort-strategy '(priority-down))
+  (dashboard-agenda-prefix-format " ")
+
   (dashboard-items '((recents   . 5)
 		     (projects  . 5)
-		     (bookmarks . 5)
-		     (agenda    . 5)))
+;		     (bookmarks . 5)
+		     (agenda    . 10)))
   :config
   (dashboard-setup-startup-hook))
 
@@ -102,7 +120,6 @@
   :init (which-key-mode))
 
 (use-package highlight-symbol
-  :init (highlight-symbol-mode)
   :bind ("<f9>" . highlight-symbol))
 
 (use-package rainbow-delimiters
@@ -132,6 +149,7 @@
   (good-scroll-mode 1))
 
 (use-package slime
+  :defer t
   :config
   (setq inferior-lisp-program (executable-find "sbcl")))
 
@@ -180,9 +198,6 @@
 (use-package company-box
   :hook ((company-mode-hook . company-box-mode)))
 
-(use-package all-the-icons
-  :if (display-graphic-p))
-
 ;; theme
 (use-package doom-themes
   :custom
@@ -197,6 +212,9 @@
   :config
   (spaceline-emacs-theme)
   (spaceline-toggle-buffer-size-off))
+
+(use-package all-the-icons
+  :if (display-graphic-p))
 
 ;;;LSP
 (use-package lsp-mode
@@ -399,7 +417,7 @@
 	 ("C-c c" . org-capture))
   :custom
   (org-default-notes-file (concat org-directory "/notes.org"))
-  (org-hide-emphasis-markers nil)
+  (org-hide-emphasis-markers t)
   (org-ellipsis " ▾")
   (org-log-done 'time) ; Insert timestamp automatically when done
 					; (org-log-done 'note)
