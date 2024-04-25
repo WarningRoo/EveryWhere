@@ -1,4 +1,4 @@
-;;; init.el
+;;; init.el -- init.el
 
 ;;; Environment
 ;; Move customization variables to a separate file and load it
@@ -31,7 +31,7 @@
 (display-time)
 (setq use-dialog-box nil)
 (setq explicit-shell-file-name "/bin/bash")
-; refresh file/dir automatically
+;; refresh file/dir automatically
 (global-auto-revert-mode t)
 (setq global-auto-revert-non-file-buffers t)
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
@@ -39,7 +39,7 @@
 ;; Line-number
 (column-number-mode 1)
 (global-display-line-numbers-mode 1)
-; Disable line numbers for some modes
+;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
 		term-mode-hook
 		shell-mode-hook
@@ -55,13 +55,13 @@
 (global-set-key (kbd "C-j C-k") 'kill-whole-line)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 
-(global-set-key (kbd "M-n") (lambda () (interactive) (next-line 10)))
-(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 10)))
+;;(global-set-key (kbd "M-n") (lambda () (interactive) (next-line 10)))
+;;(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 10)))
 
 (global-set-key (kbd "M-o") 'other-window)
 
 ;; move window
-; S-M-<right/left/up/down>
+;; S-M-<right/left/up/down>
 (windmove-swap-states-default-keybindings '(shift meta))
 
 ;; Face
@@ -81,10 +81,10 @@
 (eval-when-compile (require 'use-package))
 (setq use-package-always-ensure t)
 
-;(use-package benchmark-init
-;  :config
-;  ;; To disable collection of benchmark data after init is done.
-;  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+;;(use-package benchmark-init
+;;  :config
+;;  ;; To disable collection of benchmark data after init is done.
+;;  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (use-package dashboard
   :custom
@@ -93,7 +93,6 @@
 
   (dashboard-icon-type 'all-the-icons)
   (dashboard-set-heading-icons t)
-  ;(dashboard-set-file-icons t)
 
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
@@ -103,7 +102,7 @@
 
   (dashboard-items '((recents   . 5)
 		     (projects  . 5)
-;		     (bookmarks . 5)
+;;		     (bookmarks . 5)
 		     (agenda    . 10)))
   :config
   (dashboard-setup-startup-hook))
@@ -203,179 +202,32 @@
   :custom
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
-  (doom-themes-treemacs-theme "doom-atom")
   :config
   (load-theme 'doom-tokyo-night t nil))
 
-;; mode-line
-(use-package spaceline
+(use-package rich-minority
+  :init
+  (rich-minority-mode 1)
   :config
-  (spaceline-emacs-theme)
-  (spaceline-toggle-buffer-size-off))
+  (setq rm-blacklist
+	(format "^ \\(%s\\)$"
+		(mapconcat #'identity
+			   '("ivy" "WK" "counsel" "company" "Abbrev" "Eldoc" "org-roam-ui")
+			   "\\|"))))
 
 (use-package all-the-icons
   :if (display-graphic-p))
 
-;;;LSP
-(use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-	 (c-mode . lsp)
-	 ;; if you want which-key integration
-	 (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
-
-(use-package lsp-ui
-  :commands lsp-ui-mode)
-
-;; if you are helm user
-;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
-;; if you are ivy user
-(use-package lsp-ivy
-  :commands lsp-ivy-workspace-symbol)
-;(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-;; optionally if you want to use debugger
-;(use-package dap-mode)
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
-
-;;; Project management
-(use-package projectile
-  :init
-  (projectile-mode +1)
-  (setq projectile-switch-project-action #'projectile-dired)
-  :bind ((:map projectile-mode-map
-	       ("C-c p" . projectile-command-map))
-	 ("C-c p N" . projectile-discover-projects-in-directory)
-	 )
-  :config
-  (setq projectile-project-search-path '(("~/Repo" . 1) ("~/src" . 1)))
-					; set default dir where projects to search
-  (setq projectile-auto-discover nil)   ; Suppress the auto-discovery when startup
-  )
-
-;(use-package counsel-projectile
-;  :after (projectile)
-;  :init
-;  (counsel-projectile-mode)
-;  (setq counsel-projectile-switch-project-action #'projectile-dired))
-
-(use-package treemacs
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
-	  treemacs-deferred-git-apply-delay        0.5
-	  treemacs-directory-name-transformer      #'identity
-	  treemacs-display-in-side-window          t
-	  treemacs-eldoc-display                   'simple
-	  treemacs-file-event-delay                2000
-	  treemacs-file-extension-regex            treemacs-last-period-regex-value
-	  treemacs-file-follow-delay               0.2
-	  treemacs-file-name-transformer           #'identity
-	  treemacs-follow-after-init               t
-	  treemacs-expand-after-init               t
-	  treemacs-find-workspace-method           'find-for-file-or-pick-first
-	  treemacs-git-command-pipe                ""
-	  treemacs-goto-tag-strategy               'refetch-index
-	  treemacs-header-scroll-indicators        '(nil . "^^^^^^")
-	  treemacs-hide-dot-git-directory          t
-	  treemacs-indentation                     2
-	  treemacs-indentation-string              " "
-	  treemacs-is-never-other-window           nil
-	  treemacs-max-git-entries                 5000
-	  treemacs-missing-project-action          'ask
-	  treemacs-move-forward-on-expand          nil
-	  treemacs-no-png-images                   nil
-	  treemacs-no-delete-other-windows         t
-	  treemacs-project-follow-cleanup          nil
-	  treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-	  treemacs-position                        'left
-	  treemacs-read-string-input               'from-child-frame
-	  treemacs-recenter-distance               0.1
-	  treemacs-recenter-after-file-follow      nil
-	  treemacs-recenter-after-tag-follow       nil
-	  treemacs-recenter-after-project-jump     'always
-	  treemacs-recenter-after-project-expand   'on-distance
-	  treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-	  treemacs-project-follow-into-home        nil
-	  treemacs-show-cursor                     nil
-	  treemacs-show-hidden-files               t
-	  treemacs-silent-filewatch                nil
-	  treemacs-silent-refresh                  nil
-	  treemacs-sorting                         'alphabetic-asc
-	  treemacs-select-when-already-in-treemacs 'move-back
-	  treemacs-space-between-root-nodes        t
-	  treemacs-tag-follow-cleanup              t
-	  treemacs-tag-follow-delay                1.5
-	  treemacs-text-scale                      nil
-	  treemacs-user-mode-line-format           nil
-	  treemacs-user-header-line-format         nil
-	  treemacs-wide-toggle-width               70
-	  treemacs-width                           35
-	  treemacs-width-increment                 1
-	  treemacs-width-is-initially-locked       t
-	  treemacs-workspace-switch-cleanup        nil)
-
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
-
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    (when treemacs-python-executable
-      (treemacs-git-commit-diff-mode t))
-
-    (pcase (cons (not (null (executable-find "git")))
-		 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple)))
-
-    (treemacs-hide-gitignored-files-mode nil))
-  :bind
-  (:map global-map
-	("M-0"       . treemacs-select-window)
-	("C-x t 1"   . treemacs-delete-other-windows)
-	("C-x t t"   . treemacs)
-	("C-x t d"   . treemacs-select-directory)
-	("C-x t B"   . treemacs-bookmark)
-	("C-x t C-t" . treemacs-find-file)
-	("C-x t M-t" . treemacs-find-tag)))
-
-;(use-package treemacs-evil
-;  :after (treemacs evil))
-
-(use-package treemacs-projectile
-  :after (treemacs projectile))
-
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once))
-
-(use-package treemacs-magit
-  :after (treemacs magit))
-
-;(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-;  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-;  :config (treemacs-set-scope-type 'Perspectives))
-
-(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-  :after (treemacs)
-  :config (treemacs-set-scope-type 'Tabs))
+(use-package flycheck
+  :hook
+  (prog-mode . flycheck-mode))
 
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
 
-
 (defun qu/org-font-setup()
-  ;; Replace list hyphen with dot
+  "Replace list hyphen with dot."
   (font-lock-add-keywords 'org-mode
 			  '(("^ *\\([-]\\) "
 			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
@@ -405,23 +257,23 @@
 (use-package org
   :hook
   (org-mode . (lambda ()
-;		(org-indent-mode)
-;               (variable-pitch-mode 1) ; variable pitch against fixed-pitch
+		;;(org-indent-mode)
+		;;(variable-pitch-mode 1) ; variable pitch against fixed-pitch
 		(auto-fill-mode 0)
 		(visual-line-mode 1)
 		(adaptive-wrap-prefix-mode)
 		(setq evil-auto-indent nil)
 		(setq-local line-spacing 0.10)))
-  :bind (("C-c l" . org-store-link)
+  :bind (;("C-c l" . org-store-link)
 	 ("C-c a" . org-agenda)
 	 ("C-c c" . org-capture))
   :custom
   (org-default-notes-file (concat org-directory "/notes.org"))
   (org-hide-emphasis-markers t)
   (org-ellipsis " ▾")
-  (org-log-done 'time) ; Insert timestamp automatically when done
-					; (org-log-done 'note)
-					; Use C-u C-c C-t to make it as you will.
+  (org-log-done 'time)	;Insert timestamp automatically when done
+  ;;(org-log-done 'note)
+  ;;Use C-u C-c C-t to make it as you will.
   (org-tags-column 0)
   (org-enforce-todo-dependencies t)
   (org-log-into-drawer t)
@@ -429,28 +281,34 @@
   (org-agenda-files (list (concat org-directory "agenda")))
 
   :config
-  ; require module
+  ;; require module
   (require 'org-indent)
   (require 'org-capture)
 
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
-					;  (setq org-tag-alist '((:startgroup . nil)
-					;			; Put mutually exclusive tags here
-					;			(:endgroup . nil)
-					;			("RNOW" . ?r)
-					;			("IDEA" . ?i)))
+  ;;  (setq org-tag-alist '((:startgroup . nil)
+  ;;			; Put mutually exclusive tags here
+  ;;			(:endgroup . nil)
+  ;;			("RNOW" . ?r)
+  ;;			("IDEA" . ?i)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)")))
   (setq org-agenda-custom-commands
 	'(("n" "Now you are doing." todo "NOW")))
   (setq org-capture-templates
 	'(("t" "Todo" entry (file "~/Documents/org/agenda/tasks.org") "* TODO %?\n  %T\n" :prepend t)
 	  ("i" "Idea" entry (file "~/Documents/org/agenda/ideas.org") "* %T\n" :prepend t)))
-  (qu/org-font-setup))
+  (qu/org-font-setup)
+
+  ;; require Programming Languages Support
+  (require 'ob-lisp)
+  (require 'ob-shell))
 
 (use-package org-contrib)
 
 (use-package org-superstar
   :hook (org-mode . (lambda () (org-superstar-mode 1))))
+
+(use-package org-pomodoro)
 
 (use-package org-roam
   :custom
@@ -486,3 +344,4 @@
 (use-package adaptive-wrap)
 
 (provide 'init)
+;;; init.el ends here
