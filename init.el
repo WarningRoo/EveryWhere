@@ -1,5 +1,9 @@
 ;;; init.el -- init.el
 
+;;; Commentary:
+;; Less is more
+
+;;; Code:
 ;;; Environment
 ;; Move customization variables to a separate file and load it
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
@@ -26,12 +30,12 @@
 (savehist-mode 1)
 (setq history-length 25)
 (setq tab-width 8)
-(setq c-basic-offset 8)
+;(setq c-basic-offset 8)
 (set-input-method 'TeX)
 (display-time)
 (setq use-dialog-box nil)
 (setq explicit-shell-file-name "/bin/bash")
-;; refresh file/dir automatically
+(global-hl-line-mode 0)
 (global-auto-revert-mode t)
 (setq global-auto-revert-non-file-buffers t)
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
@@ -47,6 +51,8 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
+(add-hook 'prog-mode-hook 'hs-minor-mode)
+(add-hook 'prog-mode-hook 'prettify-symbols-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
 
 ;;; Keybindings
@@ -54,9 +60,6 @@
 (global-set-key (kbd "C-j") nil)
 (global-set-key (kbd "C-j C-k") 'kill-whole-line)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
-
-;;(global-set-key (kbd "M-n") (lambda () (interactive) (next-line 10)))
-;;(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line 10)))
 
 (global-set-key (kbd "M-o") 'other-window)
 
@@ -73,18 +76,13 @@
 				     :size 14))
 
 ;;; ABOUT Package
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-
-;;; Package setup
 (eval-when-compile (require 'use-package))
-(setq use-package-always-ensure t)
-
-;;(use-package benchmark-init
-;;  :config
-;;  ;; To disable collection of benchmark data after init is done.
-;;  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+(use-package package
+  :config
+  (setq use-package-always-ensure t)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (unless (bound-and-true-p package--initialized)
+    (package-initialize)))
 
 (use-package dashboard
   :custom
@@ -115,18 +113,8 @@
   ("C-a" . mwim-beginning-of-code-or-line)
   ("C-e" . mwim-end-of-code-or-line))
 
-(use-package which-key
-  :init (which-key-mode))
-
 (use-package highlight-symbol
   :bind ("<f9>" . highlight-symbol))
-
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-(use-package tree-sitter-indent)
-
-(use-package tree-sitter)
 
 (use-package magit)
 
@@ -153,9 +141,7 @@
   (setq inferior-lisp-program (executable-find "sbcl")))
 
 (use-package swiper)
-
 (use-package counsel)
-
 (use-package ivy
   :init
   (ivy-mode 1)
@@ -191,11 +177,10 @@
   :config (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
 (use-package company
-  :init (global-company-mode)
-  :hook ((after-init-hook . global-company-mode)))
+  :hook (after-init . global-company-mode))
 
 (use-package company-box
-  :hook ((company-mode-hook . company-box-mode)))
+  :hook (company-mode . company-box-mode))
 
 ;; theme
 (use-package doom-themes
@@ -212,26 +197,55 @@
   (setq rm-blacklist
 	(format "^ \\(%s\\)$"
 		(mapconcat #'identity
-			   '("ivy" "WK" "counsel" "company" "Abbrev" "Eldoc" "org-roam-ui")
+			   '("ivy" "WK" "counsel" "company" "Abbrev" "Eldoc" "org-roam-ui" "company-box" "hs" "Wrap")
 			   "\\|"))))
 
 (use-package all-the-icons
   :if (display-graphic-p))
 
-(use-package flycheck
+;;; project
+(use-package project
+  :config
+  (setq project-vc-extra-root-markers '("INSTALL" "COPYING")))
+
+;;; eglot lsp related
+(use-package eglot
   :hook
-  (prog-mode . flycheck-mode))
+  ((c-mode c-ts-mode) . eglot-ensure)
+  ((c++-mode c++-ts-mode) . eglot-ensure)
+  :config
+  (setq eldoc-echo-area-use-multiline-p 5
+	eldoc-echo-area-display-truncation-message nil)
+  (setq eglot-autoshutdown t)
+  ;; Add sever here
+   (add-to-list
+    'eglot-server-programs
+;;    '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd" "--limit-references=3000" "--limit-results=3000" "--rename-file-limit=3000")
+    '((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
+    ))
+
+(use-package flymake
+  :custom
+  (flymake-mode-line-lighter "F")
+  :hook
+  (prog-mode . flymake-mode)
+  :bind
+  ("M-n" . flymake-goto-next-error)
+  ("M-p" . flymake-goto-prev-error))
+
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/org/")
 (setq org-directory (file-truename *dir-of-org*))
 
 (defun qu/org-font-setup()
-  "Replace list hyphen with dot."
-  (font-lock-add-keywords 'org-mode
-			  '(("^ *\\([-]\\) "
-			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
+  "Font set for org."
   (with-eval-after-load 'org-faces
     (set-face-attribute 'org-level-1 nil :height 1.4)
     (set-face-attribute 'org-level-2 nil :height 1.3)
@@ -291,9 +305,10 @@
   ;;			(:endgroup . nil)
   ;;			("RNOW" . ?r)
   ;;			("IDEA" . ?i)))
-  (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
   (setq org-agenda-custom-commands
-	'(("n" "Now you are doing." todo "NOW")))
+	'(("n" "Now you are doing." todo "NOW")
+	  ("f" "Maybe someday" todo "FUTURE")))
   (setq org-capture-templates
 	'(("t" "Todo" entry (file "~/Documents/org/agenda/tasks.org") "* TODO %?\n  %T\n" :prepend t)
 	  ("i" "Idea" entry (file "~/Documents/org/agenda/ideas.org") "* %T\n" :prepend t)))
@@ -301,14 +316,13 @@
 
   ;; require Programming Languages Support
   (require 'ob-lisp)
-  (require 'ob-shell))
+  (require 'ob-shell)
+  (require 'ob-makefile))
 
 (use-package org-contrib)
 
 (use-package org-superstar
   :hook (org-mode . (lambda () (org-superstar-mode 1))))
-
-(use-package org-pomodoro)
 
 (use-package org-roam
   :custom
