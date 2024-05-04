@@ -4,18 +4,17 @@
 ;; Less is more
 
 ;;; Code:
-;;; Environment
+
 ;; Move customization variables to a separate file and load it
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
 (load custom-file 'noerror 'nomessage)
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;; network
+;; Network
 (setq url-proxy-services '(("https" . "localhost:7890")
 			   ("http" . "localhost:7890")))
 
 ;;; BASIC
-(defconst *spell-check-support-enabled* nil)
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq inhibit-startup-message t)
 (setq make-backup-files nil)
@@ -29,26 +28,21 @@
 (scroll-bar-mode -1)
 (savehist-mode 1)
 (setq history-length 25)
-(setq tab-width 8)
+(setq tab-width 4)
 ;(setq c-basic-offset 8)
 (set-input-method 'TeX)
 (display-time)
 (setq use-dialog-box nil)
-(setq explicit-shell-file-name "/bin/bash")
 (global-hl-line-mode 0)
 (global-auto-revert-mode t)
 (setq global-auto-revert-non-file-buffers t)
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
 
-;; Line-number
+;;; line/column number
 (column-number-mode 1)
-(global-display-line-numbers-mode 1)
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+;; Enable line numbers for some modes
+(dolist (mode '(prog-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'prog-mode-hook 'hs-minor-mode)
@@ -60,16 +54,21 @@
 (global-set-key (kbd "C-j") nil)
 (global-set-key (kbd "C-j C-k") 'kill-whole-line)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
-
 (global-set-key (kbd "M-o") 'other-window)
+
+;; Pixel scroll
+(pixel-scroll-precision-mode 1)
+(setq pixel-scroll-precision-interpolate-page t)
+(defalias 'scroll-up-command 'pixel-scroll-interpolate-down)
+(defalias 'scroll-down-command 'pixel-scroll-interpolate-up)
 
 ;; move window
 ;; S-M-<right/left/up/down>
 (windmove-swap-states-default-keybindings '(shift meta))
 
 ;; Face
-(set-fringe-mode 5)
-(setq default-frame-alist '((width . 90) (height . 50)))
+(set-fringe-mode 4)
+(setq default-frame-alist '((width . 90) (height . 52)))
 (set-face-attribute 'default nil
 		    :font (font-spec :family "FiraCode Nerd Font Mono"
 				     :foundry "Light"
@@ -94,14 +93,12 @@
 
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
-  (dashboard-item-names '(("Agenda for the coming week:" . "Just do it.")))
   (dashboard-agenda-sort-strategy '(priority-down))
   (dashboard-agenda-prefix-format " ")
 
   (dashboard-items '((recents   . 5)
 		     (projects  . 5)
-;;		     (bookmarks . 5)
-		     (agenda    . 10)))
+		     (agenda    . 20)))
   :config
   (dashboard-setup-startup-hook))
 
@@ -128,12 +125,6 @@
   (require 'google-translate-smooth-ui)
   :bind (("\C-ct" . 'google-translate-at-point)
 	 ("\C-cT" . 'google-translate-query-translate)))
-
-(use-package good-scroll
-  :bind (([next] . #'good-scroll-up-full-screen)
-	 ([prior] . #'good-scroll-down-full-screen))
-  :config
-  (good-scroll-mode 1))
 
 (use-package slime
   :defer t
@@ -203,12 +194,19 @@
 (use-package all-the-icons
   :if (display-graphic-p))
 
-;;; project
 (use-package project
   :config
   (setq project-vc-extra-root-markers '("INSTALL" "COPYING")))
 
-;;; eglot lsp related
+(use-package neotree
+  :after project
+  :bind ("<f8>" . neotree-toggle)
+  :config
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-smart-open t)
+  (setq neo-autorefresh t))
+
+;; eglot lsp related
 (use-package eglot
   :hook
   ((c-mode c-ts-mode) . eglot-ensure)
@@ -220,8 +218,8 @@
   ;; Add sever here
    (add-to-list
     'eglot-server-programs
-;;    '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd" "--limit-references=3000" "--limit-results=3000" "--rename-file-limit=3000")
-    '((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
+    '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd" "--limit-references=3000" "--limit-results=3000" "--rename-file-limit=3000")
+    ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
     ))
 
 (use-package flymake
