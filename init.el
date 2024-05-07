@@ -14,6 +14,14 @@
 (setq url-proxy-services '(("https" . "localhost:7890")
 			   ("http" . "localhost:7890")))
 
+;; Face
+(set-fringe-mode 4)
+(setq default-frame-alist '((width . 90) (height . 52)))
+(set-face-attribute 'default nil
+		    :font (font-spec :family "FiraCode Nerd Font Mono"
+				     :foundry "Light"
+				     :size 14))
+
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq inhibit-startup-message t)
@@ -51,9 +59,6 @@
 
 ;;; Keybindings
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-j") nil)
-(global-set-key (kbd "C-j C-k") 'kill-whole-line)
-(global-set-key (kbd "C-c q") 'auto-fill-mode)
 (global-set-key (kbd "M-o") 'other-window)
 
 ;; Pixel scroll
@@ -66,15 +71,7 @@
 ;; S-M-<right/left/up/down>
 (windmove-swap-states-default-keybindings '(shift meta))
 
-;; Face
-(set-fringe-mode 4)
-(setq default-frame-alist '((width . 90) (height . 52)))
-(set-face-attribute 'default nil
-		    :font (font-spec :family "FiraCode Nerd Font Mono"
-				     :foundry "Light"
-				     :size 14))
-
-;;; ABOUT Package
+;; ABOUT Package
 (eval-when-compile (require 'use-package))
 (use-package package
   :config
@@ -83,11 +80,16 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package benchmark-init
+  :disabled
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
 (use-package dashboard
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-
   (dashboard-icon-type 'all-the-icons)
   (dashboard-set-heading-icons t)
 
@@ -113,7 +115,8 @@
 (use-package highlight-symbol
   :bind ("<f9>" . highlight-symbol))
 
-(use-package magit)
+(use-package magit
+  :defer t)
 
 (use-package google-translate
   :custom
@@ -212,14 +215,12 @@
   ((c-mode c-ts-mode) . eglot-ensure)
   ((c++-mode c++-ts-mode) . eglot-ensure)
   :config
-  (setq eldoc-echo-area-use-multiline-p 5
-	eldoc-echo-area-display-truncation-message nil)
   (setq eglot-autoshutdown t)
   ;; Add sever here
    (add-to-list
     'eglot-server-programs
-    '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd" "--limit-references=3000" "--limit-results=3000" "--rename-file-limit=3000")
-    ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
+    ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd" "--limit-references=3000" "--limit-results=3000" "--rename-file-limit=3000")
+    '((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
     ))
 
 (use-package flymake
@@ -253,7 +254,6 @@
     (set-face-attribute 'org-level-6 nil :height 1.1)
     (set-face-attribute 'org-level-7 nil :height 1.1)
     (set-face-attribute 'org-level-8 nil :height 1.1))
-
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
   (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
   (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
@@ -323,6 +323,7 @@
   :hook (org-mode . (lambda () (org-superstar-mode 1))))
 
 (use-package org-roam
+  :defer t
   :custom
   (org-roam-directory (concat org-directory "roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
