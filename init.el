@@ -18,8 +18,8 @@
 (set-fringe-mode 4)
 (setq default-frame-alist '((width . 90) (height . 52)))
 (set-face-attribute 'default nil
-		    :font (font-spec :family "FiraCode Nerd Font Mono"
-				     :foundry "Light"
+		    :font (font-spec :family "JetBrains Mono"
+				     :weight 'Regular
 				     :size 14))
 
 ;;; BASIC
@@ -37,7 +37,6 @@
 (savehist-mode 1)
 (setq history-length 25)
 (setq tab-width 4)
-;(setq c-basic-offset 8)
 (set-input-method 'TeX)
 (display-time)
 (setq use-dialog-box nil)
@@ -54,7 +53,6 @@
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'prog-mode-hook 'hs-minor-mode)
-(add-hook 'prog-mode-hook 'prettify-symbols-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
 
 ;;; Keybindings
@@ -80,6 +78,9 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package all-the-icons
+  :if (display-graphic-p))
+
 (use-package benchmark-init
   :disabled
   :config
@@ -89,23 +90,23 @@
 (use-package dashboard
   :custom
   (dashboard-center-content t)
-  (dashboard-startup-banner 'logo)
   (dashboard-icon-type 'all-the-icons)
+  (dashboard-banner-logo-title "HE JUST DID IT.")
   (dashboard-set-heading-icons t)
-
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
   (dashboard-agenda-sort-strategy '(priority-down))
   (dashboard-agenda-prefix-format " ")
-
-  (dashboard-items '((recents   . 5)
-		     (projects  . 5)
+  (dashboard-items '((recents   . 10)
+		     (projects  . 10)
 		     (agenda    . 20)))
+  (dashboard-startupify-list '(dashboard-insert-newline
+			       dashboard-insert-banner-title
+			       dashboard-insert-items
+			       dashboard-insert-newline
+			       dashboard-insert-init-info))
   :config
   (dashboard-setup-startup-hook))
-
-(use-package amx
-  :init (amx-mode))
 
 (use-package mwim
   :bind
@@ -133,6 +134,9 @@
   :defer t
   :config
   (setq inferior-lisp-program (executable-find "sbcl")))
+
+(use-package amx
+  :init (amx-mode))
 
 (use-package swiper)
 (use-package counsel)
@@ -167,8 +171,10 @@
 	 ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package ivy-rich
-  :init (ivy-rich-mode t)
-  :config (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+  :init
+  (ivy-rich-mode 1)
+  :config
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
 (use-package company
   :hook (after-init . global-company-mode))
@@ -182,7 +188,7 @@
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
   :config
-  (load-theme 'doom-tokyo-night t nil))
+  (load-theme 'doom-tokyo-night t))
 
 (use-package rich-minority
   :init
@@ -193,9 +199,6 @@
 		(mapconcat #'identity
 			   '("ivy" "WK" "counsel" "company" "Abbrev" "Eldoc" "org-roam-ui" "company-box" "hs" "Wrap")
 			   "\\|"))))
-
-(use-package all-the-icons
-  :if (display-graphic-p))
 
 (use-package project
   :config
@@ -217,11 +220,11 @@
   :config
   (setq eglot-autoshutdown t)
   ;; Add sever here
-   (add-to-list
-    'eglot-server-programs
-    ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd" "--limit-references=3000" "--limit-results=3000" "--rename-file-limit=3000")
-    '((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
-    ))
+  (add-to-list
+   'eglot-server-programs
+   '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd")
+   ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
+   ))
 
 (use-package flymake
   :custom
@@ -350,7 +353,7 @@
 
 (use-package visual-fill-column
   :hook
-  (org-mode . (lambda () (setq visual-fill-column-width 100
+  (org-mode . (lambda () (setq visual-fill-column-width 110
 			       visual-fill-column-center-text t)
 		(visual-fill-column-mode 1))))
 
