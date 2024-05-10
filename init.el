@@ -27,7 +27,7 @@
 (setq inhibit-startup-message t)
 (setq make-backup-files nil)
 (setq eww-search-prefix "https://cn.bing.com/search?q=")
-(electric-pair-mode t)
+(electric-pair-mode -1)
 (save-place-mode t)
 (recentf-mode t)
 (delete-selection-mode t)
