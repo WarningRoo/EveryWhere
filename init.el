@@ -16,11 +16,11 @@
 
 ;; Face
 (set-fringe-mode 4)
-(setq default-frame-alist '((width . 90) (height . 52)))
+(setq default-frame-alist '((width . 114) (height . 55)))
 (set-face-attribute 'default nil
 		    :font (font-spec :family "JetBrains Mono"
 				     :weight 'Regular
-				     :size 14))
+				     :size 13))
 
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
@@ -202,7 +202,7 @@
 
 (use-package project
   :config
-  (setq project-vc-extra-root-markers '("INSTALL" "COPYING")))
+  (setq project-vc-extra-root-markers '("INSTALL" "COPYING" "LICENSE")))
 
 (use-package neotree
   :after project
@@ -217,6 +217,7 @@
   :hook
   ((c-mode c-ts-mode) . eglot-ensure)
   ((c++-mode c++-ts-mode) . eglot-ensure)
+  ((lisp-mode emacs-lisp-mode) . eglot-ensure)
   :config
   (setq eglot-autoshutdown t)
   ;; Add sever here
@@ -224,6 +225,10 @@
    'eglot-server-programs
    '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd")
    ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
+   ;; '((lisp-mode emacs-lisp-mode) "sbcl"
+   ;;   "--noinform"
+   ;;   "--eval" "ql:quickload \"alive-lsp\""
+   ;;   "--eval" "(alive/server::start :port 8006)")
    ))
 
 (use-package flymake
@@ -243,11 +248,13 @@
   (global-treesit-auto-mode))
 
 ;;; org-mode
-(defvar *dir-of-org* "~/Documents/org/")
+(defvar *dir-of-org* "~/Documents/Knowing/")
 (setq org-directory (file-truename *dir-of-org*))
 
 (defun qu/org-font-setup()
   "Font set for org."
+  (add-to-list 'org-emphasis-alist '("*" '(bold :emphasis t :foreground "#00BFFF")))
+  (add-to-list 'org-emphasis-alist '("/" '(italic :emphasis t :foreground "#e50062")))
   (with-eval-after-load 'org-faces
     (set-face-attribute 'org-level-1 nil :height 1.4)
     (set-face-attribute 'org-level-2 nil :height 1.3)
@@ -311,8 +318,8 @@
 	'(("n" "Now you are doing." todo "NOW")
 	  ("f" "Maybe someday" todo "FUTURE")))
   (setq org-capture-templates
-	'(("t" "Todo" entry (file "~/Documents/org/agenda/tasks.org") "* TODO %?\n  %T\n" :prepend t)
-	  ("i" "Idea" entry (file "~/Documents/org/agenda/ideas.org") "* %T\n" :prepend t)))
+	'(("t" "Todo" entry (file "~/Documents/Knowing/agenda/tasks.org") "* TODO %?\n  %T\n" :prepend t)
+	  ("i" "Idea" entry (file "~/Documents/Knowing/agenda/ideas.org") "* %T\n" :prepend t)))
   (qu/org-font-setup)
 
   ;; require Programming Languages Support
