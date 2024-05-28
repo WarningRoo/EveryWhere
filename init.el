@@ -31,7 +31,7 @@
 	   return (set-face-attribute 'default nil
 				      :font (font-spec :family font
 						       :weight 'Regular
-						       :size 13)))
+						       :size 10.0)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Segoe UI Symbol" "Symbola" "Symbol")
@@ -41,14 +41,12 @@
   ;; Emoji
   (cl-loop for font in '("Noto Color Emoji" "Apple Color Emoji" "Segoe UI Emoji")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
+	   return (set-fontset-font t 'emoji (font-spec :family font :size 10.0) nil 'prepend))
 
   ;; Specify font for Chinese characters
   (cl-loop for font in '("Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
 	   when (font-installed-p font)
-	   return (progn
-		    (setq face-font-rescale-alist `((,font . 1.0)))
-		    (set-fontset-font t 'han (font-spec :family font)))))
+	   return (set-fontset-font t 'han (font-spec :family font :size 10.0))))
 
 (qu/font-setup)
 (add-hook 'window-setup-hook #'qu/font-setup)
