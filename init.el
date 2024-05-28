@@ -17,10 +17,42 @@
 ;; Face
 (set-fringe-mode 4)
 (setq default-frame-alist '((width . 114) (height . 55)))
-(set-face-attribute 'default nil
-		    :font (font-spec :family "JetBrains Mono"
-				     :weight 'Regular
-				     :size 13))
+
+;; Fonts
+(defun font-installed-p (font-name)
+  "Check if font with FONT-NAME is available."
+  (find-font (font-spec :name font-name)))
+
+(defun qu/font-setup ()
+  "Setup fonts."
+  ;; Set default font
+  (cl-loop for font in '("Jetbrains Mono" "Consolas")
+	   when (font-installed-p font)
+	   return (set-face-attribute 'default nil
+				      :font (font-spec :family font
+						       :weight 'Regular
+						       :size 13)))
+
+  ;; Specify font for all unicode characters
+  (cl-loop for font in '("Segoe UI Symbol" "Symbola" "Symbol")
+	   when (font-installed-p font)
+	   return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
+
+  ;; Emoji
+  (cl-loop for font in '("Noto Color Emoji" "Apple Color Emoji" "Segoe UI Emoji")
+	   when (font-installed-p font)
+	   return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
+
+  ;; Specify font for Chinese characters
+  (cl-loop for font in '("Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
+	   when (font-installed-p font)
+	   return (progn
+		    (setq face-font-rescale-alist `((,font . 1.0)))
+		    (set-fontset-font t 'han (font-spec :family font)))))
+
+(qu/font-setup)
+(add-hook 'window-setup-hook #'qu/font-setup)
+(add-hook 'server-after-make-frame-hook #'qu/font-setup)
 
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
@@ -91,7 +123,7 @@
   :custom
   (dashboard-center-content t)
   (dashboard-icon-type 'all-the-icons)
-  (dashboard-banner-logo-title "HE JUST DID IT.")
+  (dashboard-banner-logo-title "HE JUST DID IT.\n一具体，就深刻。")
   (dashboard-set-heading-icons t)
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
@@ -253,8 +285,13 @@
 
 (defun qu/org-font-setup()
   "Font set for org."
-  (add-to-list 'org-emphasis-alist '("*" '(bold :emphasis t :foreground "#00BFFF")))
-  (add-to-list 'org-emphasis-alist '("/" '(italic :emphasis t :foreground "#e50062")))
+  ;; LaTeX preview
+  (plist-put org-format-latex-options :scale 1.5)
+  (setq org-preview-latex-default-process 'dvisvgm)
+  ;; emphasis
+  (add-to-list 'org-emphasis-alist '("*" '(bold :foreground "#00BFFF")))
+  (add-to-list 'org-emphasis-alist '("/" '(italic :foreground "#e50062")))
+  ;; Title
   (with-eval-after-load 'org-faces
     (set-face-attribute 'org-level-1 nil :height 1.4)
     (set-face-attribute 'org-level-2 nil :height 1.3)
@@ -286,7 +323,7 @@
 		(adaptive-wrap-prefix-mode)
 		(setq evil-auto-indent nil)
 		(setq-local line-spacing 0.10)))
-  :bind (;("C-c l" . org-store-link)
+  :bind (("C-c l" . org-store-link)
 	 ("C-c a" . org-agenda)
 	 ("C-c c" . org-capture))
   :custom
