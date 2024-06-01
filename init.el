@@ -10,7 +10,7 @@
 (load custom-file 'noerror 'nomessage)
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;; Network
+;; Proxy
 (setq url-proxy-services '(("https" . "localhost:7890")
 			   ("http" . "localhost:7890")))
 
@@ -34,19 +34,19 @@
 						       :size 10.0)))
 
   ;; Specify font for all unicode characters
-  (cl-loop for font in '("Segoe UI Symbol" "Symbola" "Symbol")
+  (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
+	   return (set-fontset-font t 'symbol (font-spec :family font :size 10.0) nil 'prepend))
 
   ;; Emoji
   (cl-loop for font in '("Noto Color Emoji" "Apple Color Emoji" "Segoe UI Emoji")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'emoji (font-spec :family font :size 10.0) nil 'prepend))
+	   return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
 
   ;; Specify font for Chinese characters
   (cl-loop for font in '("Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'han (font-spec :family font :size 10.0))))
+	   return (set-fontset-font t 'han (font-spec :family font))))
 
 (qu/font-setup)
 (add-hook 'window-setup-hook #'qu/font-setup)
@@ -327,8 +327,8 @@
   :custom
   (org-default-notes-file (concat org-directory "/notes.org"))
   (org-hide-emphasis-markers t)
-  (org-ellipsis " ▾")
-  (org-log-done 'time)	;Insert timestamp automatically when done
+  ;;(org-ellipsis " ▾")
+  ;;(org-log-done 'time)
   ;;(org-log-done 'note)
   ;;Use C-u C-c C-t to make it as you will.
   (org-tags-column 0)
@@ -343,8 +343,8 @@
   (require 'org-capture)
 
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
-  ;;  (setq org-tag-alist '((:startgroup . nil)
-  ;;			; Put mutually exclusive tags here
+  ;; (setq org-tag-alist '((:startgroup . nil)
+  ;;			;; Put mutually exclusive tags here
   ;;			(:endgroup . nil)
   ;;			("RNOW" . ?r)
   ;;			("IDEA" . ?i)))
