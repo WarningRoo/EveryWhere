@@ -46,7 +46,9 @@
   ;; Specify font for Chinese characters
   (cl-loop for font in '("Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'han (font-spec :family font))))
+	   return (set-fontset-font t 'han (font-spec :family font)))
+
+  (set-fontset-font t 'cjk-misc (font-spec :family "Sarasa Term SC Nerd")))
 
 (qu/font-setup)
 (add-hook 'window-setup-hook #'qu/font-setup)
