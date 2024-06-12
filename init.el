@@ -31,32 +31,31 @@
 	   return (set-face-attribute 'default nil
 				      :font (font-spec :family font
 						       :weight 'Regular
-						       :size 10.0)))
+						       :size 14)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'symbol (font-spec :family font :size 10.0) nil 'prepend))
+	   return (set-fontset-font t 'symbol (font-spec :family font :size 14) nil 'prepend))
 
   ;; Emoji
-  (cl-loop for font in '("Noto Color Emoji" "Apple Color Emoji" "Segoe UI Emoji")
+  (cl-loop for font in '("Noto Color Emoji" "Segoe UI Emoji")
 	   when (font-installed-p font)
 	   return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
 
   ;; Specify font for Chinese characters
   (cl-loop for font in '("Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'han (font-spec :family font)))
-
-  (set-fontset-font t 'cjk-misc (font-spec :family "Sarasa Term SC Nerd")))
+	   return (progn (set-fontset-font t 'cjk-misc (font-spec :family font))
+			 (set-fontset-font t 'han (font-spec :family font)))))
 
 (qu/font-setup)
 (add-hook 'window-setup-hook #'qu/font-setup)
 (add-hook 'server-after-make-frame-hook #'qu/font-setup)
 
 ;;; BASIC
-(setq confirm-kill-emacs #'yes-or-no-p)
 (setq inhibit-startup-message t)
+(setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
 (setq eww-search-prefix "https://cn.bing.com/search?q=")
 (electric-pair-mode -1)
@@ -120,6 +119,7 @@
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (use-package dashboard
+;;  :disabled
   :custom
   (dashboard-center-content t)
   (dashboard-icon-type 'all-the-icons)
@@ -129,9 +129,9 @@
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
   (dashboard-agenda-sort-strategy '(priority-down))
   (dashboard-agenda-prefix-format " ")
-  (dashboard-items '((recents   . 10)
-		     (projects  . 10)
-		     (agenda    . 20)))
+  (dashboard-items '((recents  . 10)
+		     ;;(projects . 10)
+		     (agenda   . 30)))
   (dashboard-startupify-list '(dashboard-insert-newline
 			       dashboard-insert-banner-title
 			       dashboard-insert-items
@@ -327,6 +327,7 @@
 	 ("C-c a" . org-agenda)
 	 ("C-c c" . org-capture))
   :custom
+  (org-imenu-depth 3)
   (org-default-notes-file (concat org-directory "/notes.org"))
   (org-hide-emphasis-markers t)
   ;;(org-ellipsis " ▾")
