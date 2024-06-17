@@ -109,33 +109,37 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package exec-path-from-shell
+  :after eshell
+  :config
+  (exec-path-from-shell-copy-env "ARCH")
+  (exec-path-from-shell-copy-env "CROSS_COMPILE")
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
 (use-package all-the-icons
   :if (display-graphic-p))
 
 (use-package benchmark-init
   :disabled
   :config
-  ;; To disable collection of benchmark data after init is done.
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (use-package dashboard
-;;  :disabled
   :custom
   (dashboard-center-content t)
-  (dashboard-icon-type 'all-the-icons)
-  (dashboard-banner-logo-title "HE JUST DID IT.\n一具体，就深刻。")
-  (dashboard-set-heading-icons t)
+  (dashboard-banner-logo-title "HE JUST DID IT. 一具体就深刻。")
+  ;; Agenda
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
   (dashboard-agenda-sort-strategy '(priority-down))
   (dashboard-agenda-prefix-format " ")
   (dashboard-items '((recents  . 10)
-		     ;;(projects . 10)
-		     (agenda   . 30)))
+		     (projects . 5)
+		     (agenda   . 15)))
   (dashboard-startupify-list '(dashboard-insert-newline
 			       dashboard-insert-banner-title
 			       dashboard-insert-items
-			       dashboard-insert-newline
 			       dashboard-insert-init-info))
   :config
   (dashboard-setup-startup-hook))
@@ -220,7 +224,7 @@
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
   :config
-  (load-theme 'doom-tokyo-night t))
+  (load-theme 'wombat t))
 
 (use-package rich-minority
   :init
@@ -255,7 +259,10 @@
   ;; Add sever here
   (add-to-list
    'eglot-server-programs
-   '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd")
+   '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd"
+     "--limit-references=10000"
+     "--limit-results=10000"
+     "--background-index")
    ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
    ;; '((lisp-mode emacs-lisp-mode) "sbcl"
    ;;   "--noinform"
