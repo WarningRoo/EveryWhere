@@ -224,7 +224,7 @@
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
   :config
-  (load-theme 'wombat t))
+  (load-theme 'doom-tokyo-night t))
 
 (use-package rich-minority
   :init
@@ -297,7 +297,7 @@
   (setq org-preview-latex-default-process 'dvisvgm)
   ;; emphasis
   (add-to-list 'org-emphasis-alist '("*" '(bold :foreground "#00BFFF")))
-  (add-to-list 'org-emphasis-alist '("/" '(italic :foreground "#e50062")))
+  (add-to-list 'org-emphasis-alist '("/" '(italic :foreground "#00FF22")))
   ;; Title
   (with-eval-after-load 'org-faces
     (set-face-attribute 'org-level-1 nil :height 1.4)
