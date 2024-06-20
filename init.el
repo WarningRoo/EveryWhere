@@ -109,6 +109,10 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package solaire-mode
+  :config
+  (solaire-global-mode +1))
+
 (use-package exec-path-from-shell
   :after eshell
   :config
