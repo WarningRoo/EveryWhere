@@ -16,7 +16,7 @@
 
 ;; Face
 (set-fringe-mode 4)
-(setq default-frame-alist '((width . 114) (height . 55)))
+(setq default-frame-alist '((width . 100) (height . 46)))
 
 ;; Fonts
 (defun font-installed-p (font-name)
@@ -31,12 +31,12 @@
 	   return (set-face-attribute 'default nil
 				      :font (font-spec :family font
 						       :weight 'Regular
-						       :size 14)))
+						       :size 15)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
 	   when (font-installed-p font)
-	   return (set-fontset-font t 'symbol (font-spec :family font :size 14) nil 'prepend))
+	   return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
 
   ;; Emoji
   (cl-loop for font in '("Noto Color Emoji" "Segoe UI Emoji")
@@ -132,6 +132,7 @@
 (use-package dashboard
   :custom
   (dashboard-center-content t)
+  (dashboard-startup-banner 'logo)
   (dashboard-banner-logo-title "HE JUST DID IT. 一具体就深刻。")
   ;; Agenda
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
@@ -141,7 +142,8 @@
   (dashboard-items '((recents  . 10)
 		     (projects . 5)
 		     (agenda   . 15)))
-  (dashboard-startupify-list '(dashboard-insert-newline
+  (dashboard-startupify-list '(dashboard-insert-banner
+			       dashboard-insert-newline
 			       dashboard-insert-banner-title
 			       dashboard-insert-items
 			       dashboard-insert-init-info))
@@ -167,8 +169,8 @@
   (google-translate-show-phonetic t)
   :config
   (require 'google-translate-smooth-ui)
-  :bind (("\C-ct" . 'google-translate-at-point)
-	 ("\C-cT" . 'google-translate-query-translate)))
+  :bind (("\C-ct" . google-translate-at-point)
+	 ("\C-cT" . google-translate-query-translate)))
 
 (use-package slime
   :defer t
@@ -191,24 +193,25 @@
   ;; enable this if you want `swiper' to use it
   (search-default-mode #'char-fold-to-regexp)
   :config
-  :bind (("C-s" . 'swiper)
-	 ("C-c C-r" . 'ivy-resume)
-	 ("<f6>" . 'ivy-resume)
-	 ("M-x" . 'counsel-M-x)
-	 ("C-x C-f" . 'counsel-find-file)
-	 ("<f1> f" . 'counsel-describe-function)
-	 ("<f1> v" . 'counsel-describe-variable)
-	 ("<f1> o" . 'counsel-describe-symbol)
-	 ("<f1> l" . 'counsel-find-library)
-	 ("<f2> i" . 'counsel-info-lookup-symbol)
-	 ("<f2> u" . 'counsel-unicode-char)
-	 ("C-c g" . 'counsel-git)
-	 ("C-c j" . 'counsel-git-grep)
-	 ("C-c k" . 'counsel-ag)
-	 ("C-x l" . 'counsel-locate)
-	 ("C-S-o" . 'counsel-rhythmbox)
+  :bind (("C-s" . swiper)
+	 ("C-c C-r" . ivy-resume)
+	 ("<f6>" . ivy-resume)
+	 ("M-x" . counsel-M-x)
+	 ("C-x C-f" . counsel-find-file)
+	 ("<f1> f" . counsel-describe-function)
+	 ("<f1> v" . counsel-describe-variable)
+	 ("<f1> o" . counsel-describe-symbol)
+	 ("<f1> l" . counsel-find-library)
+	 ("<f2> i" . counsel-info-lookup-symbol)
+	 ("<f2> u" . counsel-unicode-char)
+	 ("C-c g" . counsel-git)
+	 ("C-c j" . counsel-git-grep)
+	 ("C-c k" . counsel-ag)
+	 ("C-x l" . counsel-locate)
+	 ("C-S-o" . counsel-rhythmbox)
+	 ("C-c J" . counsel-file-jump)
 	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-minibuffer-history)))
+	 ("C-r" . counsel-minibuffer-history)))
 
 (use-package ivy-rich
   :init
@@ -223,12 +226,11 @@
   :hook (company-mode . company-box-mode))
 
 ;; theme
-(use-package doom-themes
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-  :config
-  (load-theme 'doom-tokyo-night t))
+(use-package dracula-theme
+  :init
+  (setq dracula-alternate-mode-line-and-minibuffer t))
+
+(load-theme 'dracula t)
 
 (use-package rich-minority
   :init
