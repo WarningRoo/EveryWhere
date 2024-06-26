@@ -15,7 +15,7 @@
 			   ("http" . "localhost:7890")))
 
 ;; Face
-(set-fringe-mode 4)
+(set-fringe-mode 8)
 (setq default-frame-alist '((width . 100) (height . 46)))
 
 ;; Fonts
@@ -79,7 +79,8 @@
 ;;; line/column number
 (column-number-mode 1)
 ;; Enable line numbers for some modes
-(dolist (mode '(prog-mode-hook))
+(dolist (mode '(prog-mode-hook
+		diff-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
@@ -132,19 +133,20 @@
 (use-package dashboard
   :custom
   (dashboard-center-content t)
-  (dashboard-startup-banner 'logo)
-  (dashboard-banner-logo-title "HE JUST DID IT. 一具体就深刻。")
+  (dashboard-startup-banner 2)
+  (dashboard-banner-logo-title "Practice")
   ;; Agenda
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
   (dashboard-agenda-sort-strategy '(priority-down))
   (dashboard-agenda-prefix-format " ")
-  (dashboard-items '((recents  . 10)
+  ;; Homepage
+  (dashboard-items '((recents  . 5)
 		     (projects . 5)
-		     (agenda   . 15)))
+		     (agenda   . 10)))
   (dashboard-startupify-list '(dashboard-insert-banner
-			       dashboard-insert-newline
 			       dashboard-insert-banner-title
+			       (lambda () (delete-char -1))
 			       dashboard-insert-items
 			       dashboard-insert-init-info))
   :config
@@ -230,7 +232,9 @@
   :init
   (setq dracula-alternate-mode-line-and-minibuffer t))
 
-(load-theme 'dracula t)
+;;(load-theme 'dracula t)
+;;(load-theme 'modus-operandi t)
+(load-theme 'modus-vivendi t)
 
 (use-package rich-minority
   :init
@@ -262,7 +266,7 @@
   ((lisp-mode emacs-lisp-mode) . eglot-ensure)
   :config
   (setq eglot-autoshutdown t)
-  ;; Add sever here
+  ;; Add server here
   (add-to-list
    'eglot-server-programs
    '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd"
@@ -384,7 +388,6 @@
   :hook (org-mode . (lambda () (org-superstar-mode 1))))
 
 (use-package org-roam
-  :defer t
   :custom
   (org-roam-directory (concat org-directory "roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
@@ -411,7 +414,7 @@
 
 (use-package visual-fill-column
   :hook
-  (org-mode . (lambda () (setq visual-fill-column-width 110
+  (org-mode . (lambda () (setq visual-fill-column-width 100
 			       visual-fill-column-center-text t)
 		(visual-fill-column-mode 1))))
 
