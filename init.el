@@ -110,6 +110,21 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package popper
+  :bind (("C-`"   . popper-toggle)
+	 ("M-`"   . popper-cycle)
+	 ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+	'("\\*Google Translate\\*"
+	  "\\*Messages\\*"
+	  "Output\\*$"
+	  "\\*Async Shell Command\\*"
+	  help-mode
+	  compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))
+
 (use-package solaire-mode
   :config
   (solaire-global-mode +1))
@@ -282,8 +297,7 @@
 (use-package flymake
   :custom
   (flymake-mode-line-lighter "F")
-  :hook
-  (prog-mode . flymake-mode)
+  :hook (prog-mode . flymake-mode)
   :bind (("M-n" . flymake-goto-next-error)
 	 ("M-p" . flymake-goto-prev-error)))
 
@@ -293,10 +307,6 @@
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
-
-;;; LaTeX
-(use-package tex
-  :ensure auctex)
 
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/Knowing/")
@@ -419,13 +429,12 @@
 
 (use-package visual-fill-column
   :hook
-  (org-mode . (lambda () (setq visual-fill-column-width 100
+  (org-mode . (lambda () (setq visual-fill-column-width 110
 			       visual-fill-column-center-text t)
 		(visual-fill-column-mode 1))))
 
 (use-package adaptive-wrap
-  :hook
-  (org-mode . (lambda () (adaptive-wrap-prefix-mode 1))))
+  :hook (org-mode . (lambda () (adaptive-wrap-prefix-mode 1))))
 
 (provide 'init)
 ;;; init.el ends here
