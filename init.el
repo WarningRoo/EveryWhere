@@ -153,9 +153,8 @@
   (dashboard-setup-startup-hook))
 
 (use-package mwim
-  :bind
-  ("C-a" . mwim-beginning-of-code-or-line)
-  ("C-e" . mwim-end-of-code-or-line))
+  :bind (("C-a" . mwim-beginning-of-code-or-line)
+	 ("C-e" . mwim-end-of-code-or-line)))
 
 (use-package highlight-symbol
   :bind ("<f9>" . highlight-symbol))
@@ -285,9 +284,8 @@
   (flymake-mode-line-lighter "F")
   :hook
   (prog-mode . flymake-mode)
-  :bind
-  ("M-n" . flymake-goto-next-error)
-  ("M-p" . flymake-goto-prev-error))
+  :bind (("M-n" . flymake-goto-next-error)
+	 ("M-p" . flymake-goto-prev-error)))
 
 (use-package treesit-auto
   :custom
@@ -296,15 +294,16 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
+;;; LaTeX
+(use-package tex
+  :ensure auctex)
+
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/Knowing/")
 (setq org-directory (file-truename *dir-of-org*))
 
 (defun qu/org-font-setup()
   "Font set for org."
-  ;; LaTeX preview
-  (plist-put org-format-latex-options :scale 1.5)
-  (setq org-preview-latex-default-process 'dvisvgm)
   ;; emphasis
   (add-to-list 'org-emphasis-alist '("*" '(bold :foreground "#00BFFF")))
   (add-to-list 'org-emphasis-alist '("/" '(italic :foreground "#00FF22")))
@@ -337,8 +336,6 @@
 		;;(variable-pitch-mode 1) ; variable pitch against fixed-pitch
 		(auto-fill-mode 0)
 		(visual-line-mode 1)
-		(adaptive-wrap-prefix-mode)
-		(setq evil-auto-indent nil)
 		(setq-local line-spacing 0.10)))
   :bind (("C-c l" . org-store-link)
 	 ("C-c a" . org-agenda)
@@ -347,7 +344,6 @@
   (org-imenu-depth 3)
   (org-default-notes-file (concat org-directory "/notes.org"))
   (org-hide-emphasis-markers t)
-  ;;(org-ellipsis " ▾")
   ;;(org-log-done 'time)
   ;;(org-log-done 'note)
   ;;Use C-u C-c C-t to make it as you will.
@@ -358,6 +354,16 @@
   (org-agenda-files (list (concat org-directory "agenda")))
 
   :config
+  ;; LaTeX
+  (setq org-startup-with-inline-images t)
+  (setq org-highlight-latex-and-related '(native)) ; Highlight inline LaTeX code
+  (setq org-latex-packages-alist '(("T1" "fontenc" t)
+				   ("" "amsmath" t)
+				   ("" "mathtools" t)
+				   ("" "siunitx" t)
+				   ("" "newtxmath" t)))
+  (plist-put org-format-latex-options :scale 1.5)
+
   ;; require module
   (require 'org-indent)
   (require 'org-capture)
@@ -383,7 +389,6 @@
   (require 'ob-makefile))
 
 (use-package org-contrib)
-
 (use-package org-superstar
   :hook (org-mode . (lambda () (org-superstar-mode 1))))
 
@@ -418,7 +423,9 @@
 			       visual-fill-column-center-text t)
 		(visual-fill-column-mode 1))))
 
-(use-package adaptive-wrap)
+(use-package adaptive-wrap
+  :hook
+  (org-mode . (lambda () (adaptive-wrap-prefix-mode 1))))
 
 (provide 'init)
 ;;; init.el ends here
