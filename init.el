@@ -110,6 +110,18 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package gptel
+  :config
+  (setq gptel-model "moonshot-v1-8k")
+  (setq gptel-default-mode 'org-mode)
+  (setq gptel-backend
+	(gptel-make-openai "Moonshot"
+	  :key 'gptel-api-key
+	  :models '("moonshot-v1-8k"
+		    "moonshot-v1-32k"
+		    "moonshot-v1-128k")
+	  :host "api.moonshot.cn")))
+
 (use-package popper
   :bind (("C-`"   . popper-toggle)
 	 ("M-`"   . popper-cycle)
@@ -120,6 +132,7 @@
 	  "\\*Messages\\*"
 	  "Output\\*$"
 	  "\\*Async Shell Command\\*"
+	  "\\*Buffer List\\*"
 	  help-mode
 	  compilation-mode))
   (popper-mode +1)
@@ -242,13 +255,8 @@
   :hook (company-mode . company-box-mode))
 
 ;; theme
-(use-package dracula-theme
-  :init
-  (setq dracula-alternate-mode-line-and-minibuffer t))
-
-;;(load-theme 'dracula t)
-;;(load-theme 'modus-operandi t)
-(load-theme 'modus-vivendi t)
+(use-package dracula-theme)
+(load-theme 'dracula t)
 
 (use-package rich-minority
   :init
@@ -257,7 +265,8 @@
   (setq rm-blacklist
 	(format "^ \\(%s\\)$"
 		(mapconcat #'identity
-			   '("ivy" "WK" "counsel" "company" "Abbrev" "Eldoc" "org-roam-ui" "company-box" "hs" "Wrap")
+			   '("ivy" "WK" "counsel" "company""Abbrev" "Eldoc"
+			     "org-roam-ui" "company-box" "hs" "Wrap")
 			   "\\|"))))
 
 (use-package project
@@ -352,7 +361,7 @@
 	 ("C-c c" . org-capture))
   :custom
   (org-imenu-depth 3)
-  (org-default-notes-file (concat org-directory "/notes.org"))
+  (org-default-notes-file (concat org-directory "agenda/ideas.org"))
   (org-hide-emphasis-markers t)
   ;;(org-log-done 'time)
   ;;(org-log-done 'note)
@@ -361,17 +370,20 @@
   (org-enforce-todo-dependencies t)
   (org-log-into-drawer t)
   (org-agenda-start-with-log-mode t)
-  (org-agenda-files (list (concat org-directory "agenda")))
+  (org-agenda-files (list (concat org-directory "agenda/")))
 
   :config
   ;; LaTeX
-  (setq org-startup-with-inline-images t)
-  (setq org-highlight-latex-and-related '(native)) ; Highlight inline LaTeX code
+  ;;(setq org-startup-with-inline-images t)
+  (setq org-highlight-latex-and-related '(native))
+  (setq org-preview-latex-default-process 'dvisvgm)
   (setq org-latex-packages-alist '(("T1" "fontenc" t)
-				   ("" "amsmath" t)
-				   ("" "mathtools" t)
-				   ("" "siunitx" t)
-				   ("" "newtxmath" t)))
+;;				   ("" "amsmath" t)
+;;				   ("" "mathtools" t)
+;;				   ("" "siunitx" t)
+;;				   ("" "newtxmath" t)
+				   ("" "tikz" t)
+				   ))
   (plist-put org-format-latex-options :scale 1.5)
 
   ;; require module
@@ -388,9 +400,11 @@
   (setq org-agenda-custom-commands
 	'(("n" "Now you are doing." todo "NOW")
 	  ("f" "Maybe someday" todo "FUTURE")))
+
   (setq org-capture-templates
-	'(("t" "Todo" entry (file "~/Documents/Knowing/agenda/tasks.org") "* TODO %?\n  %T\n" :prepend t)
-	  ("i" "Idea" entry (file "~/Documents/Knowing/agenda/ideas.org") "* %T\n" :prepend t)))
+	`(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org")) "* TODO %?\n  %T\n" :prepend t)
+	  ("i" "Idea" entry (file ,(concat org-directory "agenda/ideas.org")) "* %T\n" :prepend t)))
+
   (qu/org-font-setup)
 
   ;; require Programming Languages Support
@@ -399,8 +413,6 @@
   (require 'ob-makefile))
 
 (use-package org-contrib)
-(use-package org-superstar
-  :hook (org-mode . (lambda () (org-superstar-mode 1))))
 
 (use-package org-roam
   :custom
@@ -413,10 +425,9 @@
 	 ;; Dailies
 	 ("C-c n j" . org-roam-dailies-capture-today))
   :config
-  ;; If you're using a vertical completion framework, you might want a more informative completion interface
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (setq org-roam-node-display-template
+	(concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 
 (use-package org-roam-ui
