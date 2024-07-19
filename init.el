@@ -357,6 +357,11 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package consult-eglot)
+(use-package consult-eglot-embark
+  :init
+  (consult-eglot-embark-mode))
+
 (use-package company
   :hook (after-init . global-company-mode))
 
@@ -399,11 +404,12 @@
   ;; Add server here
   (add-to-list
    'eglot-server-programs
-   '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd"
-     "--limit-references=1000"
-     "--limit-results=1000"
-     "--background-index")
-   ;;'((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
+;;   '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd"
+;;     "--limit-references=1000"
+;;     "--limit-results=1000"
+;;     "--background-index"
+;;     )
+   '((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
    ;; '((lisp-mode emacs-lisp-mode) "sbcl"
    ;;   "--noinform"
    ;;   "--eval" "ql:quickload \"alive-lsp\""
@@ -426,6 +432,7 @@
 
 ;;; LaTeX
 (use-package latex
+  :defer t
   :ensure auctex)
 
 (use-package cdlatex)
