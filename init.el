@@ -58,6 +58,7 @@
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
 (setq eww-search-prefix "https://cn.bing.com/search?q=")
+(setq package-check-signature nil)
 (electric-pair-mode -1)
 (save-place-mode t)
 (recentf-mode t)
