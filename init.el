@@ -106,7 +106,7 @@
 (use-package package
   :config
   (setq use-package-always-ensure t)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
@@ -367,7 +367,11 @@
   :hook (company-mode . company-box-mode))
 
 ;; theme
-(load-theme 'wombat t)
+(use-package dracula-theme
+  :config
+  ;;(load-theme 'wombat t)
+  (load-theme 'dracula t))
+
 
 (use-package rich-minority
   :init
