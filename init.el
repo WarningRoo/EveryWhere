@@ -11,8 +11,9 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 ;; Proxy
-(setq url-proxy-services '(("https" . "localhost:7890")
-			   ("http" . "localhost:7890")))
+(if (eq system-type 'gnu/linux)
+    (setq url-proxy-services '(("https" . "localhost:7890")
+			       ("http" . "localhost:7890"))))
 
 ;; Face
 (set-fringe-mode 8)
@@ -426,6 +427,7 @@
 	 ("M-p" . flymake-goto-prev-error)))
 
 (use-package treesit-auto
+  :if (eq system-type 'gnu/linux)
   :custom
   (treesit-auto-install 'prompt)
   :config
