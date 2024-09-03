@@ -10,11 +10,6 @@
 (load custom-file 'noerror 'nomessage)
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;; Proxy
-(if (eq system-type 'gnu/linux)
-    (setq url-proxy-services '(("https" . "localhost:7890")
-			       ("http" . "localhost:7890"))))
-
 ;; Face
 (set-fringe-mode 8)
 (setq default-frame-alist '((width . 100) (height . 46)))
@@ -561,6 +556,7 @@
   (org-roam-ui-open-on-start t))
 
 (use-package visual-fill-column
+  :disabled
   :hook
   (org-mode . (lambda () (setq visual-fill-column-width 110
 			       visual-fill-column-center-text t)
