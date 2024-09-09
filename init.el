@@ -23,27 +23,27 @@
   "Setup fonts."
   ;; Set default font
   (cl-loop for font in '("Jetbrains Mono" "Consolas")
-	   when (font-installed-p font)
-	   return (set-face-attribute 'default nil
-				      :font (font-spec :family font
-						       :weight 'Regular
-						       :size 15)))
+           when (font-installed-p font)
+           return (set-face-attribute 'default nil
+                                      :font (font-spec :family font
+                                                       :weight 'Regular
+                                                       :size 15)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
-	   when (font-installed-p font)
-	   return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
+           when (font-installed-p font)
+           return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
 
   ;; Emoji
   (cl-loop for font in '("Noto Color Emoji" "Segoe UI Emoji")
-	   when (font-installed-p font)
-	   return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
+           when (font-installed-p font)
+           return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
 
   ;; Specify font for Chinese characters
   (cl-loop for font in '("Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
-	   when (font-installed-p font)
-	   return (progn (set-fontset-font t 'cjk-misc (font-spec :family font))
-			 (set-fontset-font t 'han (font-spec :family font)))))
+           when (font-installed-p font)
+           return (progn (set-fontset-font t 'cjk-misc (font-spec :family font))
+                         (set-fontset-font t 'han (font-spec :family font)))))
 
 (qu/font-setup)
 (add-hook 'window-setup-hook #'qu/font-setup)
@@ -63,6 +63,7 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (setq history-length 25)
+(setq-default indent-tabs-mode nil)
 (setq tab-width 4)
 (set-input-method 'TeX)
 (display-time)
@@ -76,7 +77,7 @@
 (column-number-mode 1)
 ;; Enable line numbers for some modes
 (dolist (mode '(prog-mode-hook
-		diff-mode-hook))
+                diff-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
@@ -116,27 +117,27 @@
   (setq gptel-model "moonshot-v1-8k")
   (setq gptel-default-mode 'org-mode)
   (setq gptel-backend
-	(gptel-make-openai "Moonshot"
-	  :key 'gptel-api-key
-	  :models '("moonshot-v1-8k"
-		    "moonshot-v1-32k"
-		    "moonshot-v1-128k")
-	  :host "api.moonshot.cn")))
+        (gptel-make-openai "Moonshot"
+          :key 'gptel-api-key
+          :models '("moonshot-v1-8k"
+                    "moonshot-v1-32k"
+                    "moonshot-v1-128k")
+          :host "api.moonshot.cn")))
 
 (use-package popper
   :bind (("C-`"   . popper-toggle)
-	 ("M-`"   . popper-cycle)
-	 ("C-M-`" . popper-toggle-type))
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
   :init
   (setq popper-reference-buffers
-	'("\\*Google Translate\\*"
-	  "\\*Messages\\*"
-	  "Output\\*$"
-	  "\\*Async Shell Command\\*"
-	  "\\*Buffer List\\*"
-	  "\\*Backtrace\\*"
-	  help-mode
-	  compilation-mode))
+        '("\\*Google Translate\\*"
+          "\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          "\\*Buffer List\\*"
+          "\\*Backtrace\\*"
+          help-mode
+          compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
 
@@ -168,19 +169,19 @@
   (dashboard-agenda-prefix-format " ")
   ;; Homepage
   (dashboard-items '((recents  . 5)
-		     (projects . 5)
-		     (agenda   . 10)))
+                     (projects . 5)
+                     (agenda   . 10)))
   (dashboard-startupify-list '(dashboard-insert-banner
-			       dashboard-insert-banner-title
-			       (lambda () (delete-char -1))
-			       dashboard-insert-items
-			       dashboard-insert-init-info))
+                               dashboard-insert-banner-title
+                               (lambda () (delete-char -1))
+                               dashboard-insert-items
+                               dashboard-insert-init-info))
   :config
   (dashboard-setup-startup-hook))
 
 (use-package mwim
   :bind (("C-a" . mwim-beginning-of-code-or-line)
-	 ("C-e" . mwim-end-of-code-or-line)))
+         ("C-e" . mwim-end-of-code-or-line)))
 
 (use-package highlight-symbol
   :bind ("<f9>" . highlight-symbol))
@@ -197,7 +198,7 @@
   :config
   (require 'google-translate-smooth-ui)
   :bind (("\C-ct" . google-translate-at-point)
-	 ("\C-cT" . google-translate-query-translate)))
+         ("\C-cT" . google-translate-query-translate)))
 
 (use-package slime
   :defer t
@@ -223,59 +224,59 @@
 
 (use-package consult
   :bind (;; C-c bindings in `mode-specific-map'
-	 ;;?("C-c M-x" . consult-mode-command)
-	 ;;?("C-c h" . consult-history)
-	 ;;?("C-c k" . consult-kmacro)
-	 ("C-c m" . consult-man)
-	 ("C-c i" . consult-info)
-	 ([remap Info-search] . consult-info)
-	 ;; C-x bindings in `ctl-x-map'
-	 ;;!("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-	 ;;!("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-	 ;;!("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-	 ;;!("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-	 ;;!("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
-	 ;;!("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-	 ;;!("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-	 ;; Custom M-# bindings for fast register access
-	 ("M-#" . consult-register-load)
-	 ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-	 ("C-M-#" . consult-register)
-	 ;; Other custom bindings
-	 ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-	 ;; M-g bindings in `goto-map'
-	 ("M-g e" . consult-compile-error) ;; Cycling between compile error(s)/warning(s)
-	 ("M-g f" . consult-flymake) ;; Cycling between flymake results
-	 ("M-g g" . consult-goto-line)             ;; orig. goto-line
-	 ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-	 ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-	 ("M-g m" . consult-mark)
-	 ("M-g k" . consult-global-mark)
-	 ("M-g i" . consult-imenu)
-	 ("M-g I" . consult-imenu-multi)
-	 ;; M-s bindings in `search-map'
-	 ("M-s d" . consult-find)                  ;; Alternative: consult-fd
-	 ;;!("M-s c" . consult-locate)
-	 ("M-s g" . consult-grep)
-	 ("M-s G" . consult-git-grep)
-	 ("M-s r" . consult-ripgrep)
-	 ("M-s l" . consult-line)
-	 ("C-s" . consult-line)
-	 ("M-s L" . consult-line-multi)
-	 ("M-s k" . consult-keep-lines)
-	 ("M-s u" . consult-focus-lines)
-	 ;; Isearch integration
-	 ("M-s e" . consult-isearch-history)
-	 ;;!:map isearch-mode-map
-	 ;;!("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-	 ;;!("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-	 ;;!("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-	 ;;!("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-	 ;; Minibuffer history
-	 ;;!:map minibuffer-local-map
-	 ;;!("M-s" . consult-history)                 ;; orig. next-matching-history-element
-	 ;;!("M-r" . consult-history)                ;; orig. previous-matching-history-element
-	 )
+         ;;?("C-c M-x" . consult-mode-command)
+         ;;?("C-c h" . consult-history)
+         ;;?("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ;;!("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ;;!("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ;;!("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ;;!("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ;;!("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+         ;;!("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ;;!("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error) ;; Cycling between compile error(s)/warning(s)
+         ("M-g f" . consult-flymake) ;; Cycling between flymake results
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ;;!("M-s c" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("C-s" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         ;;!:map isearch-mode-map
+         ;;!("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ;;!("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ;;!("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ;;!("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         ;;!:map minibuffer-local-map
+         ;;!("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ;;!("M-r" . consult-history)                ;; orig. previous-matching-history-element
+         )
   :hook (completion-list-mode . consult-preview-at-point-mode)
 
   :init
@@ -291,7 +292,7 @@
 
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
-	xref-show-definitions-function #'consult-xref)
+        xref-show-definitions-function #'consult-xref)
 
   :config
 
@@ -322,8 +323,8 @@
 
 (use-package embark
   :bind  (("C-." . embark-act)         ;; pick some comfortable binding
-	  ("C-;" . embark-dwim)        ;; good alternative: M-.
-	  ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+          ("C-;" . embark-dwim)        ;; good alternative: M-.
+          ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
   :init
 
@@ -343,9 +344,9 @@
 
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
-	       '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		 nil
-		 (window-parameters (mode-line-format . none)))))
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
   :hook
@@ -374,10 +375,10 @@
   (rich-minority-mode 1)
   :config
   (setq rm-blacklist
-	(format "^ \\(%s\\)$"
-		(mapconcat #'identity
-			   '("company" "Abbrev" "Eldoc" "org-roam-ui" "company-box" "hs" "Wrap")
-			   "\\|"))))
+        (format "^ \\(%s\\)$"
+                (mapconcat #'identity
+                           '("company" "Abbrev" "Eldoc" "org-roam-ui" "company-box" "hs" "Wrap")
+                           "\\|"))))
 
 (use-package project
   :config
@@ -419,7 +420,7 @@
   (flymake-mode-line-lighter "F")
   :hook (prog-mode . flymake-mode)
   :bind (("M-n" . flymake-goto-next-error)
-	 ("M-p" . flymake-goto-prev-error)))
+         ("M-p" . flymake-goto-prev-error)))
 
 (use-package treesit-auto
   :if (eq system-type 'gnu/linux)
@@ -463,21 +464,21 @@
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-special-keyword nil
-		      :inherit '(font-lock-comment-face fixed-pitch))
+                      :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil
-		      :inherit '(font-lock-comment-face fixed-pitch)))
+                      :inherit '(font-lock-comment-face fixed-pitch)))
 
 (use-package org
   :hook
   (org-mode . (lambda ()
-		;;(org-indent-mode)
-		;;(variable-pitch-mode 1) ; variable pitch against fixed-pitch
-		(auto-fill-mode 0)
-		(visual-line-mode 1)
-		(setq-local line-spacing 0.10)))
+                ;;(org-indent-mode)
+                ;;(variable-pitch-mode 1) ; variable pitch against fixed-pitch
+                (auto-fill-mode 0)
+                (visual-line-mode 1)
+                (setq-local line-spacing 0.10)))
   :bind (("C-c l" . org-store-link)
-	 ("C-c a" . org-agenda)
-	 ("C-c c" . org-capture))
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture))
   :custom
   (org-imenu-depth 3)
   (org-default-notes-file (concat org-directory "agenda/ideas.org"))
@@ -496,11 +497,11 @@
   (setq org-highlight-latex-and-related '(native))
   (setq org-preview-latex-default-process 'dvisvgm)
   (setq org-latex-packages-alist '(("T1" "fontenc" t)
-				   ("" "amsmath" t)
-				   ("" "mathtools" t)
-				   ("" "siunitx" t)
-				   ("" "newtxmath" t)
-				   ("" "tikz" t)))
+                                   ("" "amsmath" t)
+                                   ("" "mathtools" t)
+                                   ("" "siunitx" t)
+                                   ("" "newtxmath" t)
+                                   ("" "tikz" t)))
   (plist-put org-format-latex-options :scale 1.5)
 
   ;; require module
@@ -515,18 +516,19 @@
   ;;			("IDEA" . ?i)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
   (setq org-agenda-custom-commands
-	'(("n" "Now you are doing." todo "NOW")
-	  ("f" "Maybe someday" todo "FUTURE")))
+        '(("n" "Now you are doing." todo "NOW")
+          ("f" "Maybe someday" todo "FUTURE")))
 
   (setq org-capture-templates
-	`(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org")) "* TODO %?\n  %T\n" :prepend t)
-	  ("i" "Idea" entry (file ,(concat org-directory "agenda/ideas.org")) "* %T\n" :prepend t)))
+        `(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org")) "* TODO %?\n  %T\n" :prepend t)
+          ("i" "Idea" entry (file ,(concat org-directory "agenda/ideas.org")) "* %T\n" :prepend t)))
 
   (qu/org-font-setup)
 
   ;; require Programming Languages Support
   (require 'ob-lisp)
   (require 'ob-shell)
+  (require 'ob-python)
   (require 'ob-makefile))
 
 (use-package org-contrib)
@@ -535,15 +537,15 @@
   :custom
   (org-roam-directory (concat org-directory "roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
-	 ("C-c n f" . org-roam-node-find)
-	 ("C-c n g" . org-roam-graph)
-	 ("C-c n i" . org-roam-node-insert)
-	 ("C-c n c" . org-roam-capture)
-	 ;; Dailies
-	 ("C-c n j" . org-roam-dailies-capture-today))
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
   :config
   (setq org-roam-node-display-template
-	(concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+        (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
   (require 'org-roam-protocol))
 
@@ -559,8 +561,8 @@
   :disabled
   :hook
   (org-mode . (lambda () (setq visual-fill-column-width 110
-			       visual-fill-column-center-text t)
-		(visual-fill-column-mode 1))))
+                               visual-fill-column-center-text t)
+                (visual-fill-column-mode 1))))
 
 (use-package adaptive-wrap
   :hook (org-mode . (lambda () (adaptive-wrap-prefix-mode 1))))
