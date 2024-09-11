@@ -27,7 +27,7 @@
            return (set-face-attribute 'default nil
                                       :font (font-spec :family font
                                                        :weight 'Regular
-                                                       :size 15)))
+                                                       :size 20)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
@@ -72,6 +72,10 @@
 (global-auto-revert-mode t)
 (setq global-auto-revert-non-file-buffers t)
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
+
+;; Display the column indicator
+(setq-default fill-column 80)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 ;;; line/column number
 (column-number-mode 1)
@@ -398,6 +402,7 @@
   ((c-mode c-ts-mode) . eglot-ensure)
   ((c++-mode c++-ts-mode) . eglot-ensure)
   ((lisp-mode emacs-lisp-mode) . eglot-ensure)
+  ;;((python-mode python-ts-mode) . eglot-ensure)
   :config
   (setq eglot-autoshutdown t)
   ;; Add server here
@@ -413,6 +418,7 @@
    ;;   "--noinform"
    ;;   "--eval" "ql:quickload \"alive-lsp\""
    ;;   "--eval" "(alive/server::start :port 8006)")
+   ;;'((python-mode python-ts-mode) "pyls")
    ))
 
 (use-package flymake
