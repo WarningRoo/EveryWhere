@@ -175,9 +175,9 @@
   (dashboard-items '((recents  . 5)
                      (projects . 5)
                      (agenda   . 10)))
-  (dashboard-startupify-list '(dashboard-insert-banner
-                               dashboard-insert-banner-title
-                               (lambda () (delete-char -1))
+  (dashboard-startupify-list '(;;dashboard-insert-banner
+                               ;;dashboard-insert-banner-title
+                               ;;(lambda () (delete-char -1))
                                dashboard-insert-items
                                dashboard-insert-init-info))
   :config
@@ -402,7 +402,7 @@
   ((c-mode c-ts-mode) . eglot-ensure)
   ((c++-mode c++-ts-mode) . eglot-ensure)
   ((lisp-mode emacs-lisp-mode) . eglot-ensure)
-  ;;((python-mode python-ts-mode) . eglot-ensure)
+  ((python-mode python-ts-mode) . eglot-ensure)
   :config
   (setq eglot-autoshutdown t)
   ;; Add server here
@@ -418,7 +418,7 @@
    ;;   "--noinform"
    ;;   "--eval" "ql:quickload \"alive-lsp\""
    ;;   "--eval" "(alive/server::start :port 8006)")
-   ;;'((python-mode python-ts-mode) "pyls")
+   '((python-mode python-ts-mode) "pylsp")
    ))
 
 (use-package flymake
