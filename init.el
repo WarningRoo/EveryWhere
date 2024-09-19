@@ -66,12 +66,16 @@
 (setq-default indent-tabs-mode nil)
 (setq tab-width 4)
 (set-input-method 'TeX)
-(display-time)
 (setq use-dialog-box nil)
 (global-hl-line-mode 0)
 (global-auto-revert-mode t)
 (setq global-auto-revert-non-file-buffers t)
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
+
+;;; Modeline
+;; Date & Time
+(display-time)
+(setq display-time-day-and-date t)
 
 ;; Display the column indicator
 (setq-default fill-column 80)
@@ -85,7 +89,7 @@
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
-(add-hook 'prog-mode-hook 'hs-minor-mode)
+(add-hook 'prog-mode-hook #'hs-minor-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
 
 ;;; Keybindings
