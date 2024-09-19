@@ -98,6 +98,10 @@
 (defalias 'scroll-up-command 'pixel-scroll-interpolate-down)
 (defalias 'scroll-down-command 'pixel-scroll-interpolate-up)
 
+;; Scroll line
+(global-set-key (kbd "M-p") 'scroll-down-line)
+(global-set-key (kbd "M-n") 'scroll-up-line)
+
 ;; move window
 ;; S-M-<right/left/up/down>
 (windmove-swap-states-default-keybindings '(shift meta))
@@ -159,7 +163,6 @@
 
 (use-package all-the-icons
   :if (display-graphic-p))
-
 
 (use-package dashboard
   :custom
@@ -368,11 +371,9 @@
   :hook (company-mode . company-box-mode))
 
 ;; theme
-(use-package dracula-theme
+(use-package modus-themes
   :config
-  ;;(load-theme 'wombat t)
-  (load-theme 'dracula t))
-
+  (load-theme 'modus-vivendi-tinted t))
 
 (use-package rich-minority
   :init
@@ -393,6 +394,7 @@
   :bind ("<f8>" . neotree-toggle)
   :config
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-window-width 30)
   (setq neo-smart-open t)
   (setq neo-autorefresh t))
 
@@ -425,8 +427,8 @@
   :custom
   (flymake-mode-line-lighter "F")
   :hook (prog-mode . flymake-mode)
-  :bind (("M-n" . flymake-goto-next-error)
-         ("M-p" . flymake-goto-prev-error)))
+  :bind (("C-M-n" . flymake-goto-next-error)
+         ("C-M-p" . flymake-goto-prev-error)))
 
 (use-package treesit-auto
   :if (eq system-type 'gnu/linux)
