@@ -68,11 +68,12 @@
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
 (global-hl-line-mode 0)
+
+;; auto-revert
 (global-auto-revert-mode t)
 (setq global-auto-revert-non-file-buffers t)
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
 
-;;; Modeline
 ;; Date & Time
 (display-time)
 (setq display-time-day-and-date t)
@@ -448,6 +449,11 @@
   :ensure auctex)
 
 (use-package cdlatex)
+
+;;; Markdown
+(use-package markdown-mode
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown"))
 
 ;;; org-mode
 (defvar *dir-of-org* "~/Documents/Knowing/")
