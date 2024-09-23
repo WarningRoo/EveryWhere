@@ -50,7 +50,7 @@
 (add-hook 'server-after-make-frame-hook #'qu/font-setup)
 
 ;;; BASIC
-(setq inhibit-startup-message t)
+(setq inhibit-startup-screen t)
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
 (setq eww-search-prefix "https://cn.bing.com/search?q=")
@@ -173,7 +173,7 @@
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-  (dashboard-banner-logo-title "Practice")
+  (dashboard-banner-logo-title "Practicing & Thinking")
   ;; Agenda
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
@@ -181,6 +181,7 @@
   (dashboard-agenda-prefix-format " ")
   ;; Homepage
   (dashboard-items '((recents  . 5)
+                     (bookmarks . 5)
                      (projects . 5)
                      (agenda   . 10)))
   (dashboard-startupify-list '(;;dashboard-insert-banner
@@ -387,7 +388,8 @@
   (setq rm-blacklist
         (format "^ \\(%s\\)$"
                 (mapconcat #'identity
-                           '("company" "Abbrev" "Eldoc" "org-roam-ui" "company-box" "hs" "Wrap")
+                           '("company" "Abbrev" "Eldoc" "org-roam-ui"
+                             "company-box" "hs" "Wrap")
                            "\\|"))))
 
 (use-package project
@@ -399,7 +401,6 @@
   :bind ("<f8>" . neotree-toggle)
   :config
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-  (setq neo-window-width 30)
   (setq neo-smart-open t)
   (setq neo-autorefresh t))
 
