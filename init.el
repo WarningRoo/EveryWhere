@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+;; require
+(require 'cl-lib)
+
 ;; Move customization variables to a separate file and load it
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
 (load custom-file 'noerror 'nomessage)
@@ -20,7 +23,7 @@
   (find-font (font-spec :name font-name)))
 
 (defun qu/font-setup ()
-  "Setup fonts."
+  "Font setup."
   ;; Set default font
   (cl-loop for font in '("Jetbrains Mono" "Consolas")
            when (font-installed-p font)
