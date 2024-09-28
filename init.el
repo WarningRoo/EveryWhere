@@ -30,7 +30,7 @@
            return (set-face-attribute 'default nil
                                       :font (font-spec :family font
                                                        :weight 'Regular
-                                                       :size 20)))
+                                                       :size 16)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
@@ -185,8 +185,8 @@
   ;; Homepage
   (dashboard-items '((recents  . 5)
                      (bookmarks . 5)
-                     (projects . 5)
-                     (agenda   . 10)))
+                     ;;(projects . 5)
+                     (agenda   . 20)))
   (dashboard-startupify-list '(;;dashboard-insert-banner
                                ;;dashboard-insert-banner-title
                                ;;(lambda () (delete-char -1))
