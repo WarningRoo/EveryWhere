@@ -64,10 +64,11 @@
 (scroll-bar-mode -1)
 (setq history-length 25)
 (setq-default indent-tabs-mode nil)
-(setq tab-width 4)
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
 (global-hl-line-mode 0)
+(setq tab-width 4)
+(setq c-ts-mode-indent-offset 4)
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -108,8 +109,8 @@
 (global-set-key (kbd "M-n") 'scroll-up-line)
 
 ;; move window
-;; S-M-<right/left/up/down>
-(windmove-swap-states-default-keybindings '(shift meta))
+;; C-S-<right/left/up/down>
+(windmove-swap-states-default-keybindings '(ctrl shift))
 
 ;; ABOUT Package
 (eval-when-compile (require 'use-package))
@@ -173,7 +174,7 @@
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-  (dashboard-banner-logo-title "Practicing & Thinking")
+  ;;(dashboard-banner-logo-title "Practicing & Thinking")
   ;; Agenda
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
@@ -183,7 +184,8 @@
   (dashboard-items '((recents  . 10)
                      (bookmarks . 5)
                      ;;(projects . 5)
-                     (agenda   . 20)))
+                     (agenda   . 10)
+                     ))
   (dashboard-startupify-list '(;;dashboard-insert-banner
                                ;;dashboard-insert-banner-title
                                ;;(lambda () (delete-char -1))
