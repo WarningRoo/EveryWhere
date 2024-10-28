@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+;; Require
+(require 'cl-lib)
+
 ;; Move customization variables to a separate file and load it
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
 (load custom-file 'noerror 'nomessage)
@@ -48,6 +51,19 @@
 (qu/font-setup)
 (add-hook 'window-setup-hook #'qu/font-setup)
 (add-hook 'server-after-make-frame-hook #'qu/font-setup)
+
+;; Open FILE as root
+(defun sudo-find-file (file)
+  "Open FILE as root."
+  (interactive "FOpen file as root: ")
+  (when (file-writable-p file)
+    (user-error "File is user writeable, aborting sudo"))
+  (find-file (if (file-remote-p file)
+                 (concat "/" (file-remote-p file 'method) ":"
+                         (file-remote-p file 'user) "@" (file-remote-p file 'host)
+                         "|sudo:root@"
+                         (file-remote-p file 'host) ":" (file-remote-p file 'localname))
+               (concat "/sudo:root@localhost:" file))))
 
 ;;; BASIC
 (setq inhibit-startup-screen t)
@@ -181,10 +197,10 @@
   (dashboard-agenda-sort-strategy '(priority-down))
   (dashboard-agenda-prefix-format " ")
   ;; Homepage
-  (dashboard-items '((recents  . 10)
+  (dashboard-items '((recents . 10)
                      (bookmarks . 5)
                      ;;(projects . 5)
-                     (agenda   . 10)
+                     (agenda . 10)
                      ))
   (dashboard-startupify-list '(;;dashboard-insert-banner
                                ;;dashboard-insert-banner-title
@@ -445,6 +461,15 @@
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
+
+(use-package dogears
+  :bind
+  (:map global-map
+        ("M-g d" . dogears-go)
+        ("M-g M-b" . dogears-back)
+        ("M-g M-f" . dogears-forward)
+        ("M-g M-d" . dogears-list)
+        ("M-g M-D" . dogears-sidebar)))
 
 ;;; LaTeX
 (use-package latex
