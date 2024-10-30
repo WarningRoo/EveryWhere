@@ -27,10 +27,10 @@
   ;; Set default font
   (cl-loop for font in '("Jetbrains Mono" "Consolas")
            when (font-installed-p font)
-           return (set-face-attribute 'default nil
-                                      :font (font-spec :family font
-                                                       :weight 'Regular
-                                                       :size 16)))
+           return (dolist (face '(fixed-pitch default))
+                    (set-face-attribute face nil :font (font-spec :family font
+                                                                  :weight 'Regular
+                                                                  :size 16))))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
@@ -353,10 +353,10 @@
   )
 
 (use-package embark
-  :bind  (("C-." . embark-act)         ;; pick some comfortable binding
-          ("C-;" . embark-dwim)        ;; good alternative: M-.
+  :bind  (("C-." . embark-act)
+          ("C-;" . embark-dwim)
+          ("C-'" . embark-act-all)
           ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
   :init
 
   ;; Optionally replace the key help with a completing-read interface
