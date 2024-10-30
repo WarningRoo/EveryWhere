@@ -27,10 +27,9 @@
   ;; Set default font
   (cl-loop for font in '("Jetbrains Mono" "Consolas")
            when (font-installed-p font)
-           return (dolist (face '(fixed-pitch default))
-                    (set-face-attribute face nil :font (font-spec :family font
-                                                                  :weight 'Regular
-                                                                  :size 16))))
+           return (set-face-attribute 'default nil :font (font-spec :family font
+                                                                    :weight 'Regular
+                                                                    :size 16)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
@@ -501,18 +500,7 @@
     (set-face-attribute 'org-level-5 nil :height 1.1)
     (set-face-attribute 'org-level-6 nil :height 1.1)
     (set-face-attribute 'org-level-7 nil :height 1.1)
-    (set-face-attribute 'org-level-8 nil :height 1.1))
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-special-keyword nil
-                      :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil
-                      :inherit '(font-lock-comment-face fixed-pitch)))
+    (set-face-attribute 'org-level-8 nil :height 1.1)))
 
 (use-package org
   :hook
