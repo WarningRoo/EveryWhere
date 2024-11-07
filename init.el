@@ -84,6 +84,7 @@
 (global-hl-line-mode 0)
 (setq tab-width 4)
 (setq c-ts-mode-indent-offset 4)
+(set-frame-parameter nil 'alpha 0.89)
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -356,7 +357,6 @@
           ("C-;" . embark-dwim)
           ("C-'" . embark-act-all)
           ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
 
@@ -541,8 +541,8 @@
   ;;			("IDEA" . ?i)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
   (setq org-agenda-custom-commands
-        '(("n" "Now you are doing." todo "NOW")
-          ("f" "Maybe someday" todo "FUTURE")))
+        '(("n" "Currently in progress." todo "NOW")
+          ("f" "Low priority, maybe later." todo "FUTURE")))
 
   (setq org-capture-templates
         `(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org")) "* TODO %?\n  %T\n" :prepend t)
