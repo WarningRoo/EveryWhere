@@ -84,7 +84,7 @@
 (global-hl-line-mode 0)
 (setq tab-width 4)
 (setq c-ts-mode-indent-offset 4)
-(set-frame-parameter nil 'alpha 0.89)
+(set-frame-parameter nil 'alpha 1.00)
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -133,7 +133,7 @@
 (use-package package
   :config
   (setq use-package-always-ensure t)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
@@ -170,10 +170,6 @@
           compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
-
-(use-package solaire-mode
-  :config
-  (solaire-global-mode +1))
 
 (use-package exec-path-from-shell
   :after eshell
@@ -385,9 +381,10 @@
   :hook (company-mode . company-box-mode))
 
 ;; theme
-(use-package modus-themes
-  :config
-  (load-theme 'modus-vivendi-tinted t))
+(use-package modus-themes :disabled)
+(use-package doom-themes)
+
+(load-theme 'doom-monokai-pro t)
 
 (use-package rich-minority
   :init
@@ -559,6 +556,8 @@
 (use-package org-contrib)
 
 (use-package org-roam
+  :init
+  (setq org-roam-database-connector 'sqlite-builtin)
   :custom
   (org-roam-directory (concat org-directory "roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
