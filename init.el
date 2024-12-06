@@ -154,6 +154,10 @@
                     "moonshot-v1-128k")
           :host "api.moonshot.cn")))
 
+(use-package copilot-chat
+  :config
+  (setq copilot-chat-frontend 'org))
+
 (use-package popper
   :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
