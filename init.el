@@ -388,18 +388,13 @@
 (use-package modus-themes :disabled)
 (use-package doom-themes)
 
-(load-theme 'doom-monokai-pro t)
+(load-theme 'doom-material-dark t)
 
-(use-package rich-minority
-  :init
-  (rich-minority-mode 1)
+(use-package doom-modeline
+  :hook
+  (after-init . doom-modeline-mode)
   :config
-  (setq rm-blacklist
-        (format "^ \\(%s\\)$"
-                (mapconcat #'identity
-                           '("company" "Abbrev" "Eldoc" "org-roam-ui"
-                             "company-box" "hs" "Wrap")
-                           "\\|"))))
+  (setq doom-modeline-project-name t))
 
 (use-package project
   :config
