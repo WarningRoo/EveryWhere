@@ -183,8 +183,7 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-(use-package all-the-icons
-  :if (display-graphic-p))
+(use-package nerd-icons)
 
 (use-package dashboard
   :custom
@@ -391,6 +390,8 @@
 (load-theme 'doom-material-dark t)
 
 (use-package doom-modeline
+  :init
+  (setq doom-modeline-support-imenu t)
   :hook
   (after-init . doom-modeline-mode)
   :config
@@ -400,13 +401,19 @@
   :config
   (setq project-vc-extra-root-markers '("INSTALL" "COPYING" "LICENSE")))
 
-(use-package neotree
-  :after project
-  :bind ("<f8>" . neotree-toggle)
-  :config
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-  (setq neo-smart-open t)
-  (setq neo-autorefresh t))
+(use-package treemacs
+  :bind
+  (:map global-map
+        ("<f8>"      . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-magit
+  :after (treemacs magit))
 
 ;; eglot lsp related
 (use-package eglot
