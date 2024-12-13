@@ -81,7 +81,6 @@
 (setq-default indent-tabs-mode nil)
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
-(global-hl-line-mode 0)
 (setq tab-width 4)
 (setq c-ts-mode-indent-offset 4)
 (set-frame-parameter nil 'alpha 1.00)
@@ -141,6 +140,14 @@
   :disabled
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
+(use-package hl-line
+  :hook
+  (after-init . global-hl-line-mode)
+  :config
+  (setq hl-line-range-function (lambda ()
+                                 (cons (line-end-position)
+                                       (line-beginning-position 2)))))
 
 (use-package gptel
   :config
@@ -392,10 +399,11 @@
 (use-package doom-modeline
   :init
   (setq doom-modeline-support-imenu t)
+  :custom
+  (doom-modeline-project-name t)
+  (doom-modeline-hud t)
   :hook
-  (after-init . doom-modeline-mode)
-  :config
-  (setq doom-modeline-project-name t))
+  (after-init . doom-modeline-mode))
 
 (use-package project
   :config
