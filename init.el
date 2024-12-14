@@ -391,10 +391,13 @@
   :hook (company-mode . company-box-mode))
 
 ;; theme
-(use-package modus-themes :disabled)
-(use-package doom-themes)
+(use-package modus-themes
+  :config
+  (setq modus-themes-common-palette-overrides
+        `((border-mode-line-active unspecified)
+          (border-mode-line-inactive unspecified))))
 
-(load-theme 'doom-material-dark t)
+(load-theme 'modus-vivendi-tinted t)
 
 (use-package doom-modeline
   :init
