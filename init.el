@@ -220,12 +220,6 @@
   :bind (("C-a" . mwim-beginning-of-code-or-line)
          ("C-e" . mwim-end-of-code-or-line)))
 
-(use-package highlight-symbol
-  :bind ("<f9>" . highlight-symbol))
-
-(use-package magit
-  :defer t)
-
 (use-package google-translate
   :custom
   (google-translate-default-source-language "en")
@@ -411,6 +405,12 @@
 (use-package project
   :config
   (setq project-vc-extra-root-markers '("INSTALL" "COPYING" "LICENSE")))
+
+(use-package highlight-symbol
+  :bind ("<f9>" . highlight-symbol))
+
+(use-package magit
+  :defer t)
 
 (use-package treemacs
   :bind
