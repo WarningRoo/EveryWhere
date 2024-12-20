@@ -162,6 +162,7 @@
           :host "api.moonshot.cn")))
 
 (use-package copilot-chat
+  :defer t
   :config
   (setq copilot-chat-frontend 'org))
 
