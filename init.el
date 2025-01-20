@@ -29,7 +29,7 @@
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
-                                                                    :size 16)))
+                                                                    :size 15)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
