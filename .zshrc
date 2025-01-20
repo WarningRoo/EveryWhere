@@ -5,11 +5,14 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# SOME userful configuration
+export LESS=FR
+WORDCHARS=${WORDCHARS//\//}
+
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
-WORDCHARS=${WORDCHARS//\//}
 bindkey -e
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
