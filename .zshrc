@@ -35,6 +35,7 @@ autoload -Uz _zinit
 # PLUGINS
 zinit load zsh-users/zsh-autosuggestions
 zinit load zsh-users/zsh-syntax-highlighting
+zinit load rupa/z
 
 zinit ice depth"1"
 zinit light romkatv/powerlevel10k
