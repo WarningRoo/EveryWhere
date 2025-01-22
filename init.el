@@ -25,7 +25,7 @@
 (defun qu/font-setup ()
   "Font setup."
   ;; Set default font
-  (cl-loop for font in '("Jetbrains Mono" "Consolas")
+  (cl-loop for font in '("MesloLGS NF" "Jetbrains Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
@@ -605,6 +605,10 @@
   (org-mode . (lambda () (setq visual-fill-column-width 110
                                visual-fill-column-center-text t)
                 (visual-fill-column-mode 1))))
+
+(use-package valign
+  :hook
+  (org-mode . valign-mode))
 
 (use-package adaptive-wrap
   :hook (org-mode . (lambda () (adaptive-wrap-prefix-mode 1))))
