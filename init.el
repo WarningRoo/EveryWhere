@@ -25,7 +25,7 @@
 (defun qu/font-setup ()
   "Font setup."
   ;; Set default font
-  (cl-loop for font in '("MesloLGS NF" "Jetbrains Mono" "Consolas")
+  (cl-loop for font in '("SF Mono" "MesloLGS NF" "Jetbrains Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
@@ -195,7 +195,7 @@
 
 (use-package dashboard
   :custom
-  (dashboard-center-content t)
+  ;; (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
   ;;(dashboard-banner-logo-title "Practicing & Thinking")
   ;; Agenda
@@ -209,11 +209,13 @@
                      ;;(projects . 5)
                      (agenda . 10)
                      ))
-  (dashboard-startupify-list '(;;dashboard-insert-banner
+  (dashboard-startupify-list '(dashboard-insert-banner
                                ;;dashboard-insert-banner-title
                                ;;(lambda () (delete-char -1))
                                dashboard-insert-items
-                               dashboard-insert-init-info))
+                               ;;dashboard-insert-init-info
+                               dashboard-insert-footer
+                               ))
   :config
   (dashboard-setup-startup-hook))
 
