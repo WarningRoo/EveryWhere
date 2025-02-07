@@ -29,7 +29,7 @@
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
-                                                                    :size 15)))
+                                                                    :size 18)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
@@ -141,6 +141,46 @@
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  :custom
+  (dirvish-quick-access-entries
+   '(("h" "~/"           "Home")
+     ("d" "~/Downloads/" "Downloads")
+     ("c" "~/Documents/" "Documents")
+     ("r" "~/Repo/"      "Repo")))
+  :config
+  (dirvish-side-follow-mode)
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  (setq dirvish-attributes
+        '(nerd-icons file-time file-size collapse subtree-state vc-state git-msg))
+  (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --group-directories-first --no-group")
+  :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
+  (("<f8>"  . dirvish-side)
+   ("C-c f" . dirvish-fd)
+   :map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
+   ("a"   . dirvish-quick-access)
+   ("f"   . dirvish-file-info-menu)
+   ("y"   . dirvish-yank-menu)
+   ("N"   . dirvish-narrow)
+   ("^"   . dirvish-history-last)
+   ("h"   . dirvish-history-jump) ; remapped `describe-mode'
+   ("s"   . dirvish-quicksort)    ; remapped `dired-sort-toggle-or-edit'
+   ("v"   . dirvish-vc-menu)      ; remapped `dired-view-file'
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-l" . dirvish-ls-switches-menu)
+   ("M-m" . dirvish-mark-menu)
+   ("M-t" . dirvish-layout-toggle)
+   ("M-s" . dirvish-setup-menu)
+   ("M-e" . dirvish-emerge-menu)
+   ("M-j" . dirvish-fd-jump)))
+
 (use-package hl-line
   :hook
   (after-init . global-hl-line-mode)
@@ -211,7 +251,7 @@
                      ))
   (dashboard-startupify-list '(dashboard-insert-banner
                                ;;dashboard-insert-banner-title
-                               ;;(lambda () (delete-char -1))
+                               (lambda () (delete-char -1))
                                dashboard-insert-items
                                ;;dashboard-insert-init-info
                                dashboard-insert-footer
@@ -414,20 +454,6 @@
 
 (use-package magit
   :defer t)
-
-(use-package treemacs
-  :bind
-  (:map global-map
-        ("<f8>"      . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
-
-(use-package treemacs-magit
-  :after (treemacs magit))
 
 ;; eglot lsp related
 (use-package eglot
