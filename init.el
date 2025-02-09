@@ -584,7 +584,8 @@
   ;;			("IDEA" . ?i)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
   (setq org-agenda-custom-commands
-        '(("n" "Currently in progress." todo "NOW")
+        '(("t" "TODO" todo "TODO")
+          ("n" "Currently in progress." todo "NOW")
           ("f" "Low priority, maybe later." todo "FUTURE")))
 
   (setq org-capture-templates
