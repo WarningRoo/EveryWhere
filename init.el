@@ -235,9 +235,7 @@
 
 (use-package dashboard
   :custom
-  ;; (dashboard-center-content t)
-  (dashboard-startup-banner 'logo)
-  ;;(dashboard-banner-logo-title "Practicing & Thinking")
+  (dashboard-center-content t)
   ;; Agenda
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
@@ -245,17 +243,9 @@
   (dashboard-agenda-prefix-format " ")
   ;; Homepage
   (dashboard-items '((recents . 10)
-                     (bookmarks . 5)
-                     ;;(projects . 5)
-                     (agenda . 10)
-                     ))
-  (dashboard-startupify-list '(dashboard-insert-banner
-                               ;;dashboard-insert-banner-title
-                               (lambda () (delete-char -1))
-                               dashboard-insert-items
-                               ;;dashboard-insert-init-info
-                               dashboard-insert-footer
-                               ))
+                     (bookmarks . 10)
+                     (agenda . 10)))
+  (dashboard-startupify-list '(dashboard-insert-items))
   :config
   (dashboard-setup-startup-hook))
 
@@ -428,12 +418,6 @@
   :hook (company-mode . company-box-mode))
 
 ;; theme
-(use-package modus-themes
-  :config
-  (setq modus-themes-common-palette-overrides
-        `((border-mode-line-active unspecified)
-          (border-mode-line-inactive unspecified))))
-
 (load-theme 'modus-vivendi-tinted t)
 
 (use-package doom-modeline
@@ -584,9 +568,10 @@
   ;;			("IDEA" . ?i)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
   (setq org-agenda-custom-commands
-        '(("t" "TODO" todo "TODO")
-          ("n" "Currently in progress." todo "NOW")
-          ("f" "Low priority, maybe later." todo "FUTURE")))
+        '(("0" "All needed to to" todo "TODO|NOW|FUTURE")
+          ("1" "TODO" todo "TODO")
+          ("2" "Currently in progress." todo "NOW")
+          ("3" "Low priority, maybe later." todo "FUTURE")))
 
   (setq org-capture-templates
         `(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org")) "* TODO %?\n  %T\n" :prepend t)
@@ -629,7 +614,6 @@
   (org-roam-ui-open-on-start t))
 
 (use-package visual-fill-column
-  :disabled
   :hook
   (org-mode . (lambda () (setq visual-fill-column-width 110
                                visual-fill-column-center-text t)
