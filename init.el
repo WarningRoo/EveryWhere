@@ -25,7 +25,7 @@
 (defun qu/font-setup ()
   "Font setup."
   ;; Set default font
-  (cl-loop for font in '("SF Mono" "MesloLGS NF" "Jetbrains Mono" "Consolas")
+  (cl-loop for font in '("Monaco" "Monaco Nerd Font" "SF Mono" "MesloLGS NF" "Jetbrains Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
@@ -426,6 +426,7 @@
   :custom
   (doom-modeline-project-name t)
   (doom-modeline-hud t)
+  (doom-modeline-time-icon nil)
   :hook
   (after-init . doom-modeline-mode))
 
