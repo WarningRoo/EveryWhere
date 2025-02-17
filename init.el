@@ -25,7 +25,7 @@
 (defun qu/font-setup ()
   "Font setup."
   ;; Set default font
-  (cl-loop for font in '("Monaco" "Monaco Nerd Font" "SF Mono" "MesloLGS NF" "Jetbrains Mono" "Consolas")
+  (cl-loop for font in '("Jetbrains Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
@@ -188,18 +188,6 @@
   (setq hl-line-range-function (lambda ()
                                  (cons (line-end-position)
                                        (line-beginning-position 2)))))
-
-(use-package gptel
-  :config
-  (setq gptel-model "moonshot-v1-8k")
-  (setq gptel-default-mode 'org-mode)
-  (setq gptel-backend
-        (gptel-make-openai "Moonshot"
-          :key 'gptel-api-key
-          :models '("moonshot-v1-8k"
-                    "moonshot-v1-32k"
-                    "moonshot-v1-128k")
-          :host "api.moonshot.cn")))
 
 (use-package copilot-chat
   :defer t
