@@ -159,10 +159,10 @@
   (setq delete-by-moving-to-trash t)
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group")
-  :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
-  (("<f8>"  . dirvish-side)
-   ("C-c f" . dirvish-fd)
-   :map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
+  :bind
+  (("C-c f" . dirvish)
+   :map dirvish-mode-map          ; Dirvish inherits `dired-mode-map'
+   ("?"   . dirvish-dispatch)     ; contains most of sub-menus in dirvish extensions
    ("a"   . dirvish-quick-access)
    ("f"   . dirvish-file-info-menu)
    ("y"   . dirvish-yank-menu)
@@ -224,6 +224,10 @@
 (use-package dashboard
   :custom
   (dashboard-center-content t)
+  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
   ;; Agenda
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-match-agenda-entry "+TODO=\"NOW\"")
@@ -231,8 +235,7 @@
   (dashboard-agenda-prefix-format " ")
   ;; Homepage
   (dashboard-items '((recents . 10)
-                     (bookmarks . 10)
-                     (agenda . 10)))
+                     (bookmarks . 10)))
   (dashboard-startupify-list '(dashboard-insert-items))
   :config
   (dashboard-setup-startup-hook))
@@ -394,8 +397,11 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package consult-eglot)
+(use-package consult-eglot
+  :after eglot)
+
 (use-package consult-eglot-embark
+  :after eglot
   :init
   (consult-eglot-embark-mode))
 
