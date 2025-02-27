@@ -10,9 +10,23 @@ export LESS=FR
 WORDCHARS=${WORDCHARS//\//}
 
 # Lines configured by zsh-newuser-install
-HISTFILE=~/.histfile
+HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000
 SAVEHIST=10000
+setopt APPEND_HISTORY
+setopt SHARE_HISTORY
+
+# Alias
+alias ls='ls --color=auto'
+alias ll='ls -l'
+alias la='ls -a'
+alias lla='ls -la'
+alias ..='cd ..'
+alias .2='cd ../..'
+alias .3='cd ../../../'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+
 bindkey -e
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall

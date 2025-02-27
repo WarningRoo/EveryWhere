@@ -1,7 +1,6 @@
-;;; init.el -- init.el
+;;; init.el --- A Practical and Fast Emacs Configuration. -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Less is more
 
 ;;; Code:
 
@@ -411,9 +410,7 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
-;; theme
-(load-theme 'modus-vivendi-tinted t)
-
+;; modeline
 (use-package doom-modeline
   :init
   (setq doom-modeline-support-imenu t)
@@ -423,6 +420,9 @@
   (doom-modeline-time-icon nil)
   :hook
   (after-init . doom-modeline-mode))
+
+;; theme
+(load-theme 'modus-vivendi-tinted t)
 
 (use-package project
   :config
