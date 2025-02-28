@@ -12,10 +12,6 @@
 (load custom-file 'noerror 'nomessage)
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;; Face
-(set-fringe-mode 8)
-(setq default-frame-alist '((width . 100) (height . 46)))
-
 ;; Fonts
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
@@ -82,7 +78,8 @@
 (setq use-dialog-box nil)
 (setq tab-width 4)
 (setq c-ts-mode-indent-offset 4)
-(set-frame-parameter nil 'alpha 1.00)
+(set-frame-parameter nil 'alpha 0.90)
+(setq default-frame-alist '((width . 100) (height . 46)))
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -223,6 +220,8 @@
 (use-package dashboard
   :custom
   (dashboard-center-content t)
+  (dashboard-startup-banner 3)
+  ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
   (dashboard-set-heading-icons t)
@@ -235,7 +234,9 @@
   ;; Homepage
   (dashboard-items '((recents . 10)
                      (bookmarks . 10)))
-  (dashboard-startupify-list '(dashboard-insert-items))
+  (dashboard-startupify-list '(dashboard-insert-banner
+                               dashboard-insert-items
+                               dashboard-insert-footer))
   :config
   (dashboard-setup-startup-hook))
 
@@ -286,12 +287,12 @@
          ([remap Info-search] . consult-info)
          ;; C-x bindings in `ctl-x-map'
          ;;!("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-         ;;!("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-         ;;!("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-         ;;!("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ;;!("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
-         ;;!("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-         ;;!("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ("C-x b" . consult-buffer)
+         ("C-x 4 b" . consult-buffer-other-window)
+         ("C-x 5 b" . consult-buffer-other-frame)
+         ("C-x t b" . consult-buffer-other-tab)
+         ("C-x r b" . consult-bookmark)
+         ("C-x p b" . consult-project-buffer)
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
          ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
@@ -309,7 +310,8 @@
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
          ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s d" . consult-find)
+         ;; ("M-s d" . consult-fd)
          ;;!("M-s c" . consult-locate)
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
@@ -369,17 +371,13 @@
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
   (setq consult-narrow-key "<") ;; "C-+"
-
-  ;; Optionally make narrowing help available in the minibuffer.
-  ;; You may want to use `embark-prefix-help-command' or which-key instead.
-  ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
   )
 
 (use-package embark
   :bind  (("C-." . embark-act)
           ("C-;" . embark-dwim)
           ("C-'" . embark-act-all)
-          ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+          ("C-h B" . embark-bindings))
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
 
