@@ -420,7 +420,7 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-(load-theme 'modus-vivendi-tinted t)
+(load-theme 'modus-vivendi t)
 
 (use-package project
   :config
