@@ -238,6 +238,9 @@
                                dashboard-insert-items
                                dashboard-insert-footer))
   :config
+  (setq dashboard-bookmarks-show-base nil)
+  (setq dashboard-recentf-show-base t)
+  (setq dashboard-recentf-item-format "%s")
   (dashboard-setup-startup-hook))
 
 (use-package mwim
@@ -420,7 +423,7 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-(load-theme 'modus-vivendi t)
+(load-theme 'modus-vivendi-tinted t)
 
 (use-package project
   :config
