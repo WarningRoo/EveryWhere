@@ -71,7 +71,6 @@
 (delete-selection-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-(scroll-bar-mode -1)
 (setq history-length 25)
 (setq-default indent-tabs-mode nil)
 (set-input-method 'TeX)
@@ -80,6 +79,10 @@
 (setq c-ts-mode-indent-offset 4)
 (set-frame-parameter nil 'alpha 0.90)
 (setq default-frame-alist '((width . 100) (height . 46)))
+
+;; GUI only
+(when (display-graphic-p)
+  (scroll-bar-mode -1))
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -235,6 +238,7 @@
   (dashboard-items '((recents . 10)
                      (bookmarks . 10)))
   (dashboard-startupify-list '(dashboard-insert-banner
+                               dashboard-insert-init-info
                                dashboard-insert-items
                                dashboard-insert-footer))
   :config
@@ -304,7 +308,7 @@
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ;; M-g bindings in `goto-map'
          ("M-g e" . consult-compile-error) ;; Cycling between compile error(s)/warning(s)
-         ("M-g f" . consult-flymake) ;; Cycling between flymake results
+         ("M-g f" . consult-flymake)
          ("M-g g" . consult-goto-line)             ;; orig. goto-line
          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
          ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
