@@ -76,7 +76,6 @@
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
 (setq tab-width 4)
-(setq c-ts-mode-indent-offset 4)
 (set-frame-parameter nil 'alpha 0.90)
 (setq default-frame-alist '((width . 100) (height . 46)))
 
@@ -561,12 +560,9 @@
   (require 'org-capture)
 
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
-  ;; (setq org-tag-alist '((:startgroup . nil)
-  ;;			;; Put mutually exclusive tags here
-  ;;			(:endgroup . nil)
-  ;;			("RNOW" . ?r)
-  ;;			("IDEA" . ?i)))
-  (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "|" "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)"
+                                      "|"
+                                      "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
   (setq org-agenda-custom-commands
         '(("0" "All needed to to" todo "TODO|NOW|FUTURE")
           ("1" "TODO" todo "TODO")
@@ -574,8 +570,10 @@
           ("3" "Low priority, maybe later." todo "FUTURE")))
 
   (setq org-capture-templates
-        `(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org")) "* TODO %?\n  %T\n" :prepend t)
-          ("i" "Idea" entry (file ,(concat org-directory "agenda/ideas.org")) "* %T\n" :prepend t)))
+        `(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org"))
+           "* TODO %?\n  %T\n" :prepend t)
+          ("i" "Idea" entry (file ,(concat org-directory "agenda/ideas.org"))
+           "* %T\n" :prepend t)))
 
   (qu/org-font-setup)
 
