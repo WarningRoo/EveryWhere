@@ -27,7 +27,7 @@
                                                                     :size 18)))
 
   ;; Specify font for all unicode characters
-  (cl-loop for font in '("Jetbrains Mono" "Segoe UI Symbol" "Symbola" "Symbol")
+  (cl-loop for font in '("Symbols Nerd Fonts Mono" "Segoe UI Symbol" "Symbola" "Symbol")
            when (font-installed-p font)
            return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
 
