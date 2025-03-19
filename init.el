@@ -198,7 +198,7 @@
          ("C-M-`" . popper-toggle-type))
   :init
   (setq popper-reference-buffers
-        '("\\*Google Translate\\*"
+        '("\\*gt-result\\*"
           "\\*Messages\\*"
           "Output\\*$"
           "\\*Async Shell Command\\*"
@@ -250,16 +250,13 @@
   :bind (("C-a" . mwim-beginning-of-code-or-line)
          ("C-e" . mwim-end-of-code-or-line)))
 
-(use-package google-translate
-  :custom
-  (google-translate-default-source-language "en")
-  (google-translate-default-target-language "zh-CN")
-  (google-translate-output-destination nil)
-  (google-translate-show-phonetic t)
+(use-package go-translate
+  :bind (("C-c t" . gt-do-translate))
   :config
-  (require 'google-translate-smooth-ui)
-  :bind (("\C-ct" . google-translate-at-point)
-         ("\C-cT" . google-translate-query-translate)))
+  (setq gt-default-translator (gt-translator
+                               :taker   (gt-taker :langs '(en zh))
+                               :engines (list (gt-youdao-dict-engine))
+                               :render  (gt-buffer-render))))
 
 (use-package slime
   :defer t
