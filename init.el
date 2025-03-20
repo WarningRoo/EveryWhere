@@ -382,9 +382,8 @@
           ("C-'" . embark-act-all)
           ("C-h B" . embark-bindings))
   :init
-  (setq prefix-help-command #'embark-prefix-help-command)
-
   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  (setq prefix-help-command #'embark-prefix-help-command)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   :config
@@ -424,6 +423,10 @@
 
 ;; theme
 (load-theme 'modus-vivendi-tinted t)
+
+(use-package golden-ratio
+  :init
+  (golden-ratio-mode))
 
 (use-package project
   :config
