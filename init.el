@@ -134,6 +134,9 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package gcmh
+  :init (gcmh-mode 1))
+
 (use-package benchmark-init
   :disabled
   :config
