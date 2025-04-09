@@ -60,7 +60,6 @@
                (concat "/sudo:root@localhost:" file))))
 
 ;;; BASIC
-(setq inhibit-startup-screen t)
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
 (setq eww-search-prefix "https://cn.bing.com/search?q=")
@@ -428,6 +427,7 @@
 (load-theme 'modus-vivendi-tinted t)
 
 (use-package golden-ratio
+  :disabled
   :init
   (golden-ratio-mode))
 
