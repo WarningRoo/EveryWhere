@@ -141,6 +141,14 @@
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
+(use-package which-key
+  :init
+  (which-key-mode)
+  :config
+  (setq which-key-show-early-on-C-h t)
+  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-secondary-delay 0.05))
+
 (use-package dirvish
   :init
   (dirvish-override-dired-mode)
