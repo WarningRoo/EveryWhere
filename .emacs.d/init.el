@@ -387,16 +387,23 @@
   )
 
 (use-package embark
-  :bind  (("C-." . embark-act)
-          ("C-;" . embark-dwim)
-          ("C-'" . embark-act-all)
-          ("C-h B" . embark-bindings))
+  :bind
+  ("C-h B" . embark-bindings)
   :init
   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   (setq prefix-help-command #'embark-prefix-help-command)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   :config
+  (if (display-graphic-p)
+      (bind-keys
+       ("C-." . embark-act)
+       ("C-;" . embark-dwim)
+       ("C-'" . embark-act-all))
+    (bind-keys
+     ("C-c ." . embark-act)
+     ("C-c ;" . embark-dwim)
+     ("C-c '" . embark-act-all)))
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
