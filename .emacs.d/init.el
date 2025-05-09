@@ -129,6 +129,7 @@
 (use-package package
   :config
   (setq use-package-always-ensure t)
+  (setq package-install-upgrade-built-in t)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
@@ -484,6 +485,7 @@
 (use-package flymake
   :custom
   (flymake-mode-line-lighter "F")
+  (flymake-show-diagnostics-at-end-of-line 'short)
   :hook (prog-mode . flymake-mode)
   :bind (("C-M-n" . flymake-goto-next-error)
          ("C-M-p" . flymake-goto-prev-error)))
