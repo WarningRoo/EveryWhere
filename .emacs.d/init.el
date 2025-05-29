@@ -37,7 +37,7 @@
            return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
 
   ;; Specify font for Chinese characters
-  (cl-loop for font in '("Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
+  (cl-loop for font in '("LXGW WenKai Mono" "LXGW WenKai" "Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
            when (font-installed-p font)
            return (progn (set-fontset-font t 'cjk-misc (font-spec :family font))
                          (set-fontset-font t 'han (font-spec :family font)))))
@@ -77,6 +77,7 @@
 (setq tab-width 4)
 (set-frame-parameter nil 'alpha 0.90)
 (setq default-frame-alist '((width . 100) (height . 46)))
+(setq-default cursor-type 'bar)
 
 ;; GUI only
 (when (display-graphic-p)
@@ -103,7 +104,6 @@
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
-(add-hook 'prog-mode-hook #'hs-minor-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
 
 ;;; Keybindings
@@ -443,7 +443,6 @@
 (load-theme 'modus-vivendi-tinted t)
 
 (use-package golden-ratio
-  :disabled
   :init
   (golden-ratio-mode))
 
@@ -499,15 +498,19 @@
   (global-treesit-auto-mode))
 
 (use-package dogears
-  :bind
-  (:map global-map
-        ("M-g d" . dogears-go)
-        ("M-g M-b" . dogears-back)
-        ("M-g M-f" . dogears-forward)
-        ("M-g M-d" . dogears-list)
-        ("M-g M-D" . dogears-sidebar)))
+  :bind (:map global-map
+              ("M-g d" . dogears-go)
+              ("M-g M-b" . dogears-back)
+              ("M-g M-f" . dogears-forward)
+              ("M-g M-d" . dogears-list)
+              ("M-g M-D" . dogears-sidebar)))
 
-;;; LaTeX
+(use-package hideshow
+  :hook (prog-mode . hs-minor-mode)
+  :bind (:map hs-minor-mode-map
+              ("C-c h" . hs-toggle-hiding)))
+
+;;; Latex
 (use-package latex
   :defer t
   :ensure auctex)
@@ -604,6 +607,12 @@
   (require 'ob-makefile))
 
 (use-package org-contrib)
+
+(use-package org-download
+  :after org
+  :config
+  (setq org-download-method 'directory)
+  (setq org-download-image-dir "resource"))
 
 (use-package org-roam
   :init
