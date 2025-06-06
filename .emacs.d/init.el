@@ -440,7 +440,9 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-(load-theme 'modus-vivendi-tinted t)
+(use-package timu-caribbean-theme)
+
+(load-theme 'timu-caribbean t)
 
 (use-package golden-ratio
   :init
