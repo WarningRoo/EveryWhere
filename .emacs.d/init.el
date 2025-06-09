@@ -137,6 +137,12 @@
 (use-package gcmh
   :init (gcmh-mode 1))
 
+(use-package tab-bar
+  :init
+  (tab-bar-mode 1)
+  :bind (("<C-next>"  . tab-bar-switch-to-next-tab)
+         ("<C-prior>" . tab-bar-switch-to-prev-tab)))
+
 (use-package benchmark-init
   :disabled
   :config
@@ -486,7 +492,6 @@
 (use-package flymake
   :custom
   (flymake-mode-line-lighter "F")
-  (flymake-show-diagnostics-at-end-of-line 'short)
   :hook (prog-mode . flymake-mode)
   :bind (("C-M-n" . flymake-goto-next-error)
          ("C-M-p" . flymake-goto-prev-error)))
