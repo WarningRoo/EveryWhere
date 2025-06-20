@@ -612,7 +612,8 @@
   (require 'ob-lisp)
   (require 'ob-shell)
   (require 'ob-python)
-  (require 'ob-makefile))
+  (require 'ob-makefile)
+  (require 'ob-C))
 
 (use-package org-contrib)
 
