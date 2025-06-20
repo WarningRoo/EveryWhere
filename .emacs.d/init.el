@@ -451,6 +451,7 @@
 (load-theme 'timu-caribbean t)
 
 (use-package golden-ratio
+  :disabled
   :init
   (golden-ratio-mode))
 
