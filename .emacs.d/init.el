@@ -68,20 +68,20 @@
 (save-place-mode t)
 (recentf-mode t)
 (delete-selection-mode t)
-(tool-bar-mode -1)
 (menu-bar-mode -1)
 (setq history-length 25)
 (setq-default indent-tabs-mode nil)
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
-(setq tab-width 4)
+(setq tab-width 8)
 (set-frame-parameter nil 'alpha 0.90)
 (setq default-frame-alist '((width . 100) (height . 46)))
 (setq-default cursor-type 'bar)
 
 ;; GUI only
 (when (display-graphic-p)
-  (scroll-bar-mode -1))
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1))
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -134,14 +134,19 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package gdb-mi
+  :config
+  (setq gdb-many-windows t)
+  (setq gdb-show-main t))
+
+(use-package tramp
+  :config
+  (setq remote-file-name-inhibit-locks t
+	tramp-use-scp-direct-remote-copying t
+	remote-file-name-inhibit-auto-save-visited t))
+
 (use-package gcmh
   :init (gcmh-mode 1))
-
-(use-package tab-bar
-  :init
-  (tab-bar-mode 1)
-  :bind (("<C-next>"  . tab-bar-switch-to-next-tab)
-         ("<C-prior>" . tab-bar-switch-to-prev-tab)))
 
 (use-package benchmark-init
   :disabled
