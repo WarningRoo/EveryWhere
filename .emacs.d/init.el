@@ -142,8 +142,8 @@
 (use-package tramp
   :config
   (setq remote-file-name-inhibit-locks t
-	tramp-use-scp-direct-remote-copying t
-	remote-file-name-inhibit-auto-save-visited t))
+        tramp-use-scp-direct-remote-copying t
+        remote-file-name-inhibit-auto-save-visited t))
 
 (use-package gcmh
   :init (gcmh-mode 1))
@@ -522,6 +522,24 @@
   :hook (prog-mode . hs-minor-mode)
   :bind (:map hs-minor-mode-map
               ("C-c h" . hs-toggle-hiding)))
+
+;;; Programming
+(use-package c-ts-mode
+  :ensure nil
+  :config
+  (c-ts-mode-set-global-style 'linux)
+  :hook
+  ((c-ts-mode c++-ts-mode) . (lambda ()
+                               (setq-local c-ts-mode-indent-offset 8)
+                               (setq-local indent-tabs-mode t)
+                               (setq-local tab-width 8))))
+
+(use-package cc-mode
+  :ensure nil
+  :hook
+  ((c-mode c++-mode) . (lambda ()
+                         (c-set-style "linux")
+                         (setq-local tab-width 8))))
 
 ;;; Latex
 (use-package latex
