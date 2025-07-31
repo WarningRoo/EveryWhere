@@ -73,7 +73,6 @@
 (setq-default indent-tabs-mode nil)
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
-(setq tab-width 8)
 (set-frame-parameter nil 'alpha 0.90)
 (setq default-frame-alist '((width . 100) (height . 46)))
 (setq-default cursor-type 'bar)
