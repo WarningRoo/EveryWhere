@@ -20,7 +20,7 @@
 (defun qu/font-setup ()
   "Font setup."
   ;; Set default font
-  (cl-loop for font in '("Jetbrains Mono" "Consolas")
+  (cl-loop for font in '("Google Sans Code" "Jetbrains Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
@@ -243,7 +243,7 @@
 (use-package dashboard
   :custom
   (dashboard-center-content t)
-  (dashboard-startup-banner 3)
+  (dashboard-startup-banner 'official)
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
@@ -450,9 +450,7 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-(use-package timu-caribbean-theme)
-
-(load-theme 'timu-caribbean t)
+(load-theme 'modus-vivendi-deuteranopia t)
 
 (use-package golden-ratio
   :disabled
@@ -673,9 +671,13 @@
 
 (use-package visual-fill-column
   :hook
-  (org-mode . (lambda () (setq visual-fill-column-width 110
-                               visual-fill-column-center-text t)
-                (visual-fill-column-mode 1))))
+  (org-mode . (lambda ()
+                (visual-fill-column-mode 1)
+                (setq visual-fill-column-width 110
+                      visual-fill-column-center-text t)))
+  :config
+  (setq visual-fill-column-adjust-for-text-scale t)
+  (advice-add 'text-scale-adjust :after #'visual-fill-column-adjust))
 
 (use-package valign
   :hook
