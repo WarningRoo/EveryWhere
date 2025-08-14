@@ -160,46 +160,6 @@
   (setq which-key-idle-delay 10000)
   (setq which-key-idle-secondary-delay 0.05))
 
-(use-package dirvish
-  :init
-  (dirvish-override-dired-mode)
-  :custom
-  (dirvish-quick-access-entries
-   '(("h" "~/"           "Home")
-     ("d" "~/Downloads/" "Downloads")
-     ("c" "~/Documents/" "Documents")
-     ("r" "~/Repo/"      "Repo")))
-  :config
-  (dirvish-side-follow-mode)
-  (setq dirvish-mode-line-format
-        '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-attributes
-        '(nerd-icons file-time file-size collapse subtree-state vc-state git-msg))
-  (setq delete-by-moving-to-trash t)
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --group-directories-first --no-group")
-  :bind
-  (("C-c f" . dirvish)
-   :map dirvish-mode-map          ; Dirvish inherits `dired-mode-map'
-   ("?"   . dirvish-dispatch)     ; contains most of sub-menus in dirvish extensions
-   ("a"   . dirvish-quick-access)
-   ("f"   . dirvish-file-info-menu)
-   ("y"   . dirvish-yank-menu)
-   ("N"   . dirvish-narrow)
-   ("^"   . dirvish-history-last)
-   ("h"   . dirvish-history-jump) ; remapped `describe-mode'
-   ("s"   . dirvish-quicksort)    ; remapped `dired-sort-toggle-or-edit'
-   ("v"   . dirvish-vc-menu)      ; remapped `dired-view-file'
-   ("TAB" . dirvish-subtree-toggle)
-   ("M-f" . dirvish-history-go-forward)
-   ("M-b" . dirvish-history-go-backward)
-   ("M-l" . dirvish-ls-switches-menu)
-   ("M-m" . dirvish-mark-menu)
-   ("M-t" . dirvish-layout-toggle)
-   ("M-s" . dirvish-setup-menu)
-   ("M-e" . dirvish-emerge-menu)
-   ("M-j" . dirvish-fd-jump)))
-
 (use-package hl-line
   :hook
   (after-init . global-hl-line-mode)
@@ -334,8 +294,8 @@
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
          ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)
-         ;; ("M-s d" . consult-fd)
+         ;; ("M-s d" . consult-find)
+         ("M-s d" . consult-fd)
          ;;!("M-s c" . consult-locate)
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
