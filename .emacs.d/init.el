@@ -204,6 +204,7 @@
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'official)
+  (dashboard-banner-logo-title "FREEDOM")
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
@@ -218,7 +219,8 @@
   (dashboard-items '((recents . 10)
                      (bookmarks . 10)))
   (dashboard-startupify-list '(dashboard-insert-banner
-                               dashboard-insert-init-info
+                               dashboard-insert-banner-title
+                               ;; dashboard-insert-init-info
                                dashboard-insert-items
                                dashboard-insert-footer))
   :config
@@ -637,7 +639,12 @@
                       visual-fill-column-center-text t)))
   :config
   (setq visual-fill-column-adjust-for-text-scale t)
-  (advice-add 'text-scale-adjust :after #'visual-fill-column-adjust))
+  (defun my/vfc-adjust-if-org ()
+    (when (and (derived-mode-p 'org-mode)
+               visual-fill-column-mode)
+      (visual-fill-column-adjust)))
+  (advice-add 'text-scale-adjust :after #'my/vfc-adjust-if-org)
+  (advice-add 'mouse-wheel-text-scale :after #'my/vfc-adjust-if-org))
 
 (use-package valign
   :hook
