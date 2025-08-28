@@ -24,7 +24,7 @@
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
-                                                                    :size 18)))
+                                                                    :size 20)))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Symbols Nerd Fonts Mono" "Segoe UI Symbol" "Symbola" "Symbol")
@@ -73,7 +73,7 @@
 (setq-default indent-tabs-mode nil)
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
-(set-frame-parameter nil 'alpha 0.90)
+(set-frame-parameter nil 'alpha 1.00)
 (setq default-frame-alist '((width . 100) (height . 46)))
 (setq-default cursor-type 'bar)
 
@@ -310,13 +310,13 @@
          ;; Isearch integration
          ("M-s e" . consult-isearch-history)
          ;;!:map isearch-mode-map
-         ;;!("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-         ;;!("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-         ;;!("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-         ;;!("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;;!("M-e" . consult-isearch-history)        ;; orig. isearch-edit-string
+         ;;!("M-s e" . consult-isearch-history)      ;; orig. isearch-edit-string
+         ;;!("M-s l" . consult-line)                 ;; needed by consult-line to detect isearch
+         ;;!("M-s L" . consult-line-multi)           ;; needed by consult-line to detect isearch
          ;; Minibuffer history
          ;;!:map minibuffer-local-map
-         ;;!("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ;;!("M-s" . consult-history)                ;; orig. next-matching-history-element
          ;;!("M-r" . consult-history)                ;; orig. previous-matching-history-element
          )
   :hook (completion-list-mode . consult-preview-at-point-mode)
@@ -412,7 +412,7 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-(load-theme 'modus-vivendi-deuteranopia t)
+;; (load-theme 'modus-vivendi-deuteranopia t)
 
 (use-package golden-ratio
   :disabled
