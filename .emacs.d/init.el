@@ -241,6 +241,10 @@
                                :engines (list (gt-youdao-dict-engine))
                                :render  (gt-buffer-render))))
 
+(use-package nerd-icons-dired
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
 (use-package slime
   :defer t
   :config
