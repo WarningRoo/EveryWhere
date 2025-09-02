@@ -9,9 +9,7 @@
 (setq package-enable-at-startup nil)
 (setq load-prefer-newer noninteractive)
 (setq frame-inhibit-implied-resize t)
-(setq inhibit-startup-message t)
 (setq inhibit-startup-screen t)
-
 (setq-default mode-line-format nil)
 
 (push '(menu-bar-lines . 0) default-frame-alist)

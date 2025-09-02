@@ -62,8 +62,6 @@
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
-(setq eww-search-prefix "https://cn.bing.com/search?q=")
-(setq package-check-signature nil)
 (electric-pair-mode -1)
 (save-place-mode t)
 (recentf-mode t)
@@ -129,6 +127,7 @@
   :config
   (setq use-package-always-ensure t)
   (setq package-install-upgrade-built-in t)
+  (setq package-check-signature nil)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
@@ -151,6 +150,16 @@
   :disabled
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
+(use-package eww
+  :hook
+  (eww-mode . visual-line-mode)
+  :config
+  (setq eww-search-prefix "https://cn.bing.com/search?q=")
+  (setq shr-width 80)
+  (setq shr-indentation 2)
+  (setq shr-max-width fill-column)
+  (setq shr-use-fonts nil))
 
 (use-package which-key
   :init
@@ -200,7 +209,12 @@
 
 (use-package nerd-icons)
 
+(use-package nerd-icons-dired
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
 (use-package dashboard
+  :disabled
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'official)
@@ -240,10 +254,6 @@
                                :taker   (gt-taker :langs '(en zh))
                                :engines (list (gt-youdao-dict-engine))
                                :render  (gt-buffer-render))))
-
-(use-package nerd-icons-dired
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
 
 (use-package slime
   :defer t
@@ -523,8 +533,7 @@
 (defun qu/org-font-setup()
   "Font set for org."
   ;; emphasis
-  (add-to-list 'org-emphasis-alist '("*" '(bold :foreground "#00BFFF")))
-  (add-to-list 'org-emphasis-alist '("/" '(italic :foreground "#00FF22")))
+  (add-to-list 'org-emphasis-alist '("/" '(italic :foreground "#006400")))
   ;; Title
   (with-eval-after-load 'org-faces
     (set-face-attribute 'org-level-1 nil :height 1.4)
