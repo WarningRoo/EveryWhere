@@ -151,6 +151,12 @@
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
+(use-package dired
+  :hook
+  (dired-mode . dired-hide-details-mode)
+  :config
+  (setq dired-dwim-target t))
+
 (use-package eww
   :hook
   (eww-mode . visual-line-mode)
