@@ -152,6 +152,7 @@
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (use-package dired
+  :ensure nil
   :hook
   (dired-mode . dired-hide-details-mode)
   :config
