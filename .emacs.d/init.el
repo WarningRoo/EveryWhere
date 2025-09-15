@@ -433,7 +433,7 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-;; (load-theme 'modus-vivendi-deuteranopia t)
+(load-theme 'modus-operandi t)
 
 (use-package golden-ratio
   :disabled
