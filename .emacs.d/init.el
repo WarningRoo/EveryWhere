@@ -62,7 +62,6 @@
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
-(electric-pair-mode -1)
 (save-place-mode t)
 (recentf-mode t)
 (delete-selection-mode t)
@@ -132,6 +131,9 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package gcmh
+  :init (gcmh-mode 1))
+
 (use-package gdb-mi
   :config
   (setq gdb-many-windows t)
@@ -142,9 +144,6 @@
   (setq remote-file-name-inhibit-locks t
         tramp-use-scp-direct-remote-copying t
         remote-file-name-inhibit-auto-save-visited t))
-
-(use-package gcmh
-  :init (gcmh-mode 1))
 
 (use-package benchmark-init
   :disabled
@@ -433,7 +432,7 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-(load-theme 'modus-operandi t)
+(load-theme 'modus-vivendi t)
 
 (use-package golden-ratio
   :disabled
@@ -504,6 +503,8 @@
               ("C-c h" . hs-toggle-hiding)))
 
 ;;; Programming
+(use-package kotlin-ts-mode)
+
 (use-package c-ts-mode
   :ensure nil
   :config
