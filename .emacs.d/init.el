@@ -20,7 +20,7 @@
 (defun qu/font-setup ()
   "Font setup."
   ;; Set default font
-  (cl-loop for font in '("Google Sans Code" "Jetbrains Mono" "Consolas")
+  (cl-loop for font in '("Jetbrains Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
@@ -426,13 +426,19 @@
   (setq doom-modeline-support-imenu t)
   :custom
   (doom-modeline-project-name t)
+  (doom-modeline-buffer-file-name-style 'buffer-name)
   (doom-modeline-hud t)
+  (doom-modeline-icon nil)
+  (doom-modeline-modal-icon nil)
   (doom-modeline-time-icon nil)
+  (doom-modeline-lsp-icon nil)
+  (doom-modeline-major-mode-icon nil)
   :hook
   (after-init . doom-modeline-mode))
 
 ;; theme
-(load-theme 'modus-vivendi t)
+(use-package doom-themes)
+(load-theme 'doom-tokyo-night t)
 
 (use-package golden-ratio
   :disabled
