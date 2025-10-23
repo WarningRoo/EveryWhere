@@ -20,7 +20,7 @@
 (defun qu/font-setup ()
   "Font setup."
   ;; Set default font
-  (cl-loop for font in '("Jetbrains Mono" "Consolas")
+  (cl-loop for font in '("Noto Sans Mono" "Jetbrains Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil :font (font-spec :family font
                                                                     :weight 'Regular
@@ -37,7 +37,7 @@
            return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
 
   ;; Specify font for Chinese characters
-  (cl-loop for font in '("LXGW WenKai Mono" "LXGW WenKai" "Sarasa Term SC Nerd" "Microsoft Yahei UI" "Simhei")
+  (cl-loop for font in '("Noto Sans CJK SC" "LXGW WenKai Mono" "Sarasa Term SC Nerd" "Microsoft Yahei UI")
            when (font-installed-p font)
            return (progn (set-fontset-font t 'cjk-misc (font-spec :family font))
                          (set-fontset-font t 'han (font-spec :family font)))))
@@ -425,20 +425,22 @@
   :init
   (setq doom-modeline-support-imenu t)
   :custom
+  (doom-modeline-time t)
   (doom-modeline-project-name t)
-  (doom-modeline-buffer-file-name-style 'buffer-name)
+  (doom-modeline-buffer-file-name-style 'auto)
   (doom-modeline-hud t)
   (doom-modeline-icon nil)
   (doom-modeline-modal-icon nil)
   (doom-modeline-time-icon nil)
   (doom-modeline-lsp-icon nil)
   (doom-modeline-major-mode-icon nil)
+  (doom-modeline-buffer-encoding nil)
   :hook
   (after-init . doom-modeline-mode))
 
 ;; theme
 (use-package doom-themes)
-(load-theme 'doom-tokyo-night t)
+(load-theme 'doom-one t)
 
 (use-package golden-ratio
   :disabled
