@@ -224,7 +224,6 @@
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'official)
-  (dashboard-banner-logo-title "FREEDOM")
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
@@ -239,7 +238,7 @@
   (dashboard-items '((recents . 10)
                      (bookmarks . 10)))
   (dashboard-startupify-list '(dashboard-insert-banner
-                               dashboard-insert-banner-title
+                               ;; dashboard-insert-banner-title
                                ;; dashboard-insert-init-info
                                dashboard-insert-items
                                dashboard-insert-footer))
@@ -439,8 +438,9 @@
   (after-init . doom-modeline-mode))
 
 ;; theme
-(use-package doom-themes)
-(load-theme 'doom-one t)
+(use-package doom-themes
+  :config
+  (load-theme 'doom-one t))
 
 (use-package golden-ratio
   :disabled
