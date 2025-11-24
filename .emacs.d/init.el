@@ -89,7 +89,7 @@
 (setq display-time-day-and-date t)
 
 ;; Display the column indicator
-(setq-default fill-column 80)
+(setq-default fill-column 120)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 ;;; line/column number
@@ -237,11 +237,13 @@
   ;; Homepage
   (dashboard-items '((recents . 10)
                      (bookmarks . 10)))
-  (dashboard-startupify-list '(dashboard-insert-banner
-                               ;; dashboard-insert-banner-title
-                               ;; dashboard-insert-init-info
+  (dashboard-startupify-list '(
+                               dashboard-insert-banner
+                               dashboard-insert-banner-title
+                               dashboard-insert-init-info
                                dashboard-insert-items
-                               dashboard-insert-footer))
+                               dashboard-insert-footer
+                               ))
   :config
   (setq dashboard-bookmarks-show-base nil)
   (setq dashboard-recentf-show-base t)
@@ -456,6 +458,15 @@
 
 (use-package magit
   :defer t)
+
+(use-package blamer
+  :bind (("C-c i" . blamer-show-posframe-commit-info))
+  :custom
+  (blamer-idle-time 0.9)
+  (blamer-min-offset 70)
+  (blamer-prettify-time-p t)
+  :config
+  (global-blamer-mode 1))
 
 ;; eglot lsp related
 (use-package eglot
