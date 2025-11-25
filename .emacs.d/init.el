@@ -462,8 +462,8 @@
 (use-package blamer
   :bind (("C-c i" . blamer-show-posframe-commit-info))
   :custom
-  (blamer-idle-time 0.9)
-  (blamer-min-offset 70)
+  (blamer-idle-time 0.5)
+  (blamer-min-offset 20)
   (blamer-prettify-time-p t)
   :config
   (global-blamer-mode 1))
