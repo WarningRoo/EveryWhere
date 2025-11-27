@@ -430,11 +430,9 @@
   (doom-modeline-project-name t)
   (doom-modeline-buffer-file-name-style 'auto)
   (doom-modeline-hud t)
-  (doom-modeline-icon nil)
-  (doom-modeline-modal-icon nil)
+  (doom-modeline-icon t)
   (doom-modeline-time-icon nil)
-  (doom-modeline-lsp-icon nil)
-  (doom-modeline-major-mode-icon nil)
+  (doom-modeline-check-icon nil)
   (doom-modeline-buffer-encoding nil)
   :hook
   (after-init . doom-modeline-mode))
