@@ -4,60 +4,36 @@
 
 ;;; Code:
 
-;; Require
-(require 'cl-lib)
-
 ;; Move customization variables to a separate file and load it
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
 (load custom-file 'noerror 'nomessage)
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 ;; Fonts
-(defun font-installed-p (font-name)
-  "Check if font with FONT-NAME is available."
-  (find-font (font-spec :name font-name)))
+(defun qu/first-available (&rest fonts)
+  "Return the first font in FONTS that exists in the current fontset."
+  (seq-find (lambda (font) (find-font (font-spec :name font))) fonts))
 
-(defun qu/font-setup ()
-  "Font setup."
-  ;; Set default font
-  (cl-loop for font in '("Noto Sans Mono" "Jetbrains Mono" "Consolas")
-           when (font-installed-p font)
-           return (set-face-attribute 'default nil :font (font-spec :family font
-                                                                    :weight 'Regular
-                                                                    :size 20)))
+(defun qu/font-setup (&optional frame)
+  "Configure fonts on FRAME by selecting the first available font."
+  (with-selected-frame (or frame (selected-frame))
+    (when (display-graphic-p)
+      (when-let
+          ((font (qu/first-available "Noto Sans Mono" "Jetbrains Mono" "Consolas")))
+        (set-frame-font (font-spec :family font :size 20 :weight 'regular) nil t))
+      (when-let
+          ((font (qu/first-available "Symbols Nerd Fonts Mono" "Segoe UI Symbol" "Symbola" "Symbol")))
+        (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
+      (when-let
+          ((font (qu/first-available "Noto Color Emoji" "Segoe UI Emoji")))
+        (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
+      (when-let
+          ((font (qu/first-available "Noto Sans CJK SC" "Sarasa Term SC Nerd" "Microsoft Yahei UI")))
+        (set-fontset-font t 'han (font-spec :family font) nil 'prepend)
+        (set-fontset-font t 'cjk-misc (font-spec :family font) nil 'prepend)))))
 
-  ;; Specify font for all unicode characters
-  (cl-loop for font in '("Symbols Nerd Fonts Mono" "Segoe UI Symbol" "Symbola" "Symbol")
-           when (font-installed-p font)
-           return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
-
-  ;; Emoji
-  (cl-loop for font in '("Noto Color Emoji" "Segoe UI Emoji")
-           when (font-installed-p font)
-           return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
-
-  ;; Specify font for Chinese characters
-  (cl-loop for font in '("Noto Sans CJK SC" "LXGW WenKai Mono" "Sarasa Term SC Nerd" "Microsoft Yahei UI")
-           when (font-installed-p font)
-           return (progn (set-fontset-font t 'cjk-misc (font-spec :family font))
-                         (set-fontset-font t 'han (font-spec :family font)))))
-
-(qu/font-setup)
-(add-hook 'window-setup-hook #'qu/font-setup)
-(add-hook 'server-after-make-frame-hook #'qu/font-setup)
-
-;; Open FILE as root
-(defun sudo-find-file (file)
-  "Open FILE as root."
-  (interactive "FOpen file as root: ")
-  (when (file-writable-p file)
-    (user-error "File is user writeable, aborting sudo"))
-  (find-file (if (file-remote-p file)
-                 (concat "/" (file-remote-p file 'method) ":"
-                         (file-remote-p file 'user) "@" (file-remote-p file 'host)
-                         "|sudo:root@"
-                         (file-remote-p file 'host) ":" (file-remote-p file 'localname))
-               (concat "/sudo:root@localhost:" file))))
+(add-hook 'after-make-frame-functions #'qu/font-setup)
+(when (display-graphic-p) (qu/font-setup))
 
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
@@ -220,10 +196,10 @@
   (dired-mode . nerd-icons-dired-mode))
 
 (use-package dashboard
-  :disabled
   :custom
   (dashboard-center-content t)
-  (dashboard-startup-banner 'official)
+  (dashboard-startup-banner 'logo)
+  (dashboard-banner-logo-title "No failure, only feedback.")
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
@@ -240,7 +216,6 @@
   (dashboard-startupify-list '(
                                dashboard-insert-banner
                                dashboard-insert-banner-title
-                               dashboard-insert-init-info
                                dashboard-insert-items
                                dashboard-insert-footer
                                ))
@@ -515,6 +490,7 @@
               ("M-g M-D" . dogears-sidebar)))
 
 (use-package hideshow
+  :ensure nil
   :hook (prog-mode . hs-minor-mode)
   :bind (:map hs-minor-mode-map
               ("C-c h" . hs-toggle-hiding)))
