@@ -41,7 +41,6 @@
 (save-place-mode t)
 (recentf-mode t)
 (delete-selection-mode t)
-(menu-bar-mode -1)
 (setq history-length 25)
 (setq-default indent-tabs-mode nil)
 (set-input-method 'TeX)
@@ -49,6 +48,7 @@
 (set-frame-parameter nil 'alpha 1.00)
 (setq default-frame-alist '((width . 100) (height . 46)))
 (setq-default cursor-type 'bar)
+(menu-bar-mode -1)
 
 ;; GUI only
 (when (display-graphic-p)
@@ -132,6 +132,13 @@
   (dired-mode . dired-hide-details-mode)
   :config
   (setq dired-dwim-target t))
+
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  :bind (("C-c d" . dirvish-side))
+  :config
+  (dirvish-side-follow-mode))
 
 (use-package eww
   :hook
