@@ -48,6 +48,7 @@
 (set-frame-parameter nil 'alpha 1.00)
 (setq default-frame-alist '((width . 100) (height . 46)))
 (setq-default cursor-type 'bar)
+(show-paren-mode)
 (menu-bar-mode -1)
 
 ;; GUI only
@@ -61,8 +62,9 @@
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
 
 ;; Date & Time
-(display-time)
 (setq display-time-day-and-date t)
+(setq display-time-default-load-average nil)
+(display-time-mode)
 
 ;; Display the column indicator
 (setq-default fill-column 120)
@@ -75,12 +77,9 @@
                 diff-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-(add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
 
-;;; Keybindings
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
-(global-set-key (kbd "M-o") 'other-window)
 
 ;; Pixel scroll
 (pixel-scroll-precision-mode 1)
@@ -107,6 +106,11 @@
   (unless (bound-and-true-p package--initialized)
     (package-initialize)))
 
+(use-package benchmark-init
+  :disabled
+  :config
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
 (use-package gcmh
   :init (gcmh-mode 1))
 
@@ -121,10 +125,17 @@
         tramp-use-scp-direct-remote-copying t
         remote-file-name-inhibit-auto-save-visited t))
 
-(use-package benchmark-init
-  :disabled
-  :config
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+(use-package ace-window
+  :bind (("M-o" . ace-window))
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?j ?k ?l))
+  (aw-background t)
+  (aw-scope 'frame)
+  (aw-minibuffer-flag t)
+  (aw-dispatch-always t)
+  :custom-face
+  (aw-leading-char-face
+   ((t (:foreground "orange red" :weight bold :height 2.0)))))
 
 (use-package dired
   :ensure nil
@@ -433,8 +444,10 @@
   :config
   (setq project-vc-extra-root-markers '("INSTALL" "COPYING" "LICENSE")))
 
-(use-package highlight-symbol
-  :bind ("<f9>" . highlight-symbol))
+(use-package symbol-overlay
+  :init (symbol-overlay-mode)
+  :bind (("<f8>" . symbol-overlay-put)
+         ("<f9>" . symbol-overlay-remove-all)))
 
 (use-package magit
   :defer t)
@@ -565,6 +578,7 @@
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :custom
+  (org-src-tab-acts-natively t)
   (org-imenu-depth 3)
   (org-default-notes-file (concat org-directory "agenda/ideas.org"))
   (org-hide-emphasis-markers t)
