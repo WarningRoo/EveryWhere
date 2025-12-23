@@ -8,13 +8,13 @@
 (setq byte-compile-warnings nil)
 (setq package-enable-at-startup nil)
 (setq load-prefer-newer noninteractive)
-(setq frame-inhibit-implied-resize t)
 (setq inhibit-startup-screen t)
-(setq-default mode-line-format nil)
 
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
+;; Frame
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(menu-bar-lines . 0))
+(add-to-list 'default-frame-alist '(tool-bar-lines . 0))
+(add-to-list 'default-frame-alist '(vertical-scroll-bars . nil))
 
 (prefer-coding-system 'utf-8)
 

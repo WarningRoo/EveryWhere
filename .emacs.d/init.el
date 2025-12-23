@@ -45,16 +45,8 @@
 (setq-default indent-tabs-mode nil)
 (set-input-method 'TeX)
 (setq use-dialog-box nil)
-(set-frame-parameter nil 'alpha 1.00)
-(setq default-frame-alist '((width . 100) (height . 46)))
 (setq-default cursor-type 'bar)
 (show-paren-mode)
-(menu-bar-mode -1)
-
-;; GUI only
-(when (display-graphic-p)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1))
 
 ;; auto-revert
 (global-auto-revert-mode t)
