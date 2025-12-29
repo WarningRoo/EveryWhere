@@ -38,14 +38,14 @@
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
+(setq history-length 25)
+(setq use-dialog-box nil)
+(setq-default indent-tabs-mode nil)
+(setq-default cursor-type 'bar)
+(set-input-method 'TeX)
 (save-place-mode t)
 (recentf-mode t)
 (delete-selection-mode t)
-(setq history-length 25)
-(setq-default indent-tabs-mode nil)
-(set-input-method 'TeX)
-(setq use-dialog-box nil)
-(setq-default cursor-type 'bar)
 (show-paren-mode)
 
 ;; auto-revert
