@@ -20,7 +20,7 @@
     (when (display-graphic-p)
       (when-let
           ((font (qu/first-available "Noto Sans Mono" "Jetbrains Mono" "Consolas")))
-        (set-frame-font (font-spec :family font :size 20 :weight 'regular) nil t))
+        (set-frame-font (font-spec :family font :size 18 :weight 'regular) nil t))
       (when-let
           ((font (qu/first-available "Symbols Nerd Fonts Mono" "Segoe UI Symbol" "Symbola" "Symbol")))
         (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
@@ -116,6 +116,9 @@
   (setq remote-file-name-inhibit-locks t
         tramp-use-scp-direct-remote-copying t
         remote-file-name-inhibit-auto-save-visited t))
+
+(use-package winner
+  :init (winner-mode))
 
 (use-package ace-window
   :bind (("M-o" . ace-window))
@@ -425,7 +428,7 @@
 ;; theme
 (use-package doom-themes
   :config
-  (load-theme 'doom-one t))
+  (load-theme 'doom-tokyo-night t))
 
 (use-package golden-ratio
   :disabled
