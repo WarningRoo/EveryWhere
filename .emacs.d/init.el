@@ -296,6 +296,7 @@
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ;; M-g bindings in `goto-map'
          ("M-g e" . consult-compile-error) ;; Cycling between compile error(s)/warning(s)
+         ("M-g r" . consult-grep-match)
          ("M-g f" . consult-flymake)
          ("M-g g" . consult-goto-line)             ;; orig. goto-line
          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
@@ -332,14 +333,8 @@
 
   :init
 
-  ;;; Registers Related
-  (setq register-preview-delay 0.5)
-  ;; Set the separator for register append/prepend
-  (setq register-separator ?+)
-  (set-register register-separator "\n")
-
-  (setq register-preview-function #'consult-register-format)
   (advice-add #'register-preview :override #'consult-register-window)
+  (setq register-preview-delay 0.5)
 
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
@@ -356,10 +351,10 @@
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
+   consult-ripgrep consult-git-grep consult-grep consult-man
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   consult-source-bookmark consult-source-file-register
+   consult-source-recent-file consult-source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
 
@@ -428,7 +423,7 @@
 ;; theme
 (use-package doom-themes
   :config
-  (load-theme 'doom-tokyo-night t))
+  (load-theme 'doom-dracula t))
 
 (use-package golden-ratio
   :disabled
@@ -548,8 +543,6 @@
 
 (defun qu/org-font-setup()
   "Font set for org."
-  ;; emphasis
-  (add-to-list 'org-emphasis-alist '("/" '(italic :foreground "#006400")))
   ;; Title
   (with-eval-after-load 'org-faces
     (set-face-attribute 'org-level-1 nil :height 1.4)
@@ -661,7 +654,11 @@
   (org-roam-ui-update-on-save t)
   (org-roam-ui-open-on-start t))
 
+(use-package olivetti
+  :hook (org-mode . olivetti-mode))
+
 (use-package visual-fill-column
+  :disabled
   :hook
   (org-mode . (lambda ()
                 (visual-fill-column-mode 1)
