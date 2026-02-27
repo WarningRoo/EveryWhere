@@ -212,7 +212,7 @@
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-  (dashboard-banner-logo-title "No failure, only feedback.")
+  (dashboard-banner-logo-title "*konw*")
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
