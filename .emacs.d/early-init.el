@@ -8,7 +8,7 @@
 (setq byte-compile-warnings nil)
 (setq package-enable-at-startup nil)
 (setq load-prefer-newer noninteractive)
-(setq inhibit-startup-screen t)
+(setq inhibit-startup-screen nil)
 
 ;; Frame
 (add-to-list 'default-frame-alist '(fullscreen . maximized))

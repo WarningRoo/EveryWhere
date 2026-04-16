@@ -209,6 +209,7 @@
   (dired-mode . nerd-icons-dired-mode))
 
 (use-package dashboard
+  :disabled
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
@@ -422,8 +423,14 @@
 
 ;; theme
 (use-package doom-themes
+  :disabled
   :config
-  (load-theme 'doom-dracula t))
+  ;; (load-theme 'doom-dracula t)
+  )
+
+(use-package ef-themes
+  :config
+  (load-theme 'ef-night :no-confirm))
 
 (use-package golden-ratio
   :disabled
