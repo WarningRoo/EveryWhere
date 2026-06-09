@@ -18,16 +18,16 @@
   "Configure fonts on FRAME by selecting the first available font."
   (with-selected-frame (or frame (selected-frame))
     (when (display-graphic-p)
-      (when-let
+      (when-let*
           ((font (qu/first-available "Noto Sans Mono" "Jetbrains Mono" "Consolas")))
         (set-frame-font (font-spec :family font :size 18 :weight 'regular) nil t))
-      (when-let
+      (when-let*
           ((font (qu/first-available "Symbols Nerd Fonts Mono" "Segoe UI Symbol" "Symbola" "Symbol")))
         (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
-      (when-let
+      (when-let*
           ((font (qu/first-available "Noto Color Emoji" "Segoe UI Emoji")))
         (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
-      (when-let
+      (when-let*
           ((font (qu/first-available "Noto Sans CJK SC" "Sarasa Term SC Nerd" "Microsoft Yahei UI")))
         (set-fontset-font t 'han (font-spec :family font) nil 'prepend)
         (set-fontset-font t 'cjk-misc (font-spec :family font) nil 'prepend)))))
@@ -88,25 +88,27 @@
 (windmove-swap-states-default-keybindings '(ctrl shift))
 
 ;; ABOUT Package
-(eval-when-compile (require 'use-package))
-(use-package package
-  :config
-  (setq use-package-always-ensure t)
-  (setq package-install-upgrade-built-in t)
-  (setq package-check-signature nil)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-  (unless (bound-and-true-p package--initialized)
-    (package-initialize)))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(setq package-install-upgrade-built-in nil)
+(setq package-check-signature nil)
+(unless (bound-and-true-p package--initialized)
+    (package-initialize))
+(require 'use-package)
+(setq use-package-always-ensure nil)
 
 (use-package benchmark-init
   :disabled
+  :ensure t
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (use-package gcmh
+  :ensure t
   :init (gcmh-mode 1))
 
 (use-package gdb-mi
+  :ensure t
   :config
   (setq gdb-many-windows t)
   (setq gdb-show-main t))
@@ -118,9 +120,11 @@
         remote-file-name-inhibit-auto-save-visited t))
 
 (use-package winner
+  :ensure t
   :init (winner-mode))
 
 (use-package ace-window
+  :ensure t
   :bind (("M-o" . ace-window))
   :custom
   (aw-keys '(?a ?s ?d ?f ?j ?k ?l))
@@ -133,13 +137,13 @@
    ((t (:foreground "orange red" :weight bold :height 2.0)))))
 
 (use-package dired
-  :ensure nil
   :hook
   (dired-mode . dired-hide-details-mode)
   :config
   (setq dired-dwim-target t))
 
 (use-package dirvish
+  :ensure t
   :init
   (dirvish-override-dired-mode)
   :bind (("C-c d" . dirvish-side))
@@ -165,6 +169,7 @@
   (setq which-key-idle-secondary-delay 0.05))
 
 (use-package hl-line
+  :ensure t
   :hook
   (after-init . global-hl-line-mode)
   :config
@@ -173,11 +178,13 @@
                                        (line-beginning-position 2)))))
 
 (use-package copilot-chat
+  :ensure t
   :defer t
   :config
   (setq copilot-chat-frontend 'org))
 
 (use-package popper
+  :ensure t
   :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
@@ -195,6 +202,7 @@
   (popper-echo-mode +1))
 
 (use-package exec-path-from-shell
+  :ensure t
   :after eshell
   :config
   (exec-path-from-shell-copy-env "ARCH")
@@ -202,14 +210,16 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-(use-package nerd-icons)
+(use-package nerd-icons
+  :ensure t)
 
 (use-package nerd-icons-dired
+  :ensure t
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
 (use-package dashboard
-  :disabled
+  :ensure t
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
@@ -240,10 +250,12 @@
   (dashboard-setup-startup-hook))
 
 (use-package mwim
+  :ensure t
   :bind (("C-a" . mwim-beginning-of-code-or-line)
          ("C-e" . mwim-end-of-code-or-line)))
 
 (use-package go-translate
+  :ensure t
   :bind (("C-c t" . gt-do-translate))
   :config
   (setq gt-default-translator (gt-translator
@@ -252,28 +264,34 @@
                                :render  (gt-buffer-render))))
 
 (use-package slime
+  :ensure t
   :defer t
   :config
   (setq inferior-lisp-program (executable-find "sbcl")))
 
 (use-package vertico
+  :ensure t
   :init
   (vertico-mode))
 
 (use-package savehist
+  :ensure t
   :init
   (savehist-mode))
 
 (use-package orderless
+  :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package marginalia
+  :ensure t
   :init
   (marginalia-mode))
 
 (use-package consult
+  :ensure t
   :bind (;; C-c bindings in `mode-specific-map'
          ;;?("C-c M-x" . consult-mode-command)
          ;;?("C-c h" . consult-history)
@@ -388,25 +406,31 @@
                  (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
+  :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package consult-eglot
+  :ensure t
   :after eglot)
 
 (use-package consult-eglot-embark
+  :ensure t
   :after eglot
   :init
   (consult-eglot-embark-mode))
 
 (use-package company
+  :ensure t
   :hook (after-init . global-company-mode))
 
 (use-package company-box
+  :ensure t
   :hook (company-mode . company-box-mode))
 
 ;; modeline
 (use-package doom-modeline
+  :ensure t
   :init
   (setq doom-modeline-support-imenu t)
   :custom
@@ -424,16 +448,19 @@
 ;; theme
 (use-package doom-themes
   :disabled
+  :ensure tn
   :config
   ;; (load-theme 'doom-dracula t)
   )
 
 (use-package ef-themes
+  :ensure t
   :config
   (load-theme 'ef-night :no-confirm))
 
 (use-package golden-ratio
   :disabled
+  :ensure t
   :init
   (golden-ratio-mode))
 
@@ -442,14 +469,17 @@
   (setq project-vc-extra-root-markers '("INSTALL" "COPYING" "LICENSE")))
 
 (use-package symbol-overlay
+  :ensure t
   :init (symbol-overlay-mode)
   :bind (("<f8>" . symbol-overlay-put)
          ("<f9>" . symbol-overlay-remove-all)))
 
 (use-package magit
-  :defer t)
+  :defer t
+  :ensure t)
 
 (use-package blamer
+  :ensure t
   :bind (("C-c i" . blamer-show-posframe-commit-info))
   :custom
   (blamer-idle-time 0.5)
@@ -484,6 +514,7 @@
    ))
 
 (use-package flymake
+  :ensure t
   :custom
   (flymake-mode-line-lighter "F")
   :hook (prog-mode . flymake-mode)
@@ -492,6 +523,7 @@
 
 (use-package treesit-auto
   :if (eq system-type 'gnu/linux)
+  :ensure t
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -499,6 +531,7 @@
   (global-treesit-auto-mode))
 
 (use-package dogears
+  :ensure t
   :bind (:map global-map
               ("M-g d" . dogears-go)
               ("M-g M-b" . dogears-back)
@@ -507,16 +540,13 @@
               ("M-g M-D" . dogears-sidebar)))
 
 (use-package hideshow
-  :ensure nil
+  :ensure t
   :hook (prog-mode . hs-minor-mode)
   :bind (:map hs-minor-mode-map
               ("C-c h" . hs-toggle-hiding)))
 
 ;;; Programming
-(use-package kotlin-ts-mode)
-
 (use-package c-ts-mode
-  :ensure nil
   :config
   (c-ts-mode-set-global-style 'linux)
   :hook
@@ -526,7 +556,6 @@
                                (setq-local tab-width 8))))
 
 (use-package cc-mode
-  :ensure nil
   :hook
   ((c-mode c++-mode) . (lambda ()
                          (c-set-style "linux")
@@ -537,10 +566,12 @@
   :defer t
   :ensure auctex)
 
-(use-package cdlatex)
+(use-package cdlatex
+  :ensure t)
 
 ;;; Markdown
 (use-package markdown-mode
+  :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown"))
 
@@ -627,15 +658,18 @@
   (require 'ob-makefile)
   (require 'ob-C))
 
-(use-package org-contrib)
+(use-package org-contrib
+  :ensure t)
 
 (use-package org-download
+  :ensure t
   :after org
   :config
   (setq org-download-method 'directory)
   (setq org-download-image-dir "resource"))
 
 (use-package org-roam
+  :ensure t
   :init
   (setq org-roam-database-connector 'sqlite-builtin)
   :custom
@@ -654,6 +688,7 @@
   (require 'org-roam-protocol))
 
 (use-package org-roam-ui
+  :ensure t
   :after org-roam
   :custom
   (org-roam-ui-sync-theme t)
@@ -662,10 +697,12 @@
   (org-roam-ui-open-on-start t))
 
 (use-package olivetti
+  :ensure t
   :hook (org-mode . olivetti-mode))
 
 (use-package visual-fill-column
   :disabled
+  :ensure t
   :hook
   (org-mode . (lambda ()
                 (visual-fill-column-mode 1)
@@ -681,10 +718,12 @@
   (advice-add 'mouse-wheel-text-scale :after #'my/vfc-adjust-if-org))
 
 (use-package valign
+  :ensure t
   :hook
   (org-mode . valign-mode))
 
 (use-package adaptive-wrap
+  :ensure t
   :hook (org-mode . (lambda () (adaptive-wrap-prefix-mode 1))))
 
 (provide 'init)
