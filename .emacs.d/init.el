@@ -42,11 +42,17 @@
 (setq use-dialog-box nil)
 (setq-default indent-tabs-mode nil)
 (setq-default cursor-type 'bar)
-(set-input-method 'TeX)
 (save-place-mode t)
 (recentf-mode t)
 (delete-selection-mode t)
 (show-paren-mode)
+
+(defun qu/enable-tex-input-method ()
+  "Enable TeX input method in the current buffer."
+  (set-input-method "TeX"))
+
+(dolist (hook '(text-mode-hook org-mode-hook LaTeX-mode-hook latex-mode-hook))
+  (add-hook hook #'qu/enable-tex-input-method))
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -67,9 +73,9 @@
 ;; Enable line numbers for some modes
 (dolist (mode '(prog-mode-hook
                 diff-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+  (add-hook mode #'display-line-numbers-mode))
 
-(add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
 
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
 
@@ -108,7 +114,6 @@
   :init (gcmh-mode 1))
 
 (use-package gdb-mi
-  :ensure t
   :config
   (setq gdb-many-windows t)
   (setq gdb-show-main t))
@@ -120,7 +125,6 @@
         remote-file-name-inhibit-auto-save-visited t))
 
 (use-package winner
-  :ensure t
   :init (winner-mode))
 
 (use-package ace-window
@@ -165,11 +169,10 @@
   (which-key-mode)
   :config
   (setq which-key-show-early-on-C-h t)
-  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-delay 1.0)
   (setq which-key-idle-secondary-delay 0.05))
 
 (use-package hl-line
-  :ensure t
   :hook
   (after-init . global-hl-line-mode)
   :config
@@ -223,17 +226,12 @@
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-  (dashboard-banner-logo-title "*konw*")
+  (dashboard-banner-logo-title "*know*")
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
-  ;; Agenda
-  (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
-  (dashboard-match-agenda-entry "+TODO=\"NOW\"")
-  (dashboard-agenda-sort-strategy '(priority-down))
-  (dashboard-agenda-prefix-format " ")
   ;; Homepage
   (dashboard-items '((recents . 10)
                      (bookmarks . 10)))
@@ -275,7 +273,6 @@
   (vertico-mode))
 
 (use-package savehist
-  :ensure t
   :init
   (savehist-mode))
 
@@ -448,7 +445,7 @@
 ;; theme
 (use-package doom-themes
   :disabled
-  :ensure tn
+  :ensure t
   :config
   ;; (load-theme 'doom-dracula t)
   )
@@ -480,13 +477,12 @@
 
 (use-package blamer
   :ensure t
-  :bind (("C-c i" . blamer-show-posframe-commit-info))
+  :bind (("C-c g b" . blamer-show-posframe-commit-info)
+         ("C-c g B" . global-blamer-mode))
   :custom
   (blamer-idle-time 0.5)
   (blamer-min-offset 20)
-  (blamer-prettify-time-p t)
-  :config
-  (global-blamer-mode 1))
+  (blamer-prettify-time-p t))
 
 ;; eglot lsp related
 (use-package eglot
@@ -514,7 +510,6 @@
    ))
 
 (use-package flymake
-  :ensure t
   :custom
   (flymake-mode-line-lighter "F")
   :hook (prog-mode . flymake-mode)
@@ -540,7 +535,6 @@
               ("M-g M-D" . dogears-sidebar)))
 
 (use-package hideshow
-  :ensure t
   :hook (prog-mode . hs-minor-mode)
   :bind (:map hs-minor-mode-map
               ("C-c h" . hs-toggle-hiding)))
@@ -564,10 +558,12 @@
 ;;; Latex
 (use-package latex
   :defer t
-  :ensure auctex)
+  :ensure auctex
+  :hook (LaTeX-mode . cdlatex-mode))
 
 (use-package cdlatex
-  :ensure t)
+  :ensure t
+  :hook (org-mode . org-cdlatex-mode))
 
 ;;; Markdown
 (use-package markdown-mode
@@ -576,8 +572,9 @@
   :init (setq markdown-command "multimarkdown"))
 
 ;;; org-mode
-(defvar *dir-of-org* "~/Documents/Knowing/")
-(setq org-directory (file-truename *dir-of-org*))
+(defvar qu/org-root (expand-file-name "~/Documents/Knowing/")
+  "Root directory for Org files.")
+(setq org-directory qu/org-root)
 
 (defun qu/org-font-setup()
   "Font set for org."
@@ -629,7 +626,7 @@
                                    ("" "tikz" t)))
   (plist-put org-format-latex-options :scale 1.5)
 
-  ;; require module
+  ;; Org modules
   (require 'org-indent)
   (require 'org-capture)
 
@@ -638,7 +635,7 @@
                                       "|"
                                       "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
   (setq org-agenda-custom-commands
-        '(("0" "All needed to to" todo "TODO|NOW|FUTURE")
+        '(("0" "All active tasks" todo "TODO|NOW|FUTURE")
           ("1" "TODO" todo "TODO")
           ("2" "Currently in progress." todo "NOW")
           ("3" "Low priority, maybe later." todo "FUTURE")))
@@ -651,12 +648,14 @@
 
   (qu/org-font-setup)
 
-  ;; require Programming Languages Support
-  (require 'ob-lisp)
-  (require 'ob-shell)
-  (require 'ob-python)
-  (require 'ob-makefile)
-  (require 'ob-C))
+  ;; Babel languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((lisp . t)
+     (shell . t)
+     (python . t)
+     (makefile . t)
+     (C . t))))
 
 (use-package org-contrib
   :ensure t)
@@ -694,7 +693,7 @@
   (org-roam-ui-sync-theme t)
   (org-roam-ui-follow t)
   (org-roam-ui-update-on-save t)
-  (org-roam-ui-open-on-start t))
+  (org-roam-ui-open-on-start nil))
 
 (use-package olivetti
   :ensure t
@@ -710,12 +709,12 @@
                       visual-fill-column-center-text t)))
   :config
   (setq visual-fill-column-adjust-for-text-scale t)
-  (defun my/vfc-adjust-if-org ()
+  (defun qu/visual-fill-column-adjust-if-org ()
     (when (and (derived-mode-p 'org-mode)
                visual-fill-column-mode)
       (visual-fill-column-adjust)))
-  (advice-add 'text-scale-adjust :after #'my/vfc-adjust-if-org)
-  (advice-add 'mouse-wheel-text-scale :after #'my/vfc-adjust-if-org))
+  (advice-add 'text-scale-adjust :after #'qu/visual-fill-column-adjust-if-org)
+  (advice-add 'mouse-wheel-text-scale :after #'qu/visual-fill-column-adjust-if-org))
 
 (use-package valign
   :ensure t
