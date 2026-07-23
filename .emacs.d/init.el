@@ -180,11 +180,12 @@
                                  (cons (line-end-position)
                                        (line-beginning-position 2)))))
 
-(use-package copilot-chat
+(use-package aidermacs
   :ensure t
   :defer t
-  :config
-  (setq copilot-chat-frontend 'org))
+  :custom
+  (aidermacs-default-chat-mode 'architect)
+  (aidermacs-default-model "sonnet"))
 
 (use-package popper
   :ensure t
@@ -226,15 +227,14 @@
   :custom
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-  (dashboard-banner-logo-title "*know*")
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
   ;; Homepage
-  (dashboard-items '((recents . 10)
-                     (bookmarks . 10)))
+  (dashboard-items '((recents . 8)
+                     (bookmarks . 8)))
   (dashboard-startupify-list '(
                                dashboard-insert-banner
                                dashboard-insert-banner-title
@@ -271,6 +271,11 @@
   :ensure t
   :init
   (vertico-mode))
+
+(use-package vertico-posframe
+  :ensure t
+  :init
+  (vertico-posframe-mode 1))
 
 (use-package savehist
   :init
@@ -447,8 +452,7 @@
   :disabled
   :ensure t
   :config
-  ;; (load-theme 'doom-dracula t)
-  )
+  (load-theme 'doom-xcode t))
 
 (use-package ef-themes
   :ensure t
@@ -512,6 +516,7 @@
 (use-package flymake
   :custom
   (flymake-mode-line-lighter "F")
+  (flymake-show-diagnostics-at-end-of-line t)
   :hook (prog-mode . flymake-mode)
   :bind (("C-M-n" . flymake-goto-next-error)
          ("C-M-p" . flymake-goto-prev-error)))
