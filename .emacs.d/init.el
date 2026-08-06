@@ -207,7 +207,6 @@
 
 (use-package exec-path-from-shell
   :ensure t
-  :after eshell
   :config
   (exec-path-from-shell-copy-env "ARCH")
   (exec-path-from-shell-copy-env "CROSS_COMPILE")
