@@ -5,7 +5,6 @@
 ;;; Code:
 
 (setq gc-cons-threshold most-positive-fixnum)
-(setq byte-compile-warnings nil)
 (setq package-enable-at-startup nil)
 (setq load-prefer-newer noninteractive)
 (setq inhibit-startup-screen t)

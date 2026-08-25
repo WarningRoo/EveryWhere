@@ -43,6 +43,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default cursor-type 'bar)
 (save-place-mode t)
+(setq recentf-auto-cleanup 'never)
 (recentf-mode t)
 (delete-selection-mode t)
 (show-paren-mode)
@@ -75,7 +76,9 @@
                 diff-mode-hook))
   (add-hook mode #'display-line-numbers-mode))
 
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(setq delete-trailing-lines nil)
+(dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
+  (add-hook hook #'delete-trailing-whitespace-mode))
 
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
 
@@ -89,18 +92,15 @@
 (global-set-key (kbd "M-p") 'scroll-down-line)
 (global-set-key (kbd "M-n") 'scroll-up-line)
 
-;; move window
-;; C-S-<right/left/up/down>
-(windmove-swap-states-default-keybindings '(ctrl shift))
-
 ;; ABOUT Package
+(require 'use-package)
+(require 'bind-key)
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq package-install-upgrade-built-in nil)
 (setq package-check-signature nil)
 (unless (bound-and-true-p package--initialized)
     (package-initialize))
-(require 'use-package)
 (setq use-package-always-ensure nil)
 
 (use-package benchmark-init
@@ -187,6 +187,10 @@
   (aidermacs-default-chat-mode 'architect)
   (aidermacs-default-model "sonnet"))
 
+(use-package gptel
+  :ensure t
+  :defer t)
+
 (use-package popper
   :ensure t
   :bind (("C-`"   . popper-toggle)
@@ -210,7 +214,8 @@
   :config
   (exec-path-from-shell-copy-env "ARCH")
   (exec-path-from-shell-copy-env "CROSS_COMPILE")
-  (when (memq window-system '(mac ns x))
+  (when (or (memq window-system '(mac ns x pgtk))
+            (daemonp))
     (exec-path-from-shell-initialize)))
 
 (use-package nerd-icons
@@ -272,6 +277,7 @@
   (vertico-mode))
 
 (use-package vertico-posframe
+  :disabled
   :ensure t
   :init
   (vertico-posframe-mode 1))
@@ -492,25 +498,15 @@
   :hook
   ((c-mode c-ts-mode) . eglot-ensure)
   ((c++-mode c++-ts-mode) . eglot-ensure)
-  ((lisp-mode emacs-lisp-mode) . eglot-ensure)
   ((python-mode python-ts-mode) . eglot-ensure)
   :config
   (setq eglot-autoshutdown t)
-  ;; Add server here
   (add-to-list
    'eglot-server-programs
-   ;;   '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd"
-   ;;     "--limit-references=1000"
-   ;;     "--limit-results=1000"
-   ;;     "--background-index"
-   ;;     )
-   '((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls")
-   ;; '((lisp-mode emacs-lisp-mode) "sbcl"
-   ;;   "--noinform"
-   ;;   "--eval" "ql:quickload \"alive-lsp\""
-   ;;   "--eval" "(alive/server::start :port 8006)")
-   '((python-mode python-ts-mode) "pylsp")
-   ))
+   '((c++-mode c++-ts-mode c-mode c-ts-mode) "ccls"))
+  (add-to-list
+   'eglot-server-programs
+   '((python-mode python-ts-mode) "pylsp")))
 
 (use-package flymake
   :custom
@@ -520,14 +516,11 @@
   :bind (("C-M-n" . flymake-goto-next-error)
          ("C-M-p" . flymake-goto-prev-error)))
 
-(use-package treesit-auto
+(use-package treesit
   :if (eq system-type 'gnu/linux)
-  :ensure t
   :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (treesit-enabled-modes t)
+  (treesit-auto-install-grammar 'ask))
 
 (use-package dogears
   :ensure t
@@ -600,7 +593,7 @@
                 ;;(variable-pitch-mode 1) ; variable pitch against fixed-pitch
                 (auto-fill-mode 0)
                 (visual-line-mode 1)
-                (setq-local line-spacing 0.10)))
+                (setq-local line-spacing '(0.05 . 0.05))))
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture))
