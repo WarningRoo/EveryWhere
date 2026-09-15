@@ -30,12 +30,18 @@ config.scrollback_lines = 20000
 config.exit_behavior = 'CloseOnCleanExit'
 config.exit_behavior_messaging = 'Terse'
 
-config.window_background_opacity = 0.90
+-- 85% opacity by default; Ctrl+Shift+B toggles transparency for the current window.
+config.window_background_opacity = 0.85
 
 -- Use plain transparency: Acrylic was unstable in testing on this Windows machine.
 if is_win then
   config.win32_system_backdrop = 'Disable'
 end
+
+config.default_cursor_style = 'BlinkingBlock'
+config.cursor_blink_rate = 700
+config.cursor_blink_ease_in = 'EaseInOut'
+config.cursor_blink_ease_out = 'EaseInOut'
 
 config.quick_select_patterns = {
   '[0-9a-fA-F]{2}(?::[0-9a-fA-F]{2}){5}',
@@ -43,6 +49,13 @@ config.quick_select_patterns = {
   -- Long options, excluding any '=value' suffix.
   [[(?<![\w-])--\w+(?:-\w+)*(?![\w-])]],
 }
+
+local toggle_transparency = wezterm.action_callback(function(window)
+  local overrides = window:get_config_overrides() or {}
+  local opacity = window:effective_config().window_background_opacity
+  overrides.window_background_opacity = opacity < 1 and 1.0 or 0.85
+  window:set_config_overrides(overrides)
+end)
 
 -- Keys
 config.keys = {
@@ -64,6 +77,13 @@ config.keys = {
       flags = 'FUZZY|TABS|LAUNCH_MENU_ITEMS',
       title = 'Launcher',
     },
+  },
+
+  -- toggle between opaque and 85% opacity without changing other overrides
+  {
+    key = 'b',
+    mods = 'CTRL|SHIFT',
+    action = toggle_transparency,
   },
 }
 
@@ -107,6 +127,11 @@ end
 local last_ssh_input = ''
 wezterm.on('augment-command-palette', function()
   return {
+    {
+      brief = 'Toggle transparency',
+      icon = 'md_opacity',
+      action = toggle_transparency,
+    },
     {
       brief = 'SSH to host',
       icon = 'md_login',
