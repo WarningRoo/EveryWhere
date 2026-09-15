@@ -212,8 +212,9 @@
 (use-package exec-path-from-shell
   :ensure t
   :config
-  (exec-path-from-shell-copy-env "ARCH")
-  (exec-path-from-shell-copy-env "CROSS_COMPILE")
+  (exec-path-from-shell-copy-envs
+   '("ARCH" "CROSS_COMPILE"
+     "ANTHROPIC_AUTH_TOKEN" "ANTHROPIC_DEFAULT_HAIKU_MODEL"))
   (when (or (memq window-system '(mac ns x pgtk))
             (daemonp))
     (exec-path-from-shell-initialize)))
@@ -483,6 +484,21 @@
 (use-package magit
   :defer t
   :ensure t)
+
+(use-package gptel-magit
+  :ensure t
+  :after magit
+  :config
+  (setq gptel-magit-model
+        (intern (or (getenv "ANTHROPIC_DEFAULT_HAIKU_MODEL") "deepseek-flash")))
+  (setq gptel-magit-backend
+        (gptel-make-deepseek "DeepSeek-Commit"
+          :key (lambda ()
+                 (or (getenv "ANTHROPIC_AUTH_TOKEN")
+                     (user-error "Set ANTHROPIC_AUTH_TOKEN for DeepSeek")))
+          :models (list gptel-magit-model)
+          :request-params '(:thinking (:type "disabled") :max_tokens 1024)))
+  (gptel-magit-install))
 
 (use-package blamer
   :ensure t
