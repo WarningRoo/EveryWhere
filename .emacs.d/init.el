@@ -511,7 +511,8 @@
 (use-package flymake
   :custom
   (flymake-mode-line-lighter "F")
-  (flymake-show-diagnostics-at-end-of-line t)
+  :config
+  (setq flymake-show-diagnostics-at-end-of-line 'fancy)
   :hook (prog-mode . flymake-mode)
   :bind (("C-M-n" . flymake-goto-next-error)
          ("C-M-p" . flymake-goto-prev-error)))
@@ -533,6 +534,9 @@
 
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode)
+  :custom
+  (hs-display-lines-hidden t)
+  (hs-show-indicators t)
   :bind (:map hs-minor-mode-map
               ("C-c h" . hs-toggle-hiding)))
 

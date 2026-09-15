@@ -7,6 +7,7 @@
 (setq gc-cons-threshold most-positive-fixnum)
 (setq package-enable-at-startup nil)
 (setq load-prefer-newer noninteractive)
+(setq load-path-filter-function #'load-path-filter-cache-directory-files)
 (setq inhibit-startup-screen t)
 
 ;; Frame
