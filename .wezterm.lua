@@ -38,10 +38,7 @@ if is_win then
   config.win32_system_backdrop = 'Disable'
 end
 
-config.default_cursor_style = 'BlinkingBlock'
-config.cursor_blink_rate = 700
-config.cursor_blink_ease_in = 'EaseInOut'
-config.cursor_blink_ease_out = 'EaseInOut'
+config.default_cursor_style = 'SteadyBar'
 
 config.quick_select_patterns = {
   '[0-9a-fA-F]{2}(?::[0-9a-fA-F]{2}){5}',
@@ -53,7 +50,7 @@ config.quick_select_patterns = {
 local toggle_transparency = wezterm.action_callback(function(window)
   local overrides = window:get_config_overrides() or {}
   local opacity = window:effective_config().window_background_opacity
-  overrides.window_background_opacity = opacity < 1 and 1.0 or 0.85
+  overrides.window_background_opacity = opacity < 1 and 1.0 or config.window_background_opacity
   window:set_config_overrides(overrides)
 end)
 
@@ -79,7 +76,7 @@ config.keys = {
     },
   },
 
-  -- toggle between opaque and 85% opacity without changing other overrides
+  -- toggle between opaque and configured opacity without changing other overrides
   {
     key = 'b',
     mods = 'CTRL|SHIFT',
