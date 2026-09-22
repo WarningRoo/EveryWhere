@@ -231,7 +231,7 @@
   :ensure t
   :custom
   (dashboard-center-content t)
-  (dashboard-startup-banner 'logo)
+  (dashboard-startup-banner 'official)
   ;; Icon
   (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
@@ -528,7 +528,7 @@
   :custom
   (flymake-mode-line-lighter "F")
   :config
-  (setq flymake-show-diagnostics-at-end-of-line 'fancy)
+  (setq flymake-show-diagnostics-at-end-of-line t)
   :hook (prog-mode . flymake-mode)
   :bind (("C-M-n" . flymake-goto-next-error)
          ("C-M-p" . flymake-goto-prev-error)))
@@ -562,7 +562,7 @@
   (c-ts-mode-set-global-style 'linux)
   :hook
   ((c-ts-mode c++-ts-mode) . (lambda ()
-                               (setq-local c-ts-mode-indent-offset 8)
+                               (setq-local c-ts-indent-offset 8)
                                (setq-local indent-tabs-mode t)
                                (setq-local tab-width 8))))
 
