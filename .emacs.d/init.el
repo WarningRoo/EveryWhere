@@ -28,7 +28,12 @@
       (when-let*
           ((font (qu/first-available "Maple Mono NF CN" "Noto Sans CJK SC" "Sarasa Term SC Nerd" "Microsoft Yahei UI")))
         (set-fontset-font t 'han (font-spec :family font) nil 'prepend)
-        (set-fontset-font t 'cjk-misc (font-spec :family font) nil 'prepend)))))
+        (set-fontset-font t 'cjk-misc (font-spec :family font) nil 'prepend))
+      (when-let*
+          ((font (qu/first-available "Inter" "Noto Sans" "Segoe UI")))
+        (dolist (face '(mode-line mode-line-inactive tab-line header-line))
+          (set-face-attribute face (selected-frame)
+                              :family font :height 130 :weight 'regular))))))
 
 (add-hook 'after-make-frame-functions #'qu/font-setup)
 (when (display-graphic-p) (qu/font-setup))
@@ -45,6 +50,7 @@
 (recentf-mode t)
 (delete-selection-mode t)
 (show-paren-mode)
+(setq read-extended-command-predicate #'command-completion-default-include-p)
 
 (defun qu/enable-tex-input-method ()
   "Enable TeX input method in the current buffer."
@@ -58,16 +64,13 @@
 (setq global-auto-revert-non-file-buffers t)
 (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode)
 
-;; Date & Time
-(setq display-time-day-and-date t)
-(setq display-time-default-load-average nil)
-(display-time-mode)
-
 ;; Display the column indicator
 (setq-default fill-column 120)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 ;;; line/column number
+(setq display-line-numbers-width-start t
+      display-line-numbers-grow-only t)
 (column-number-mode 1)
 ;; Enable line numbers for some modes
 (dolist (mode '(prog-mode-hook
@@ -81,6 +84,8 @@
 (global-set-key (kbd "C-c '") 'comment-or-uncomment-region)
 
 ;; Pixel scroll
+(setq scroll-margin 3
+      scroll-conservatively 101)
 (pixel-scroll-precision-mode 1)
 (setq pixel-scroll-precision-interpolate-page t)
 (defalias 'scroll-up-command 'pixel-scroll-interpolate-down)
@@ -125,6 +130,62 @@
 (use-package winner
   :init (winner-mode))
 
+(use-package mouse
+  :custom
+  (window-resize-pixelwise t)
+  (mouse-1-double-click-prefer-symbols t)
+  :config
+  (context-menu-mode 1)
+  (mouse-shift-adjust-mode 1))
+
+(use-package tab-line
+  :demand t
+  :bind (:map tab-line-mode-map
+              ("C-<prior>" . tab-line-switch-to-prev-tab)
+              ("C-<next>" . tab-line-switch-to-next-tab))
+  :custom
+  (tab-line-close-button-show 'selected)
+  (tab-line-tab-name-function #'tab-line-tab-name-truncated-buffer)
+  (tab-line-tab-name-truncated-max 24)
+  (tab-line-exclude-buffers
+   (lambda (buffer) (not (buffer-file-name (get-buffer buffer)))))
+  (tab-line-tabs-window-buffers-filter-function #'tab-line-tabs-non-excluded)
+  :config
+  (custom-set-faces
+   '(tab-line ((t (:background "#282828" :foreground "#b0bec5" :box nil))))
+   '(tab-line-tab ((t (:inherit tab-line :background "#282828" :box nil))))
+   '(tab-line-tab-inactive ((t (:inherit tab-line-tab :foreground "#9e9e9e" :background "#282828"))))
+   '(tab-line-tab-current ((t (:inherit tab-line-tab :foreground "#eeffff" :background "#3a3a3a"))))
+   '(tab-line-highlight ((t (:background "#424242" :box nil)))))
+  (global-tab-line-mode 1))
+
+(use-package prog-mode
+  :hook (prog-mode . (lambda () (setq-local line-spacing '(0.03 . 0.03)))))
+
+(use-package xref
+  :hook (prog-mode . xref-mouse-mode)
+  :config
+  (defun qu/context-menu-xref (menu click)
+    "Add Xref actions for the symbol at mouse CLICK to MENU."
+    (when (and (derived-mode-p 'prog-mode)
+               (bounds-of-thing-at-mouse click 'symbol))
+      (define-key-after menu [xref-separator] menu-bar-separator)
+      (define-key-after menu [xref-definition]
+        `(menu-item "Go to Definition"
+                    ,(lambda () (interactive) (xref-find-definitions-at-mouse click))))
+      (define-key-after menu [xref-references]
+        `(menu-item "Find References"
+                    ,(lambda () (interactive) (xref-find-references-at-mouse click)))))
+    menu)
+  (add-hook 'context-menu-functions #'qu/context-menu-xref))
+
+(use-package which-func
+  :custom
+  (which-func-modes '(prog-mode))
+  (which-func-display 'header)
+  :config
+  (which-function-mode 1))
+
 (use-package ace-window
   :ensure t
   :bind (("M-o" . ace-window))
@@ -146,9 +207,12 @@
 
 (use-package dirvish
   :ensure t
+  :custom (dirvish-side-width 32)
   :init
   (dirvish-override-dired-mode)
-  :bind (("C-c d" . dirvish-side))
+  :bind (("C-c d" . dirvish-side)
+         :map dirvish-mode-map
+         ("<mouse-2>" . dired-mouse-find-file))
   :config
   (dirvish-side-follow-mode))
 
@@ -167,16 +231,15 @@
   (which-key-mode)
   :config
   (setq which-key-show-early-on-C-h t)
-  (setq which-key-idle-delay 1.0)
+  (setq which-key-idle-delay 0.5)
   (setq which-key-idle-secondary-delay 0.05))
 
 (use-package hl-line
-  :hook
-  (after-init . global-hl-line-mode)
+  :hook ((prog-mode dired-mode) . hl-line-mode)
+  :custom (hl-line-sticky-flag nil)
   :config
-  (setq hl-line-range-function (lambda ()
-                                 (cons (line-end-position)
-                                       (line-beginning-position 2)))))
+  (custom-set-faces
+   '(hl-line ((t (:background "#282828" :extend t))))))
 
 (use-package aidermacs
   :ensure t
@@ -194,6 +257,16 @@
   :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
+  :custom
+  (popper-window-height
+   (lambda (win)
+     (let ((height (floor (frame-height (window-frame win)) 3)))
+       (fit-window-to-buffer win height height))))
+  (popper-display-function
+   (lambda (buffer &optional alist)
+     ;; Keep callers such as Flymake from overriding the shared panel height.
+     (popper-select-popup-at-bottom
+      buffer (cons (cons 'window-height popper-window-height) alist))))
   :init
   (setq popper-reference-buffers
         '("\\*gt-result\\*"
@@ -202,8 +275,12 @@
           "\\*Async Shell Command\\*"
           "\\*Buffer List\\*"
           "\\*Backtrace\\*"
+          "\\`\\*eldoc\\*"
+          "\\`\\*company-documentation\\*\\'"
           help-mode
-          compilation-mode))
+          compilation-mode
+          flymake-diagnostics-buffer-mode
+          flymake-project-diagnostics-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
 
@@ -224,31 +301,6 @@
   :ensure t
   :hook
   (dired-mode . nerd-icons-dired-mode))
-
-(use-package dashboard
-  :ensure t
-  :custom
-  (dashboard-center-content t)
-  (dashboard-startup-banner 'official)
-  ;; Icon
-  (dashboard-display-icons-p t)
-  (dashboard-icon-type 'nerd-icons)
-  (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons t)
-  ;; Homepage
-  (dashboard-items '((recents . 8)
-                     (bookmarks . 8)))
-  (dashboard-startupify-list '(
-                               dashboard-insert-banner
-                               dashboard-insert-banner-title
-                               dashboard-insert-items
-                               dashboard-insert-footer
-                               ))
-  :config
-  (setq dashboard-bookmarks-show-base nil)
-  (setq dashboard-recentf-show-base t)
-  (setq dashboard-recentf-item-format "%s")
-  (dashboard-setup-startup-hook))
 
 (use-package mwim
   :ensure t
@@ -272,6 +324,7 @@
 
 (use-package vertico
   :ensure t
+  :custom (vertico-resize nil)
   :init
   (vertico-mode))
 
@@ -428,11 +481,8 @@
 
 (use-package company
   :ensure t
+  :custom (company-tooltip-align-annotations t)
   :hook (after-init . global-company-mode))
-
-(use-package company-box
-  :ensure t
-  :hook (company-mode . company-box-mode))
 
 ;; modeline
 (use-package doom-modeline
@@ -440,22 +490,35 @@
   :init
   (setq doom-modeline-support-imenu t)
   :custom
-  (doom-modeline-time t)
+  (doom-modeline-time nil)
   (doom-modeline-project-name t)
   (doom-modeline-buffer-file-name-style 'auto)
-  (doom-modeline-hud t)
+  (doom-modeline-hud nil)
   (doom-modeline-icon t)
-  (doom-modeline-time-icon nil)
   (doom-modeline-check-icon nil)
   (doom-modeline-buffer-encoding nil)
   :hook
-  (after-init . doom-modeline-mode))
+  (after-init . doom-modeline-mode)
+  :config
+  (custom-set-faces
+   '(doom-modeline-buffer-file ((t (:weight normal))))
+   '(doom-modeline-buffer-path ((t (:weight normal))))
+   '(doom-modeline-project-dir ((t (:weight normal))))
+   '(doom-modeline-project-root-dir ((t (:weight normal))))
+   '(doom-modeline-buffer-major-mode ((t (:weight normal))))))
 
 ;; theme
 (use-package doom-themes
   :ensure t
   :config
-  (load-theme 'doom-material-dark t))
+  (load-theme 'doom-material-dark t)
+  (custom-set-faces
+   '(line-number ((t (:foreground "#757575" :weight normal))))
+   '(line-number-current-line ((t (:foreground "#eeffff" :background "#282828" :weight normal))))
+   '(font-lock-comment-face ((t (:foreground "#9e9e9e"))))
+   '(font-lock-doc-face ((t (:foreground "#9e9e9e"))))
+   '(shadow ((t (:foreground "#9e9e9e")))))
+  (qu/font-setup))
 
 (use-package golden-ratio
   :disabled
@@ -469,7 +532,7 @@
 
 (use-package symbol-overlay
   :ensure t
-  :init (symbol-overlay-mode)
+  :hook (prog-mode . symbol-overlay-mode)
   :bind (("<f8>" . symbol-overlay-put)
          ("<f9>" . symbol-overlay-remove-all)))
 
@@ -503,6 +566,10 @@
 
 ;; eglot lsp related
 (use-package eglot
+  :bind (:map eglot-mode-map
+              ("<f2>" . eglot-rename)
+              ("C-c e a" . eglot-code-actions)
+              ("C-c e f" . eglot-format-buffer))
   :hook
   ((c-mode c-ts-mode) . eglot-ensure)
   ((c++-mode c++-ts-mode) . eglot-ensure)
@@ -519,11 +586,13 @@
 (use-package flymake
   :custom
   (flymake-mode-line-lighter "F")
-  :config
-  (setq flymake-show-diagnostics-at-end-of-line t)
+  (flymake-show-diagnostics-at-end-of-line 'short)
   :hook (prog-mode . flymake-mode)
   :bind (("C-M-n" . flymake-goto-next-error)
-         ("C-M-p" . flymake-goto-prev-error)))
+         ("C-M-p" . flymake-goto-prev-error)
+         :map flymake-mode-map
+         ("C-c ! b" . flymake-show-buffer-diagnostics)
+         ("C-c ! p" . flymake-show-project-diagnostics)))
 
 (use-package treesit
   :if (eq system-type 'gnu/linux)
