@@ -19,16 +19,14 @@
   (with-selected-frame (or frame (selected-frame))
     (when (display-graphic-p)
       (when-let*
-          ((font (qu/first-available "Noto Sans Mono" "Jetbrains Mono" "Consolas")))
-        (set-frame-font (font-spec :family font :size 18 :weight 'regular) nil t))
-      (when-let*
-          ((font (qu/first-available "Symbols Nerd Fonts Mono" "Segoe UI Symbol" "Symbola" "Symbol")))
-        (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
+          ((font (qu/first-available "Maple Mono NF CN" "Noto Sans Mono" "Jetbrains Mono" "Consolas")))
+        (set-frame-font (font-spec :family font :size 15.0 :weight 'regular) nil)
+        (set-face-attribute 'fixed-pitch (selected-frame) :family font))
       (when-let*
           ((font (qu/first-available "Noto Color Emoji" "Segoe UI Emoji")))
         (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
       (when-let*
-          ((font (qu/first-available "Noto Sans CJK SC" "Sarasa Term SC Nerd" "Microsoft Yahei UI")))
+          ((font (qu/first-available "Maple Mono NF CN" "Noto Sans CJK SC" "Sarasa Term SC Nerd" "Microsoft Yahei UI")))
         (set-fontset-font t 'han (font-spec :family font) nil 'prepend)
         (set-fontset-font t 'cjk-misc (font-spec :family font) nil 'prepend)))))
 
@@ -455,15 +453,9 @@
 
 ;; theme
 (use-package doom-themes
-  :disabled
   :ensure t
   :config
-  (load-theme 'doom-xcode t))
-
-(use-package ef-themes
-  :ensure t
-  :config
-  (load-theme 'ef-night :no-confirm))
+  (load-theme 'doom-material-dark t))
 
 (use-package golden-ratio
   :disabled
