@@ -1,1 +1,12 @@
 .aider*
+
+# Local environment files and credentials
+.env
+.env.*
+.authinfo*
+
+# SSH host configuration and keys
+.ssh/
+
+# Machine-local Emacs customizations
+/.emacs.d/custom-vars.el
