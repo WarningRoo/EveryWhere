@@ -72,6 +72,7 @@
 (setq display-line-numbers-width-start t
       display-line-numbers-grow-only t)
 (column-number-mode 1)
+
 ;; Enable line numbers for some modes
 (dolist (mode '(prog-mode-hook
                 diff-mode-hook))
@@ -212,8 +213,16 @@
   (dirvish-override-dired-mode)
   :bind (("C-c d" . dirvish-side)
          :map dirvish-mode-map
-         ("<mouse-2>" . dired-mouse-find-file))
+         ("<mouse-2>" . qu/dirvish-mouse-open))
   :config
+  (require 'dirvish-subtree)
+  (defun qu/dirvish-mouse-open (event)
+    "Expand the directory at EVENT, or open its file in the editor."
+    (interactive "e")
+    (mouse-set-point event)
+    (if (file-directory-p (dired-get-file-for-visit))
+        (dirvish-subtree-toggle)
+      (dired-find-file)))
   (dirvish-side-follow-mode))
 
 (use-package eww
