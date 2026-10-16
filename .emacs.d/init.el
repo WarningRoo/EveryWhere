@@ -702,6 +702,12 @@
   (org-agenda-files (list (concat org-directory "agenda/")))
 
   :config
+  (defface qu/org-bold
+    '((t (:inherit bold :foreground "#ffcb6b")))
+    "Face for bold emphasis in Org buffers."
+    :group 'org-faces)
+  (setf (cadr (assoc "*" org-emphasis-alist)) 'qu/org-bold)
+
   ;; LaTeX
   (setq org-highlight-latex-and-related '(native))
   (setq org-preview-latex-default-process 'dvisvgm)
