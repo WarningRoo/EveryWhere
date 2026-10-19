@@ -7,7 +7,6 @@
 ;; Move customization variables to a separate file and load it
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
 (load custom-file 'noerror 'nomessage)
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 ;; Fonts
 (defun qu/first-available (&rest fonts)
@@ -89,8 +88,8 @@
       scroll-conservatively 101)
 (pixel-scroll-precision-mode 1)
 (setq pixel-scroll-precision-interpolate-page t)
-(defalias 'scroll-up-command 'pixel-scroll-interpolate-down)
-(defalias 'scroll-down-command 'pixel-scroll-interpolate-up)
+(global-set-key (kbd "C-v") #'pixel-scroll-interpolate-down)
+(global-set-key (kbd "M-v") #'pixel-scroll-interpolate-up)
 
 ;; Scroll line
 (global-set-key (kbd "M-p") 'scroll-down-line)
@@ -102,9 +101,9 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq package-install-upgrade-built-in nil)
-(setq package-check-signature nil)
-(unless (bound-and-true-p package--initialized)
-    (package-initialize))
+(setq package-check-signature 'allow-unsigned)
+(unless (bound-and-true-p package--activated)
+    (package-activate-all))
 (setq use-package-always-ensure nil)
 
 (use-package benchmark-init
@@ -118,11 +117,13 @@
   :init (gcmh-mode 1))
 
 (use-package gdb-mi
+  :defer t
   :config
   (setq gdb-many-windows t)
   (setq gdb-show-main t))
 
 (use-package tramp
+  :defer t
   :config
   (setq remote-file-name-inhibit-locks t
         tramp-use-scp-direct-remote-copying t
@@ -297,11 +298,12 @@
   :ensure t
   :config
   (exec-path-from-shell-copy-envs
-   '("ARCH" "CROSS_COMPILE"
-     "ANTHROPIC_AUTH_TOKEN" "ANTHROPIC_DEFAULT_HAIKU_MODEL"))
-  (when (or (memq window-system '(mac ns x pgtk))
-            (daemonp))
-    (exec-path-from-shell-initialize)))
+   (append
+    '("ARCH" "CROSS_COMPILE"
+      "ANTHROPIC_AUTH_TOKEN" "ANTHROPIC_DEFAULT_HAIKU_MODEL")
+    (when (or (memq window-system '(mac ns x pgtk))
+              (daemonp))
+      exec-path-from-shell-variables))))
 
 (use-package nerd-icons
   :ensure t)
@@ -336,12 +338,6 @@
   :custom (vertico-resize nil)
   :init
   (vertico-mode))
-
-(use-package vertico-posframe
-  :disabled
-  :ensure t
-  :init
-  (vertico-posframe-mode 1))
 
 (use-package savehist
   :init
@@ -529,16 +525,6 @@
    '(shadow ((t (:foreground "#9e9e9e")))))
   (qu/font-setup))
 
-(use-package golden-ratio
-  :disabled
-  :ensure t
-  :init
-  (golden-ratio-mode))
-
-(use-package project
-  :config
-  (setq project-vc-extra-root-markers '("INSTALL" "COPYING" "LICENSE")))
-
 (use-package symbol-overlay
   :ensure t
   :hook (prog-mode . symbol-overlay-mode)
@@ -611,6 +597,7 @@
 
 (use-package dogears
   :ensure t
+  :hook (after-init . dogears-mode)
   :bind (:map global-map
               ("M-g d" . dogears-go)
               ("M-g M-b" . dogears-back)
@@ -628,6 +615,7 @@
 
 ;;; Programming
 (use-package c-ts-mode
+  :defer t
   :config
   (c-ts-mode-set-global-style 'linux)
   :hook
@@ -637,6 +625,7 @@
                                (setq-local tab-width 8))))
 
 (use-package cc-mode
+  :defer t
   :hook
   ((c-mode c++-mode) . (lambda ()
                          (c-set-style "linux")
@@ -723,7 +712,8 @@
   (require 'org-indent)
   (require 'org-capture)
 
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (advice-add 'org-refile :after
+              (lambda (&rest _) (org-save-all-org-buffers)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)"
                                       "|"
                                       "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
@@ -749,9 +739,6 @@
      (python . t)
      (makefile . t)
      (C . t))))
-
-(use-package org-contrib
-  :ensure t)
 
 (use-package org-download
   :ensure t
@@ -790,24 +777,9 @@
 
 (use-package olivetti
   :ensure t
+  :custom
+  (olivetti-body-width 0.8)
   :hook (org-mode . olivetti-mode))
-
-(use-package visual-fill-column
-  :disabled
-  :ensure t
-  :hook
-  (org-mode . (lambda ()
-                (visual-fill-column-mode 1)
-                (setq visual-fill-column-width 110
-                      visual-fill-column-center-text t)))
-  :config
-  (setq visual-fill-column-adjust-for-text-scale t)
-  (defun qu/visual-fill-column-adjust-if-org ()
-    (when (and (derived-mode-p 'org-mode)
-               visual-fill-column-mode)
-      (visual-fill-column-adjust)))
-  (advice-add 'text-scale-adjust :after #'qu/visual-fill-column-adjust-if-org)
-  (advice-add 'mouse-wheel-text-scale :after #'qu/visual-fill-column-adjust-if-org))
 
 (use-package valign
   :ensure t
