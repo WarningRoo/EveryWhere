@@ -132,6 +132,14 @@
 (use-package winner
   :init (winner-mode))
 
+(use-package frame
+  :custom
+  (window-divider-default-places t)
+  (window-divider-default-right-width 2)
+  (window-divider-default-bottom-width 2)
+  :config
+  (window-divider-mode 1))
+
 (use-package mouse
   :custom
   (window-resize-pixelwise t)
@@ -157,7 +165,7 @@
    '(tab-line ((t (:background "#282828" :foreground "#b0bec5" :box nil))))
    '(tab-line-tab ((t (:inherit tab-line :background "#282828" :box nil))))
    '(tab-line-tab-inactive ((t (:inherit tab-line-tab :foreground "#9e9e9e" :background "#282828"))))
-   '(tab-line-tab-current ((t (:inherit tab-line-tab :foreground "#eeffff" :background "#3a3a3a"))))
+   '(tab-line-tab-current ((t (:inherit tab-line-tab :foreground "#eeffff" :background "#303030" :overline "#82aaff"))))
    '(tab-line-highlight ((t (:background "#424242" :box nil)))))
   (global-tab-line-mode 1))
 
@@ -518,6 +526,10 @@
   :config
   (load-theme 'doom-material-dark t)
   (custom-set-faces
+   '(header-line ((t (:background "#282828" :foreground "#bfc7d5" :box nil))))
+   '(window-divider ((t (:foreground "#424242"))))
+   '(window-divider-first-pixel ((t (:foreground "#424242"))))
+   '(window-divider-last-pixel ((t (:foreground "#424242"))))
    '(line-number ((t (:foreground "#757575" :weight normal))))
    '(line-number-current-line ((t (:foreground "#eeffff" :background "#282828" :weight normal))))
    '(font-lock-comment-face ((t (:foreground "#9e9e9e"))))
@@ -534,6 +546,12 @@
 (use-package magit
   :defer t
   :ensure t)
+
+(use-package diff-hl
+  :ensure t
+  :custom (diff-hl-disable-on-remote t)
+  :hook ((after-init . global-diff-hl-mode)
+         (magit-post-refresh . diff-hl-magit-post-refresh)))
 
 (use-package gptel-magit
   :ensure t
@@ -593,7 +611,9 @@
   :if (eq system-type 'gnu/linux)
   :custom
   (treesit-enabled-modes t)
-  (treesit-auto-install-grammar 'ask))
+  (treesit-auto-install-grammar 'ask)
+  (treesit-font-lock-level
+   '((c-ts-mode . 4) (c++-ts-mode . 4) (python-ts-mode . 4) (t . 3))))
 
 (use-package dogears
   :ensure t
@@ -652,19 +672,6 @@
   "Root directory for Org files.")
 (setq org-directory qu/org-root)
 
-(defun qu/org-font-setup()
-  "Font set for org."
-  ;; Title
-  (with-eval-after-load 'org-faces
-    (set-face-attribute 'org-level-1 nil :height 1.4)
-    (set-face-attribute 'org-level-2 nil :height 1.3)
-    (set-face-attribute 'org-level-3 nil :height 1.2)
-    (set-face-attribute 'org-level-4 nil :height 1.1)
-    (set-face-attribute 'org-level-5 nil :height 1.1)
-    (set-face-attribute 'org-level-6 nil :height 1.1)
-    (set-face-attribute 'org-level-7 nil :height 1.1)
-    (set-face-attribute 'org-level-8 nil :height 1.1)))
-
 (use-package org
   :hook
   (org-mode . (lambda ()
@@ -672,12 +679,14 @@
                 ;;(variable-pitch-mode 1) ; variable pitch against fixed-pitch
                 (auto-fill-mode 0)
                 (visual-line-mode 1)
-                (setq-local line-spacing '(0.05 . 0.05))))
+                (setq-local line-spacing '(0.05 . 0.05)
+                            word-wrap-by-category t)))
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :custom
   (org-src-tab-acts-natively t)
+  (org-fontify-quote-and-verse-blocks t)
   (org-imenu-depth 3)
   (org-default-notes-file (concat org-directory "agenda/ideas.org"))
   (org-hide-emphasis-markers t)
@@ -691,6 +700,20 @@
   (org-agenda-files (list (concat org-directory "agenda/")))
 
   :config
+  (custom-set-faces
+   '(org-level-1 ((t (:height 1.2))))
+   '(org-level-2 ((t (:height 1.1))))
+   '(org-level-3 ((t (:height 1.05))))
+   '(org-level-4 ((t (:height 1.0))))
+   '(org-level-5 ((t (:height 1.0))))
+   '(org-level-6 ((t (:height 1.0))))
+   '(org-level-7 ((t (:height 1.0))))
+   '(org-level-8 ((t (:height 1.0))))
+   '(org-code ((t (:inherit fixed-pitch :foreground "#89ddff" :background "#282828"))))
+   '(org-verbatim ((t (:inherit fixed-pitch :foreground "#c3e88d" :background "#282828"))))
+   '(org-quote ((t (:inherit default :background "#282828" :extend t))))
+   '(org-verse ((t (:inherit org-quote)))))
+
   (defface qu/org-bold
     '((t (:inherit bold :foreground "#ffcb6b")))
     "Face for bold emphasis in Org buffers."
@@ -714,9 +737,9 @@
 
   (advice-add 'org-refile :after
               (lambda (&rest _) (org-save-all-org-buffers)))
-  (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)"
+  (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "FUTURE(f)"
                                       "|"
-                                      "DONE(d)" "CANCELED(c)" "FUTURE(f)")))
+                                      "DONE(d)" "CANCELED(c)")))
   (setq org-agenda-custom-commands
         '(("0" "All active tasks" todo "TODO|NOW|FUTURE")
           ("1" "TODO" todo "TODO")
@@ -728,8 +751,6 @@
            "* TODO %?\n  %T\n" :prepend t)
           ("i" "Idea" entry (file ,(concat org-directory "agenda/ideas.org"))
            "* %T\n" :prepend t)))
-
-  (qu/org-font-setup)
 
   ;; Babel languages
   (org-babel-do-load-languages
@@ -786,9 +807,24 @@
   :hook
   (org-mode . valign-mode))
 
-(use-package adaptive-wrap
+(use-package visual-wrap
+  :hook (org-mode . visual-wrap-prefix-mode)
+  :config (require 'kinsoku))
+
+(use-package org-modern
   :ensure t
-  :hook (org-mode . (lambda () (adaptive-wrap-prefix-mode 1))))
+  :hook (org-mode . org-modern-mode)
+  :custom
+  ;; Let Valign handle tables and visual-wrap handle continuation prefixes.
+  (org-modern-table nil)
+  (org-modern-block-fringe nil)
+  (org-modern-block-name nil)
+  (org-modern-keyword nil)
+  :config
+  (custom-set-faces
+   '(org-modern-label ((t (:height 0.9 :weight regular))))
+   '(org-modern-todo ((t (:inherit (org-todo org-modern-label) :weight regular :inverse-video t))))
+   '(org-modern-priority ((t (:inherit (org-priority org-modern-label) :weight regular :inverse-video t))))))
 
 (provide 'init)
 ;;; init.el ends here
