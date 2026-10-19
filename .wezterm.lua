@@ -19,8 +19,15 @@ end
 
 -- Font (Nerd Font + CJK, required by p10k)
 config.font = wezterm.font('Maple Mono NF CN')
-config.font_size = 18.0
+config.font_size = 16.0
 config.line_height = 1.05
+
+-- UI font; the command palette inherits window_frame.font.
+config.window_frame = {
+  font = wezterm.font { family = 'Inter', weight = 'Regular' },
+  font_size = 13.0,
+}
+config.command_palette_font_size = 13.0
 
 -- Theme
 config.color_scheme = 'Catppuccin Mocha'
