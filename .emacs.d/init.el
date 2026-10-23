@@ -55,8 +55,7 @@
   "Enable TeX input method in the current buffer."
   (set-input-method "TeX"))
 
-(dolist (hook '(text-mode-hook org-mode-hook LaTeX-mode-hook latex-mode-hook))
-  (add-hook hook #'qu/enable-tex-input-method))
+(add-hook 'text-mode-hook #'qu/enable-tex-input-method)
 
 ;; auto-revert
 (global-auto-revert-mode t)
@@ -155,18 +154,31 @@
               ("C-<next>" . tab-line-switch-to-next-tab))
   :custom
   (tab-line-close-button-show 'selected)
-  (tab-line-tab-name-function #'tab-line-tab-name-truncated-buffer)
+  (tab-line-tab-name-function
+   (lambda (buffer &optional buffers)
+     (concat " " (tab-line-tab-name-truncated-buffer buffer buffers) " ")))
   (tab-line-tab-name-truncated-max 24)
   (tab-line-exclude-buffers
    (lambda (buffer) (not (buffer-file-name (get-buffer buffer)))))
   (tab-line-tabs-window-buffers-filter-function #'tab-line-tabs-non-excluded)
   :config
+  (setq tab-line-separator
+        (propertize " " 'display '(space :width (1))
+                    'face '(:background "#505050")))
+  ;; Background-colored boxes provide padding without a visible border.
   (custom-set-faces
-   '(tab-line ((t (:background "#282828" :foreground "#b0bec5" :box nil))))
-   '(tab-line-tab ((t (:inherit tab-line :background "#282828" :box nil))))
+   '(tab-line ((t (:background "#202020" :foreground "#b0bec5" :box nil))))
+   '(tab-line-tab
+     ((t (:inherit tab-line :background "#282828"
+          :box (:line-width 5 :color "#282828" :style nil)))))
    '(tab-line-tab-inactive ((t (:inherit tab-line-tab :foreground "#9e9e9e" :background "#282828"))))
-   '(tab-line-tab-current ((t (:inherit tab-line-tab :foreground "#eeffff" :background "#303030" :overline "#82aaff"))))
-   '(tab-line-highlight ((t (:background "#424242" :box nil)))))
+   '(tab-line-tab-current
+     ((t (:inherit tab-line-tab :foreground "#eeffff" :background "#383838"
+          :overline "#82aaff"
+          :box (:line-width 5 :color "#383838" :style nil)))))
+   '(tab-line-highlight
+     ((t (:background "#424242"
+          :box (:line-width 5 :color "#424242" :style nil))))))
   (global-tab-line-mode 1))
 
 (use-package prog-mode
@@ -215,13 +227,37 @@
   :config
   (setq dired-dwim-target t))
 
+(use-package project
+  :defer t
+  :config
+  ;; Explicitly mark non-VC folders as projects without creating a Git repo.
+  (add-to-list 'project-vc-extra-root-markers ".project")
+  (add-to-list 'project-switch-commands
+               '(treemacs-add-and-display-current-project-exclusively "File tree" ?t)
+               t))
+
+(use-package treemacs
+  :ensure t
+  :commands treemacs-add-and-display-current-project-exclusively
+  :bind (("C-c d" . treemacs)
+         :map treemacs-mode-map
+         ("<mouse-1>" . treemacs-single-click-expand-action))
+  :custom
+  (treemacs-width 32)
+  :config
+  ;; Treemacs resets this while loading its Python integration.
+  (setq treemacs-collapse-dirs 0)
+  (treemacs-follow-mode 1)
+  (treemacs-project-follow-mode 1)
+  (treemacs-filewatch-mode 1)
+  (when (executable-find "git")
+    (treemacs-git-mode 'simple)))
+
 (use-package dirvish
   :ensure t
-  :custom (dirvish-side-width 32)
   :init
   (dirvish-override-dired-mode)
-  :bind (("C-c d" . dirvish-side)
-         :map dirvish-mode-map
+  :bind (:map dirvish-mode-map
          ("<mouse-2>" . qu/dirvish-mouse-open))
   :config
   (require 'dirvish-subtree)
@@ -231,8 +267,7 @@
     (mouse-set-point event)
     (if (file-directory-p (dired-get-file-for-visit))
         (dirvish-subtree-toggle)
-      (dired-find-file)))
-  (dirvish-side-follow-mode))
+      (dired-find-file))))
 
 (use-package eww
   :hook
@@ -258,13 +293,6 @@
   :config
   (custom-set-faces
    '(hl-line ((t (:background "#282828" :extend t))))))
-
-(use-package aidermacs
-  :ensure t
-  :defer t
-  :custom
-  (aidermacs-default-chat-mode 'architect)
-  (aidermacs-default-model "sonnet"))
 
 (use-package gptel
   :ensure t
@@ -335,12 +363,6 @@
                                :engines (list (gt-youdao-dict-engine))
                                :render  (gt-buffer-render))))
 
-(use-package slime
-  :ensure t
-  :defer t
-  :config
-  (setq inferior-lisp-program (executable-find "sbcl")))
-
 (use-package vertico
   :ensure t
   :custom (vertico-resize nil)
@@ -364,42 +386,30 @@
 
 (use-package consult
   :ensure t
-  :bind (;; C-c bindings in `mode-specific-map'
-         ;;?("C-c M-x" . consult-mode-command)
-         ;;?("C-c h" . consult-history)
-         ;;?("C-c k" . consult-kmacro)
-         ("C-c m" . consult-man)
+  :bind (("C-c m" . consult-man)
          ("C-c i" . consult-info)
          ([remap Info-search] . consult-info)
-         ;; C-x bindings in `ctl-x-map'
-         ;;!("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
          ("C-x b" . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x 5 b" . consult-buffer-other-frame)
          ("C-x t b" . consult-buffer-other-tab)
          ("C-x r b" . consult-bookmark)
          ("C-x p b" . consult-project-buffer)
-         ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("M-'" . consult-register-store)
          ("C-M-#" . consult-register)
-         ;; Other custom bindings
-         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-         ;; M-g bindings in `goto-map'
-         ("M-g e" . consult-compile-error) ;; Cycling between compile error(s)/warning(s)
+         ("M-y" . consult-yank-pop)
+         ("M-g e" . consult-compile-error)
          ("M-g r" . consult-grep-match)
          ("M-g f" . consult-flymake)
-         ("M-g g" . consult-goto-line)             ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g g" . consult-goto-line)
+         ("M-g M-g" . consult-goto-line)
+         ("M-g o" . consult-outline)
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
-         ;; M-s bindings in `search-map'
-         ;; ("M-s d" . consult-find)
          ("M-s d" . consult-fd)
-         ;;!("M-s c" . consult-locate)
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
@@ -408,22 +418,9 @@
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         ;;!:map isearch-mode-map
-         ;;!("M-e" . consult-isearch-history)        ;; orig. isearch-edit-string
-         ;;!("M-s e" . consult-isearch-history)      ;; orig. isearch-edit-string
-         ;;!("M-s l" . consult-line)                 ;; needed by consult-line to detect isearch
-         ;;!("M-s L" . consult-line-multi)           ;; needed by consult-line to detect isearch
-         ;; Minibuffer history
-         ;;!:map minibuffer-local-map
-         ;;!("M-s" . consult-history)                ;; orig. next-matching-history-element
-         ;;!("M-r" . consult-history)                ;; orig. previous-matching-history-element
-         )
+         ("M-s e" . consult-isearch-history))
   :hook (completion-list-mode . consult-preview-at-point-mode)
-
   :init
-
   (advice-add #'register-preview :override #'consult-register-window)
   (setq register-preview-delay 0.5)
 
@@ -432,27 +429,14 @@
         xref-show-definitions-function #'consult-xref)
 
   :config
-
-  ;; Optionally configure preview. The default value
-  ;; is 'any, such that any key triggers the preview.
-  ;; (setq consult-preview-key 'any)
-  ;; (setq consult-preview-key "M-.")
-  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
-  ;; For some commands and buffer sources it is useful to configure the
-  ;; :preview-key on a per-command basis using the `consult-customize' macro.
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep consult-man
    consult-bookmark consult-recent-file consult-xref
    consult-source-bookmark consult-source-file-register
    consult-source-recent-file consult-source-project-recent-file
-   ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
-
-  ;; Optionally configure the narrowing key.
-  ;; Both < and C-+ work reasonably well.
-  (setq consult-narrow-key "<") ;; "C-+"
-  )
+  (setq consult-narrow-key "<"))
 
 (use-package embark
   :bind
@@ -500,8 +484,6 @@
 ;; modeline
 (use-package doom-modeline
   :ensure t
-  :init
-  (setq doom-modeline-support-imenu t)
   :custom
   (doom-modeline-time nil)
   (doom-modeline-project-name t)
@@ -668,9 +650,7 @@
   :init (setq markdown-command "multimarkdown"))
 
 ;;; org-mode
-(defvar qu/org-root (expand-file-name "~/Documents/Knowing/")
-  "Root directory for Org files.")
-(setq org-directory qu/org-root)
+(setq org-directory (expand-file-name "~/Documents/Knowing/"))
 
 (use-package org
   :hook
@@ -731,10 +711,6 @@
                                    ("" "tikz" t)))
   (plist-put org-format-latex-options :scale 1.5)
 
-  ;; Org modules
-  (require 'org-indent)
-  (require 'org-capture)
-
   (advice-add 'org-refile :after
               (lambda (&rest _) (org-save-all-org-buffers)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "FUTURE(f)"
@@ -770,8 +746,6 @@
 
 (use-package org-roam
   :ensure t
-  :init
-  (setq org-roam-database-connector 'sqlite-builtin)
   :custom
   (org-roam-directory (concat org-directory "roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
