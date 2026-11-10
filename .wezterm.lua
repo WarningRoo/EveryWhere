@@ -6,6 +6,13 @@ local config = wezterm.config_builder()
 local is_win = wezterm.target_triple:find('windows') ~= nil
 local git_bash = 'C:\\Program Files\\Git\\bin\\bash.exe'
 
+-- Use XWayland/XIM on Linux to avoid the recurring Wayland input-method failure.
+if wezterm.target_triple:find('linux') then
+  config.enable_wayland = false
+  config.use_ime = true
+  config.xim_im_name = 'fcitx'
+end
+
 -- Shell for new tabs.
 -- Windows needs an explicit path: bare 'bash' resolves to WSL's bash.exe in System32.
 config.default_prog = is_win
