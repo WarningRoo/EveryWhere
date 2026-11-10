@@ -40,12 +40,13 @@
 ;;; BASIC
 (setq confirm-kill-emacs #'yes-or-no-p)
 (setq make-backup-files nil)
-(setq history-length 25)
+(setq history-length 200)
 (setq use-dialog-box nil)
 (setq-default indent-tabs-mode nil)
 (setq-default cursor-type 'bar)
 (save-place-mode t)
 (setq recentf-auto-cleanup 'never)
+(setq recentf-max-saved-items 300)
 (recentf-mode t)
 (delete-selection-mode t)
 (show-paren-mode)
@@ -410,7 +411,7 @@
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
          ("M-s d" . consult-fd)
-         ("M-s g" . consult-grep)
+         ("M-s g" . consult-ripgrep)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
          ("M-s l" . consult-line)
@@ -439,23 +440,19 @@
   (setq consult-narrow-key "<"))
 
 (use-package embark
-  :bind
-  ("C-h B" . embark-bindings)
+  :bind (("C-h B" . embark-bindings)
+         ("C-." . embark-act)
+         ("C-;" . embark-dwim)
+         ("C-'" . embark-act-all)
+         ("C-c ." . embark-act)
+         ("C-c ;" . embark-dwim)
+         ("C-c C-'" . embark-act-all))
   :init
   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   (setq prefix-help-command #'embark-prefix-help-command)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   :config
-  (if (display-graphic-p)
-      (bind-keys
-       ("C-." . embark-act)
-       ("C-;" . embark-dwim)
-       ("C-'" . embark-act-all))
-    (bind-keys
-     ("C-c ." . embark-act)
-     ("C-c ;" . embark-dwim)
-     ("C-c '" . embark-act-all)))
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
@@ -655,8 +652,6 @@
 (use-package org
   :hook
   (org-mode . (lambda ()
-                ;;(org-indent-mode)
-                ;;(variable-pitch-mode 1) ; variable pitch against fixed-pitch
                 (auto-fill-mode 0)
                 (visual-line-mode 1)
                 (setq-local line-spacing '(0.05 . 0.05)
@@ -670,9 +665,6 @@
   (org-imenu-depth 3)
   (org-default-notes-file (concat org-directory "agenda/ideas.org"))
   (org-hide-emphasis-markers t)
-  ;;(org-log-done 'time)
-  ;;(org-log-done 'note)
-  ;;Use C-u C-c C-t to make it as you will.
   (org-tags-column 0)
   (org-enforce-todo-dependencies t)
   (org-log-into-drawer t)
@@ -703,16 +695,12 @@
   ;; LaTeX
   (setq org-highlight-latex-and-related '(native))
   (setq org-preview-latex-default-process 'dvisvgm)
-  (setq org-latex-packages-alist '(("T1" "fontenc" t)
-                                   ("" "amsmath" t)
-                                   ("" "mathtools" t)
+  (setq org-latex-packages-alist '(("" "mathtools" t)
                                    ("" "siunitx" t)
                                    ("" "newtxmath" t)
                                    ("" "tikz" t)))
   (plist-put org-format-latex-options :scale 1.5)
 
-  (advice-add 'org-refile :after
-              (lambda (&rest _) (org-save-all-org-buffers)))
   (setq org-todo-keywords '((sequence "TODO(t)" "NOW(n)" "FUTURE(f)"
                                       "|"
                                       "DONE(d)" "CANCELED(c)")))
@@ -726,13 +714,12 @@
         `(("t" "Todo" entry (file ,(concat org-directory "agenda/tasks.org"))
            "* TODO %?\n  %T\n" :prepend t)
           ("i" "Idea" entry (file ,(concat org-directory "agenda/ideas.org"))
-           "* %T\n" :prepend t)))
+           "* %T\n%?" :prepend t)))
 
   ;; Babel languages
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((lisp . t)
-     (shell . t)
+   '((shell . t)
      (python . t)
      (makefile . t)
      (C . t))))
@@ -741,7 +728,6 @@
   :ensure t
   :after org
   :config
-  (setq org-download-method 'directory)
   (setq org-download-image-dir "resource"))
 
 (use-package org-roam
@@ -765,9 +751,6 @@
   :ensure t
   :after org-roam
   :custom
-  (org-roam-ui-sync-theme t)
-  (org-roam-ui-follow t)
-  (org-roam-ui-update-on-save t)
   (org-roam-ui-open-on-start nil))
 
 (use-package olivetti
