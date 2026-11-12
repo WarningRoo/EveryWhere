@@ -19,7 +19,7 @@
     (when (display-graphic-p)
       (when-let*
           ((font (qu/first-available "Maple Mono NF CN" "Noto Sans Mono" "Jetbrains Mono" "Consolas")))
-        (set-frame-font (font-spec :family font :size 15.0 :weight 'regular) nil)
+        (set-frame-font (font-spec :family font :size 15.0 :weight 'light) nil)
         (set-face-attribute 'fixed-pitch (selected-frame) :family font))
       (when-let*
           ((font (qu/first-available "Noto Color Emoji" "Segoe UI Emoji")))
@@ -149,38 +149,9 @@
   (mouse-shift-adjust-mode 1))
 
 (use-package tab-line
-  :demand t
   :bind (:map tab-line-mode-map
               ("C-<prior>" . tab-line-switch-to-prev-tab)
-              ("C-<next>" . tab-line-switch-to-next-tab))
-  :custom
-  (tab-line-close-button-show 'selected)
-  (tab-line-tab-name-function
-   (lambda (buffer &optional buffers)
-     (concat " " (tab-line-tab-name-truncated-buffer buffer buffers) " ")))
-  (tab-line-tab-name-truncated-max 24)
-  (tab-line-exclude-buffers
-   (lambda (buffer) (not (buffer-file-name (get-buffer buffer)))))
-  (tab-line-tabs-window-buffers-filter-function #'tab-line-tabs-non-excluded)
-  :config
-  (setq tab-line-separator
-        (propertize " " 'display '(space :width (1))
-                    'face '(:background "#505050")))
-  ;; Background-colored boxes provide padding without a visible border.
-  (custom-set-faces
-   '(tab-line ((t (:background "#202020" :foreground "#b0bec5" :box nil))))
-   '(tab-line-tab
-     ((t (:inherit tab-line :background "#282828"
-          :box (:line-width 5 :color "#282828" :style nil)))))
-   '(tab-line-tab-inactive ((t (:inherit tab-line-tab :foreground "#9e9e9e" :background "#282828"))))
-   '(tab-line-tab-current
-     ((t (:inherit tab-line-tab :foreground "#eeffff" :background "#383838"
-          :overline "#82aaff"
-          :box (:line-width 5 :color "#383838" :style nil)))))
-   '(tab-line-highlight
-     ((t (:background "#424242"
-          :box (:line-width 5 :color "#424242" :style nil))))))
-  (global-tab-line-mode 1))
+              ("C-<next>" . tab-line-switch-to-next-tab)))
 
 (use-package prog-mode
   :hook (prog-mode . (lambda () (setq-local line-spacing '(0.03 . 0.03)))))
@@ -345,6 +316,13 @@
 (use-package nerd-icons
   :ensure t)
 
+(use-package modern-tab
+  :vc (:url "https://github.com/MArpogaus/modern-tab" :rev :newest)
+  :config
+  (require 'modern-tab-line)
+  (global-tab-line-mode 1)
+  (modern-tab-line-mode 1))
+
 (use-package nerd-icons-dired
   :ensure t
   :hook
@@ -487,6 +465,7 @@
   (doom-modeline-buffer-file-name-style 'auto)
   (doom-modeline-hud nil)
   (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon nil)
   (doom-modeline-check-icon nil)
   (doom-modeline-buffer-encoding nil)
   :hook
@@ -674,13 +653,17 @@
   :config
   (custom-set-faces
    '(org-level-1 ((t (:height 1.2))))
-   '(org-level-2 ((t (:height 1.1))))
-   '(org-level-3 ((t (:height 1.05))))
-   '(org-level-4 ((t (:height 1.0))))
-   '(org-level-5 ((t (:height 1.0))))
-   '(org-level-6 ((t (:height 1.0))))
-   '(org-level-7 ((t (:height 1.0))))
-   '(org-level-8 ((t (:height 1.0))))
+   '(org-level-2 ((t (:inherit default :foreground unspecified :weight regular :height 1.1))))
+   '(org-level-3 ((t (:inherit default :foreground unspecified :weight regular :height 1.05))))
+   '(org-level-4 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
+   '(org-level-5 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
+   '(org-level-6 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
+   '(org-level-7 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
+   '(org-level-8 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
+   '(org-table ((t (:inherit shadow :foreground unspecified))))
+   '(org-meta-line ((t (:inherit shadow :foreground unspecified))))
+   '(org-block-begin-line ((t (:inherit org-meta-line :foreground unspecified))))
+   '(org-block-end-line ((t (:inherit org-meta-line :foreground unspecified))))
    '(org-code ((t (:inherit fixed-pitch :foreground "#89ddff" :background "#282828"))))
    '(org-verbatim ((t (:inherit fixed-pitch :foreground "#c3e88d" :background "#282828"))))
    '(org-quote ((t (:inherit default :background "#282828" :extend t))))

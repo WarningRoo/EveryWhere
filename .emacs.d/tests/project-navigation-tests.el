@@ -8,6 +8,7 @@
 (package-initialize)
 (require 'use-package)
 (require 'project)
+(require 'modern-tab-line)
 
 (defvar qu-test/init-file
   (or (getenv "EMACS_INIT_UNDER_TEST")
@@ -27,7 +28,8 @@
           (while t
             (setq form (read (current-buffer)))
             (when (and (eq (car-safe form) 'use-package)
-                       (memq (cadr form) '(project treemacs dirvish consult tab-line)))
+                       (memq (cadr form) '(project treemacs dirvish consult tab-line
+                                          nerd-icons modern-tab)))
               (eval form t)))
         (end-of-file nil)))))
 
@@ -57,33 +59,51 @@
   (should (eq (lookup-key tab-line-mode-map (kbd "C-<next>"))
               'tab-line-switch-to-next-tab)))
 
-(ert-deftest qu-test/tab-line-label-padding ()
-  (dolist (name '("main.c" "a_long_filename_that_needs_truncation.h"))
-    (with-temp-buffer
-      (rename-buffer name t)
-      (let ((label (funcall tab-line-tab-name-function (current-buffer))))
-        (should (string-prefix-p " " label))
-        (should (string-suffix-p " " label))
-        (should (<= (string-width (string-trim label)) 24))))))
+(ert-deftest qu-test/modern-tab-controls-the-file-tab-line ()
+  (should global-tab-line-mode)
+  (should modern-tab-line-mode)
+  (should-not (bound-and-true-p modern-tab-bar-mode))
+  (should (eq tab-line-tab-name-function #'modern-tab-line-tab-name))
+  (should (eq tab-line-tab-name-format-function #'modern-tab-line-tab-format))
+  (should (eq tab-line-close-tab-function #'modern-tab-line-close-tab)))
 
-(ert-deftest qu-test/tab-line-separator-and-faces ()
-  (should (stringp tab-line-separator))
-  (should (equal (get-text-property 0 'display tab-line-separator)
-                 '(space :width (1))))
-  (should-not (equal (face-attribute 'tab-line :background)
-                     (face-attribute 'tab-line-tab-inactive :background)))
-  (should-not (equal (face-attribute 'tab-line-tab-current :background)
-                     (face-attribute 'tab-line-tab-inactive :background))))
-
-(ert-deftest qu-test/tab-line-background-colored-box-padding ()
+(ert-deftest qu-test/tab-line-old-customizations-removed ()
+  (should-not tab-line-exclude-buffers)
+  (should (eq tab-line-tabs-window-buffers-filter-function #'identity))
   (dolist (face '(tab-line-tab tab-line-tab-inactive
                   tab-line-tab-current tab-line-highlight))
-    (let ((box (face-attribute face :box nil t)))
-      (should (listp box))
-      (should (= (or (plist-get box :line-width) 0) 5))
-      (should (equal (plist-get box :color)
-                     (face-attribute face :background nil t)))
-      (should-not (plist-get box :style)))))
+    (should-not (equal (plist-get (face-attribute face :box nil t) :line-width) 5))))
+
+(ert-deftest qu-test/modern-tab-default-controls-preserved ()
+  (should modern-tab-line-auto-hide)
+  (should (equal tab-line-separator ""))
+  (should-not tab-line-new-button-show)
+  (should (eq tab-line-close-button-show 'selected)))
+
+(ert-deftest qu-test/modern-tab-closes-unshared-buffer ()
+  (let ((buffer (generate-new-buffer "modern-tab-unshared.txt"))
+        (other (generate-new-buffer "modern-tab-other.txt")))
+    (unwind-protect
+        (save-window-excursion
+          (switch-to-buffer other)
+          (switch-to-buffer buffer)
+          (funcall tab-line-close-tab-function buffer)
+          (should-not (buffer-live-p buffer)))
+      (when (buffer-live-p buffer) (kill-buffer buffer))
+      (kill-buffer other))))
+
+(ert-deftest qu-test/modern-tab-keeps-buffer-shared-by-another-window ()
+  (let ((buffer (generate-new-buffer "modern-tab-shared.txt")))
+    (unwind-protect
+        (save-window-excursion
+          (delete-other-windows)
+          (switch-to-buffer buffer)
+          (let ((other (split-window-right)))
+            (set-window-buffer other buffer)
+            (funcall tab-line-close-tab-function buffer)
+            (should (buffer-live-p buffer))
+            (should (eq (window-buffer other) buffer))))
+      (when (buffer-live-p buffer) (kill-buffer buffer)))))
 
 (ert-deftest qu-test/tab-line-keyboard-switching ()
   (let* ((first (generate-new-buffer "tab-first.txt"))

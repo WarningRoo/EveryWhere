@@ -11,6 +11,7 @@
 (require 'org)
 (require 'org-capture)
 (require 'recentf)
+(require 'doom-modeline)
 
 (defvar qu-config-test/init-file
   (or (getenv "EMACS_INIT_UNDER_TEST")
@@ -32,10 +33,12 @@
   (dolist (form qu-config-test/forms)
     (when (or (and (eq (car-safe form) 'setq)
                    (memq (cadr form) '(history-length recentf-max-saved-items)))
+              (and (eq (car-safe form) 'defun)
+                   (memq (cadr form) '(qu/first-available qu/font-setup)))
               (and (eq (car-safe form) 'global-set-key)
                    (memq 'comment-or-uncomment-region (flatten-tree form)))
               (and (eq (car-safe form) 'use-package)
-                   (memq (cadr form) '(consult embark org org-download))))
+                   (memq (cadr form) '(consult embark org org-download doom-modeline))))
       (eval form t))))
 
 (defvar qu-config-test/embark-lazy (not (featurep 'embark)))
@@ -61,6 +64,49 @@
 (ert-deftest qu-config-test/history-retention ()
   (should (= history-length 200))
   (should (= recentf-max-saved-items 300)))
+
+(ert-deftest qu-config-test/body-font-is-light-with-size-preserved ()
+  (let (requested-font)
+    (cl-letf (((symbol-function 'display-graphic-p) (lambda (&rest _) t))
+              ((symbol-function 'qu/first-available) (lambda (&rest fonts) (car fonts)))
+              ((symbol-function 'set-frame-font)
+               (lambda (font &rest _) (setq requested-font font)))
+              ((symbol-function 'set-face-attribute) #'ignore)
+              ((symbol-function 'set-fontset-font) #'ignore))
+      (qu/font-setup))
+    (should (equal (font-get requested-font :weight)
+                   (font-get (font-spec :weight 'light) :weight)))
+    (should (= (font-get requested-font :size) 15.0))))
+
+(ert-deftest qu-config-test/secondary-org-headings-use-body-color ()
+  (dolist (face '(org-level-2 org-level-3 org-level-4 org-level-5
+                 org-level-6 org-level-7 org-level-8))
+    (should (eq (face-attribute face :inherit) 'default))
+    (should (eq (face-attribute face :foreground) 'unspecified))))
+
+(ert-deftest qu-config-test/org-auxiliary-faces-share-existing-styles ()
+  (dolist (face '(org-table org-meta-line))
+    (should (eq (face-attribute face :inherit) 'shadow)))
+  (dolist (face '(org-block-begin-line org-block-end-line))
+    (should (eq (face-attribute face :inherit) 'org-meta-line))))
+
+(ert-deftest qu-config-test/modeline-omits-major-mode-icon ()
+  (should-not doom-modeline-major-mode-icon))
+
+(ert-deftest qu-config-test/frame-padding-preserves-transparency ()
+  (let (default-frame-alist)
+    (with-temp-buffer
+      (insert-file-contents
+       (expand-file-name "early-init.el" (file-name-directory qu-config-test/init-file)))
+      (condition-case nil
+          (while t
+            (let ((form (read (current-buffer))))
+              (when (and (eq (car-safe form) 'add-to-list)
+                         (equal (cadr form) '(quote default-frame-alist)))
+                (eval form t))))
+        (end-of-file nil)))
+    (should (equal (alist-get 'internal-border-width default-frame-alist) 8))
+    (should (= (alist-get 'alpha-background default-frame-alist) 85))))
 
 (ert-deftest qu-config-test/idea-capture-starts-in-body ()
   (let* ((file (make-temp-file "emacs-capture-check-" nil ".org"))
