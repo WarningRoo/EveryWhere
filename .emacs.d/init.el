@@ -344,6 +344,9 @@
 
 (use-package vertico
   :ensure t
+  :bind (:map vertico-map
+              ("C-v" . vertico-scroll-up)
+              ("M-v" . vertico-scroll-down))
   :custom (vertico-resize nil)
   :init
   (vertico-mode))
