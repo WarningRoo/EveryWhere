@@ -304,6 +304,10 @@
 
 (use-package exec-path-from-shell
   :ensure t
+  :init
+  (when (eq system-type 'windows-nt)
+    (setq exec-path-from-shell-shell-name
+          "C:/Program Files/Git/bin/bash.exe"))
   :config
   (exec-path-from-shell-copy-envs
    (append
