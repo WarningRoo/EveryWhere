@@ -667,7 +667,7 @@
    '(org-level-6 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
    '(org-level-7 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
    '(org-level-8 ((t (:inherit default :foreground unspecified :weight regular :height 1.0))))
-   '(org-table ((t (:inherit shadow :foreground unspecified))))
+   '(org-table ((t (:inherit fixed-pitch :foreground unspecified))))
    '(org-meta-line ((t (:inherit shadow :foreground unspecified))))
    '(org-block-begin-line ((t (:inherit org-meta-line :foreground unspecified))))
    '(org-block-end-line ((t (:inherit org-meta-line :foreground unspecified))))
@@ -739,7 +739,7 @@
 
 (use-package org-roam-ui
   :ensure t
-  :after org-roam
+  :commands (org-roam-ui-open org-roam-ui-mode)
   :custom
   (org-roam-ui-open-on-start nil))
 
