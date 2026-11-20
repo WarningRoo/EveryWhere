@@ -6,7 +6,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # PATH update
-export PATH="$HOME/.local/bin:$PATH"
+typeset -U PATH path
+path=("$HOME/.local/bin" "${path[@]}")
+
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+fi
 
 # SOME userful configuration
 export LESS=FR
@@ -14,7 +19,7 @@ WORDCHARS=${WORDCHARS//\//}
 
 # Lines configured by zsh-newuser-install
 HISTFILE="$HOME/.zsh_history"
-HISTSIZE=10000
+HISTSIZE=20000
 SAVEHIST=10000
 setopt APPEND_HISTORY
 setopt SHARE_HISTORY
@@ -51,10 +56,15 @@ autoload -Uz _zinit
 
 # PLUGINS
 zinit load zsh-users/zsh-autosuggestions
-zinit load zsh-users/zsh-syntax-highlighting
 zinit load rupa/z
 
 zinit ice depth"1"
 zinit light romkatv/powerlevel10k
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+if (( $+commands[fzf] )) && [[ -n $HOMEBREW_PREFIX && -r "$HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh" ]]; then
+  FZF_CTRL_T_COMMAND= FZF_ALT_C_COMMAND= source "$HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh"
+fi
+
+zinit load zsh-users/zsh-syntax-highlighting
